@@ -19,7 +19,7 @@
     <description>TrackMe_Geolo</description>
 
     <properties>
-        <java.version>17</java.version> <!-- Cambié a Java 17 para mayor compatibilidad -->
+        <java.version>17</java.version> 
     </properties>
 
     <dependencies>
@@ -35,15 +35,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Si no vas a usar Lombok, puedes eliminar esta dependencia -->
-        <!--
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
-            <scope>provided</scope>
-        </dependency>
-        -->
+        
 
         <!-- Driver MySQL para conexión con base de datos -->
         <dependency>

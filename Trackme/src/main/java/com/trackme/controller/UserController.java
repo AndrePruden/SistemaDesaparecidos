@@ -1,7 +1,7 @@
 package com.trackme.controller;
 
 import com.trackme.model.Usuario;
-import com.trackme.repository.UserRepository;
+//se elimino UserRepository 
 import com.trackme.service.UsuarioService;
 
 import java.util.List;
