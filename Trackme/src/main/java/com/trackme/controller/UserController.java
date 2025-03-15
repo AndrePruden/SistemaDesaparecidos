@@ -66,4 +66,13 @@ public class UserController {
         usuarioService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/iniciar-sesion")
+    public ResponseEntity<Boolean> iniciarSesion(@RequestBody Usuario usuario) {
+        Optional<Usuario> existingUser = usuarioService.obtenerPorEmail(usuario.getEmail());
+        if (existingUser.isPresent() && existingUser.get().getPassword().equals(usuario.getPassword())) {
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.ok(false);
+    }
 }

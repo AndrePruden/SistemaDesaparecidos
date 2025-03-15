@@ -13,11 +13,17 @@ export interface Usuario {
   providedIn: 'root',
 })
 export class UsuarioService {
-  private apiUrl = 'http://localhost:8080/usuarios'; //es el URL de nuestro backend chicos
+  private apiUrl = 'http://localhost:8080/usuarios'; // URL de nuestro backend
 
   constructor(private http: HttpClient) {}
 
+  // Método para registrar un usuario
   registrarUsuario(usuario: Usuario): Observable<string> {
     return this.http.post<string>(`${this.apiUrl}/registro`, usuario);
+  }
+
+  // Método para iniciar sesión
+  iniciarSesion(credenciales: { email: string, password: string }): Observable<boolean> {
+    return this.http.post<boolean>(`${this.apiUrl}/iniciar-sesion`, credenciales);
   }
 }
