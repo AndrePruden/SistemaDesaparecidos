@@ -19,6 +19,13 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
+//    public Usuario(Long id, String email, String nombre, String password) {
+//        this.email = email;
+//        this.id = id;
+//        this.nombre = nombre;
+//        this.password = password;
+//    }
+
     public Long getId() {
         return id;
     }
