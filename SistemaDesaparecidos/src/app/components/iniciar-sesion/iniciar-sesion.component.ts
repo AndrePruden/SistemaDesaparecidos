@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './iniciar-sesion.component.html',
-  styleUrls: ['./iniciar-sesion.component.css']
+  styleUrls: ['./iniciar-sesion.component.scss']
 })
 export class IniciarSesionComponent {
   credenciales = { email: '', password: '' };

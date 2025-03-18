@@ -23,7 +23,7 @@ export class RegistroComponent {
         this.usuario = { nombre: '', email: '', password: '' };
       },
       () => {
-        this.mensaje = 'Error al registrar el usuario. Inténtalo de nuevo.';
+        this.mensaje = '';
       }
     );
   }
