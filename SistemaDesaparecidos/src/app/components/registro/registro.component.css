@@ -90,3 +90,16 @@
     margin-top: 10px;
     display: block;
 }
+.home-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    color: #4070f4;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .home-icon:hover {
+    color: #265df2;
+  }
