@@ -22,6 +22,7 @@
             name="email"
             placeholder="Ingrese su email"
             required
+            (ngModelChange)="validarEmail($event)"
           />
           <i class="uil uil-envelope icon"></i>
         </div>

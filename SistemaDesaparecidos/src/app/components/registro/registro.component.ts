@@ -17,8 +17,16 @@ export class RegistroComponent {
 
   constructor(private usuarioService: UsuarioService) {}
 
+  private emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
   onSubmit(): void {
+    if (!this.emailRegex.test(this.usuario.email)) {
+      this.mensajeError = 'Por favor, ingresa un correo electrónico válido.';
+      return;
+    }
+
     const contraseña = this.usuario.password;
+    
     if (contraseña.length < 8) {
       this.mensajeError = 'La contraseña debe tener al menos 8 caracteres.';
       return;
@@ -56,6 +64,14 @@ export class RegistroComponent {
         this.mensaje = '';  // Limpiar mensaje de éxito en caso de error
       }
     );
+  }
+
+  validarEmail(email: string): void {
+    if (!this.emailRegex.test(email)) {
+      this.mensajeError = 'Por favor, ingresa un correo electrónico válido.';
+    } else {
+      this.mensajeError = '';
+    }
   }
    
 }
