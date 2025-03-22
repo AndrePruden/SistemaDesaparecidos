@@ -18,17 +18,26 @@ export class IniciarSesionComponent {
   constructor(private usuarioService: UsuarioService, private router: Router) {}
 
   onSubmit(): void {
+    console.log('Credenciales:', this.credenciales);  // Verifica los valores que se están enviando
     this.usuarioService.iniciarSesion(this.credenciales).subscribe(
-      (response) => {
-        if (response) {
+      (response) => { 
+        console.log('Respuesta del backend:', response);  // Muestra la respuesta
+        if (response.message === 'Inicio de sesión exitoso.') {
           this.router.navigate(['/']); // Redirigir a la página principal después del inicio de sesión
         } else {
           this.mensaje = 'Credenciales incorrectas. Inténtalo de nuevo.';
         }
       },
-      () => {
-        this.mensaje = 'Error al iniciar sesión. Inténtalo de nuevo.';
+      (error) => {
+        console.log('Error al iniciar sesión:', error);
+        if (error.status === 404) {
+          this.mensaje = 'El correo electrónico no está registrado.';
+        } else if (error.status === 401) {
+          this.mensaje = 'Contraseña incorrecta.';
+        } else {
+          this.mensaje = 'Error al iniciar sesión. Inténtalo de nuevo.';
+        }
       }
     );
-  }
+  }  
 }

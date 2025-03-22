@@ -9,6 +9,10 @@ export interface Usuario {
   password: string;
 }
 
+export interface ResponseMessage {
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -18,12 +22,13 @@ export class UsuarioService {
   constructor(private http: HttpClient) {}
 
   // Método para registrar un usuario
-  registrarUsuario(usuario: Usuario): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/registro`, usuario);
+  registrarUsuario(usuario: Usuario): Observable<ResponseMessage> {
+    return this.http.post<ResponseMessage>(`${this.apiUrl}/registro`, usuario);
   }
 
   // Método para iniciar sesión
-  iniciarSesion(credenciales: { email: string, password: string }): Observable<boolean> {
-    return this.http.post<boolean>(`${this.apiUrl}/iniciar-sesion`, credenciales);
+  iniciarSesion(credenciales: { email: string, password: string }): Observable<ResponseMessage> {
+    return this.http.post<ResponseMessage>(`${this.apiUrl}/iniciar-sesion`, credenciales);
   }
+  
 }

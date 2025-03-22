@@ -1,37 +1,39 @@
 package com.trackme.service;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.trackme.model.Usuario;
+import com.trackme.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.trackme.model.Usuario;
-import com.trackme.repository.UserRepository;
+import java.util.Optional;
 
 @Service
 public class UsuarioService {
 
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository usuarioRepository;
-
-    public List<Usuario> obtenerTodos() {
-        return usuarioRepository.findAll();
+    public UsuarioService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    public Optional<Usuario> obtenerPorId(Long id) {
-        return usuarioRepository.findById(id);
+    public Optional<Usuario> obtenerUsuarioPorEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
-    public Usuario guardar(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public Optional<Usuario> obtenerUsuarioPorId(Long id) {
+        return userRepository.findById(id);
     }
 
-    public void eliminar(Long id) {
-        usuarioRepository.deleteById(id);
+    public Usuario crearUsuario(Usuario usuario) {
+        return userRepository.save(usuario);
     }
 
-    public Optional<Usuario> obtenerPorEmail(String email) {
-        return usuarioRepository.findByEmail(email);
+    public Usuario actualizarUsuario(Usuario usuario) {
+        return userRepository.save(usuario);
+    }
+
+    public void eliminarUsuario(Long id) {
+        userRepository.findById(id).ifPresent(userRepository::delete);
     }
 }
