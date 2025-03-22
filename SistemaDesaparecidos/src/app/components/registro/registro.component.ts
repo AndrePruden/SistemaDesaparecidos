@@ -18,6 +18,27 @@ export class RegistroComponent {
   constructor(private usuarioService: UsuarioService) {}
 
   onSubmit(): void {
+    const contraseña = this.usuario.password;
+    if (contraseña.length < 8) {
+      this.mensajeError = 'La contraseña debe tener al menos 8 caracteres.';
+      return;
+    }
+
+    if (!/[A-Z]/.test(contraseña)) {
+      this.mensajeError = 'La contraseña debe contener al menos una letra mayúscula.';
+      return;
+    }
+
+    if (!/[0-9]/.test(contraseña)) {
+      this.mensajeError = 'La contraseña debe contener al menos un número.';
+      return;
+    }
+
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(contraseña)) {
+      this.mensajeError = 'La contraseña debe contener al menos un carácter especial.';
+      return;
+    }
+
     this.usuarioService.registrarUsuario(this.usuario).subscribe(
       (response) => {
         this.mensaje = response.message;  // Acceder a la propiedad 'message' del objeto de respuesta

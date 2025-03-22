@@ -23,6 +23,12 @@
     </properties>
 
     <dependencies>
+        <!-- BCrypt para encriptar las contraseñas en la base de datos con una hash-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+        </dependency>
+
         <!-- Spring Boot JPA para manejo de base de datos -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -46,7 +46,8 @@ public class UserController {
             return ResponseEntity.status(404).body(new ResponseMessage("El correo electrónico no está registrado."));
         }
 
-        if (existingUser.get().getPassword().equals(usuario.getPassword())) {
+        // Verifica si la contraseña es correcta
+        if (usuarioService.verificarContraseña(usuario.getPassword(), existingUser.get().getPassword())) {
             return ResponseEntity.ok(new ResponseMessage("Inicio de sesión exitoso."));
         }
 

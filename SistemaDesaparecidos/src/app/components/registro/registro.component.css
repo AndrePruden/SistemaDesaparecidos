@@ -81,3 +81,12 @@
     color: #4070f4;
     font-weight: 500;
 }
+.mensaje.error {
+    color: #ff0000;
+}
+.text-muted {
+    font-size: 0.875em;
+    color: #6c757d;
+    margin-top: 10px;
+    display: block;
+}
