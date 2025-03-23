@@ -23,6 +23,7 @@ export class IniciarSesionComponent {
       (response) => { 
         console.log('Respuesta del backend:', response);  // Muestra la respuesta
         if (response.message === 'Inicio de sesión exitoso.') {
+          localStorage.setItem('email', this.credenciales.email);
           this.router.navigate(['/']); // Redirigir a la página principal después del inicio de sesión
         } else {
           this.mensaje = 'Credenciales incorrectas. Inténtalo de nuevo.';

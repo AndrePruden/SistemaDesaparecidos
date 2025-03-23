@@ -1,0 +1,38 @@
+<div class="container">
+    <h2>Reportes de Personas Desaparecidas</h2>
+  
+    <!-- Formulario para crear un reporte -->
+    <div class="formulario">
+      <h3>Crear Nuevo Reporte</h3>
+      <form (ngSubmit)="crearReporte()">
+        <div class="input-field">
+          <input type="text" [(ngModel)]="nuevoReporte.nombre" name="nombre" placeholder="Nombre" required>
+        </div>
+        <div class="input-field">
+          <input type="number" [(ngModel)]="nuevoReporte.edad" name="edad" placeholder="Edad">
+        </div>
+        <div class="input-field">
+          <input type="date" [(ngModel)]="nuevoReporte.fechaDesaparicion" name="fechaDesaparicion" placeholder="Fecha de Desaparición" required>
+        </div>
+        <div class="input-field">
+          <input type="text" [(ngModel)]="nuevoReporte.lugarDesaparicion" name="lugarDesaparicion" placeholder="Lugar de Desaparición" required>
+        </div>
+        <div class="input-field">
+          <textarea [(ngModel)]="nuevoReporte.descripcion" name="descripcion" placeholder="Descripción"></textarea>
+        </div>
+        <button type="submit">Crear Reporte</button>
+      </form>
+    </div>
+  
+    <!-- Lista de reportes -->
+    <div class="lista-reportes">
+      <h3>Mis Reportes</h3>
+      <div *ngFor="let reporte of reportes" class="reporte">
+        <p><strong>Nombre:</strong> {{ reporte.nombre }}</p>
+        <p><strong>Edad:</strong> {{ reporte.edad }}</p>
+        <p><strong>Fecha de Desaparición:</strong> {{ reporte.fechaDesaparicion }}</p>
+        <p><strong>Lugar de Desaparición:</strong> {{ reporte.lugarDesaparicion }}</p>
+        <p><strong>Descripción:</strong> {{ reporte.descripcion }}</p>
+      </div>
+    </div>
+  </div>
