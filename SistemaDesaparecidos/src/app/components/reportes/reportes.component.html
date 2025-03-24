@@ -1,8 +1,14 @@
 <div class="container">
     <h2>Reportes de Personas Desaparecidas</h2>
   
+    <!-- Mostrar el email del usuario y el botón de cerrar sesión si está logueado -->
+  <div *ngIf="estaLogueado" class="sesion-info">
+    <p>Email: {{ emailUsuario }}</p>
+    <button (click)="cerrarSesion()">Cerrar Sesión</button>
+  </div>
+
     <!-- Formulario para crear un reporte -->
-    <div class="formulario">
+    <div *ngIf="estaLogueado" class="formulario">
       <h3>Crear Nuevo Reporte</h3>
       <form (ngSubmit)="crearReporte()">
         <div class="input-field">
@@ -24,9 +30,14 @@
       </form>
     </div>
   
+    <!-- Mensaje si no está logueado -->
+  <div *ngIf="!estaLogueado" class="mensaje">
+    <p>Por favor, <a routerLink="/iniciar-sesion">inicia sesión</a> para reportar una persona desaparecida.</p>
+  </div>
+
     <!-- Lista de reportes -->
     <div class="lista-reportes">
-      <h3>Mis Reportes</h3>
+      <h3>Reportes Existentes</h3>
       <div *ngFor="let reporte of reportes" class="reporte">
         <p><strong>Nombre:</strong> {{ reporte.nombre }}</p>
         <p><strong>Edad:</strong> {{ reporte.edad }}</p>
