@@ -4,11 +4,12 @@ import { RouterModule } from '@angular/router';
 import { CarouselComponent } from '../carousel/carousel.component';
 import { HeaderComponent } from '../header/header.component';
 import { ReportesComponent } from '../reportes/reportes.component';
+import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, CarouselComponent, HeaderComponent, ReportesComponent], // Importa RouterModule
+  imports: [CommonModule, RouterModule, CarouselComponent, HeaderComponent, ReportesComponent, FooterComponent], // Importa RouterModule
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })

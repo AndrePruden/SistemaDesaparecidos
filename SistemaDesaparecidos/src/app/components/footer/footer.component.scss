@@ -1,0 +1,44 @@
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 50px; /* Reducido el padding izquierdo */
+    background-color: #000814;
+    color: white;
+    
+}
+
+.footer-left, .footer-center, .footer-right {
+    display: flex;
+    align-items: center;
+}
+
+.social-icon, .footer-icon {
+    height: 30px;
+    margin-right: 10px;
+    
+}
+
+.footer-logo {
+    width: auto;
+    height: 100px; /* Tamaño del logo en el pie de página */
+    
+}
+
+.footer a {
+    color: white;
+    text-decoration: none;
+}
+.footer-left {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    text-align: center; 
+}
+
+.email-link {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    gap: 10px; 
+}
