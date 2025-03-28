@@ -4,18 +4,22 @@ import com.trackme.model.Usuario;
 import com.trackme.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-class UsuarioControllerTest {
+@ExtendWith(MockitoExtension.class)
+class UserControllerTest {
 
     @Mock
     private UsuarioService usuarioService;
@@ -23,18 +27,17 @@ class UsuarioControllerTest {
     @InjectMocks
     private UserController userController;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     void testRegistrarUsuarioCorreoExistente() {
-        Usuario usuario = new Usuario("newuser", "password123", "existing@domain.com");
+        // Arrange
+        Usuario usuario = new Usuario();
+        usuario.setEmail("existing@domain.com");
         when(usuarioService.obtenerUsuarioPorEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
 
+        // Act
         ResponseEntity<ResponseMessage> response = userController.registrarUsuario(usuario);
 
+        // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("El correo ya está registrado.", response.getBody().getMessage());
@@ -42,35 +45,64 @@ class UsuarioControllerTest {
 
     @Test
     void testRegistrarUsuarioExitoso() {
-        Usuario usuario = new Usuario("newuser", "password123", "new@domain.com");
-        when(usuarioService.obtenerUsuarioPorEmail(usuario.getEmail())).thenReturn(Optional.empty());
-
+        // Arrange
+        Usuario usuario = new Usuario();
+        usuario.setEmail("new@domain.com");
+        
+        when(usuarioService.obtenerUsuarioPorEmail(usuario.getEmail()))
+            .thenReturn(Optional.empty());
+        
+        // Cambio clave: Si crearUsuario devuelve el usuario creado
+        when(usuarioService.crearUsuario(any(Usuario.class)))
+            .thenReturn(usuario); // Asume que crearUsuario devuelve el usuario
+    
+        // Act
         ResponseEntity<ResponseMessage> response = userController.registrarUsuario(usuario);
-
+    
+        // Assert
+        assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Usuario registrado con éxito.", response.getBody().getMessage());
+        
+        ResponseMessage body = response.getBody();
+        assertNotNull(body);
+        assertEquals("Usuario registrado con éxito.", body.getMessage());
+        
+        verify(usuarioService, times(1)).crearUsuario(any(Usuario.class));
     }
-
+    
     @Test
     void testIniciarSesionExitoso() {
-        Usuario usuario = new Usuario("validuser", "validpassword", "valid@domain.com");
-        when(usuarioService.obtenerUsuarioPorEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+        Usuario usuario = new Usuario();
+        usuario.setEmail("valid@domain.com");
+        usuario.setPassword("validpass");
+        
+        Usuario usuarioExistente = new Usuario();
+        usuarioExistente.setPassword("validpass");
+        
+        when(usuarioService.obtenerUsuarioPorEmail(anyString())).thenReturn(Optional.of(usuarioExistente));
+        when(usuarioService.verificarContraseña(anyString(), anyString())).thenReturn(true);
 
         ResponseEntity<ResponseMessage> response = userController.iniciarSesion(usuario);
 
+        assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Inicio de sesión exitoso.", response.getBody().getMessage());
+        
+        ResponseMessage body = response.getBody();
+        assertNotNull(body); // Verificación explícita
+        assertEquals("Inicio de sesión exitoso.", body.getMessage());
     }
 
     @Test
     void testIniciarSesionFallidoCorreoNoRegistrado() {
-        Usuario usuario = new Usuario("anyuser", "anyPassword", "nonexistent@domain.com");
+        // Arrange
+        Usuario usuario = new Usuario();
+        usuario.setEmail("nonexistent@domain.com");
         when(usuarioService.obtenerUsuarioPorEmail(usuario.getEmail())).thenReturn(Optional.empty());
 
+        // Act
         ResponseEntity<ResponseMessage> response = userController.iniciarSesion(usuario);
 
+        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("El correo electrónico no está registrado.", response.getBody().getMessage());
@@ -78,13 +110,22 @@ class UsuarioControllerTest {
 
     @Test
     void testIniciarSesionFallidoContraseñaIncorrecta() {
-        Usuario usuario = new Usuario("validuser", "wrongpassword", "valid@domain.com");
-        Usuario usuarioExistente = new Usuario("validuser", "validpassword", "valid@domain.com");
+        // Arrange
+        Usuario usuario = new Usuario();
+        usuario.setEmail("valid@domain.com");
+        usuario.setPassword("wrongpassword");
+        Usuario usuarioExistente = new Usuario();
+        usuarioExistente.setPassword("correctpassword");
+        
+        when(usuarioService.obtenerUsuarioPorEmail(usuario.getEmail()))
+            .thenReturn(Optional.of(usuarioExistente));
+        when(usuarioService.verificarContraseña(usuario.getPassword(), usuarioExistente.getPassword()))
+            .thenReturn(false);
 
-        when(usuarioService.obtenerUsuarioPorEmail(usuario.getEmail())).thenReturn(Optional.of(usuarioExistente));
-
+        // Act
         ResponseEntity<ResponseMessage> response = userController.iniciarSesion(usuario);
 
+        // Assert
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Contraseña incorrecta.", response.getBody().getMessage());
@@ -92,53 +133,63 @@ class UsuarioControllerTest {
 
     @Test
     void testEliminarUsuarioExitoso() {
+        // Arrange
         Long id = 1L;
-        Usuario usuario = new Usuario("testuser", "password123", "test@domain.com");
-        usuario.setId(id);
-        when(usuarioService.obtenerUsuarioPorId(id)).thenReturn(Optional.of(usuario));
+        when(usuarioService.obtenerUsuarioPorId(id)).thenReturn(Optional.of(new Usuario()));
+        doNothing().when(usuarioService).eliminarUsuario(id);
 
+        // Act
         ResponseEntity<Void> response = userController.eliminarUsuario(id);
 
+        // Assert
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(usuarioService, times(1)).eliminarUsuario(id);
     }
 
     @Test
     void testEliminarUsuarioNoEncontrado() {
+        // Arrange
         Long id = 1L;
         when(usuarioService.obtenerUsuarioPorId(id)).thenReturn(Optional.empty());
 
+        // Act
         ResponseEntity<Void> response = userController.eliminarUsuario(id);
 
+        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(usuarioService, never()).eliminarUsuario(id);
     }
 
     @Test
     void testActualizarUsuarioExitoso() {
+        // Arrange
         Long id = 1L;
-        Usuario usuarioExistente = new Usuario("testuser", "password123", "test@domain.com");
-        usuarioExistente.setId(id);
-        Usuario usuarioActualizado = new Usuario("updateduser", "newpassword", "newemail@domain.com");
+        Usuario usuarioActualizado = new Usuario();
         usuarioActualizado.setId(id);
+        when(usuarioService.obtenerUsuarioPorId(id)).thenReturn(Optional.of(new Usuario()));
+        when(usuarioService.actualizarUsuario(any(Usuario.class))).thenReturn(usuarioActualizado);
 
-        when(usuarioService.obtenerUsuarioPorId(id)).thenReturn(Optional.of(usuarioExistente));
-        when(usuarioService.actualizarUsuario(usuarioActualizado)).thenReturn(usuarioActualizado);
-
+        // Act
         ResponseEntity<Usuario> response = userController.actualizarUsuario(id, usuarioActualizado);
 
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("updateduser", response.getBody().getNombre());
+        assertEquals(id, response.getBody().getId());
     }
 
     @Test
     void testActualizarUsuarioNoEncontrado() {
+        // Arrange
         Long id = 1L;
-        Usuario usuarioActualizado = new Usuario("updateduser", "newpassword", "newemail@domain.com");
-
+        Usuario usuarioActualizado = new Usuario();
+        usuarioActualizado.setId(id);
         when(usuarioService.obtenerUsuarioPorId(id)).thenReturn(Optional.empty());
 
+        // Act
         ResponseEntity<Usuario> response = userController.actualizarUsuario(id, usuarioActualizado);
 
+        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 }
