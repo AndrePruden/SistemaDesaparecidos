@@ -1,83 +1,115 @@
-# Sistema Desaparecidos - TrackMe
+# TrackMe - Sistema de Gestión de Personas Desaparecidas
 
-Proyecto que gestiona información sobre personas desaparecidas, compuesto por un frontend en Angular y un backend en Java con Spring Boot.
+TrackMe es un sistema diseñado para gestionar información sobre personas desaparecidas, centralizando datos y facilitando la comunicación entre familiares, autoridades y la comunidad.
 
-## Tecnologías
-- **Frontend**: Angular 19, RxJS, TypeScript.
-- **Backend**: Spring Boot 3.x, Spring Data JPA, MySQL, Java 17.
+![Elevator Pitch](ElevatorPitch.png)
 
-## Instrucciones de Instalación
+## Tecnologías Utilizadas
+
+### Frontend:
+- Angular 19
+- RxJS
+- TypeScript
+
+### Backend:
+- Spring Boot 3.x
+- Spring Data JPA
+- MySQL
+- Java 17
+
+## Instalación y Configuración
 
 ### Backend
-1. Clona el repositorio y navega al directorio del backend.
 
-git clone <URL_DEL_REPOSITORIO>
-cd <DIRECTORIO_DEL_BACKEND>
+1. **Clona el repositorio y accede al directorio del backend:**
+   ```sh
+   git clone <URL_DEL_REPOSITORIO>
+   cd <DIRECTORIO_DEL_BACKEND>
+   ```
 
-2. Asegúrate de tener **Java 17** y **Maven** instalados:
-   winget install --id Oracle.OpenJDK.17  
-   winget install Apache.Maven    
+2. **Asegúrate de tener Java 17 y Maven instalados:**
+   ```sh
+   winget install --id Oracle.OpenJDK.17
+   winget install Apache.Maven
+   ```
 
+3. **Configura la Base de Datos:**
+   - Asegúrate de tener MySQL instalado y en ejecución.
+   - Crea una base de datos llamada `Trackme`.
+   - Dentro de la base de datos `Trackme`, crea las siguientes tablas:
+   
+     ```sql
+     CREATE TABLE usuarios (
+         id INT AUTO_INCREMENT PRIMARY KEY,
+         email VARCHAR(255) NOT NULL UNIQUE,
+         nombre VARCHAR(100) NOT NULL,
+         password VARCHAR(255) NOT NULL
+     );
 
+     CREATE TABLE persona_desaparecida (
+         id_desaparecido INT AUTO_INCREMENT PRIMARY KEY,
+         email_reportaje VARCHAR(100) NOT NULL,
+         nombre VARCHAR(100) NOT NULL,
+         edad INT,
+         fecha_desaparicion DATE NOT NULL,
+         lugar_desaparicion VARCHAR(255) NOT NULL,
+         descripcion TEXT,
+         FOREIGN KEY (email_reportaje) REFERENCES usuarios(email) ON DELETE CASCADE
+     );
+     ```
 
-3. Configura la Base de Datos:
+4. **Agrega el driver de MySQL en el archivo `pom.xml`:**
+   ```xml
+   <dependency>
+       <groupId>mysql</groupId>
+       <artifactId>mysql-connector-java</artifactId>
+       <version>8.0.26</version>
+   </dependency>
+   ```
 
-Asegúrate de tener MySQL instalado y en ejecución.
+5. **Configura el archivo `application.properties` para la conexión a la base de datos:**
+   ```properties
+   spring.datasource.url=jdbc:mysql://localhost:3306/Trackme
+   spring.datasource.username=root
+   spring.datasource.password=estudiante
+   spring.jpa.hibernate.ddl-auto=update
+   spring.jpa.show-sql=true
+   ```
 
-Crea una base de datos llamada Trackme.
+6. **Compila y ejecuta el backend:**
+   ```sh
+   mvn clean install
+   mvn spring-boot:run
+   ```
 
-Dentro de la base de datos Trackme, crea una tabla usuarios con los campos necesarios (email, nombre, password). Aquí tienes un ejemplo de cómo podría ser la sentencia SQL:
+### Frontend
 
-CREATE TABLE usuarios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    nombre VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL
-);
+1. **Navega al directorio del frontend:**
+   ```sh
+   cd <DIRECTORIO_DEL_FRONTEND>
+   ```
 
-4. Agregar drivers de MySQL al pom.xml para la conexion con la BD. 
-
-<dependency>
-    <groupId>mysql</groupId>
-    <artifactId>mysql-connector-java</artifactId>
-    <version>8.0.26</version> <!-- Asegúrate de usar la versión más reciente -->
-</dependency>
-
-5. Configura application.properties:
-Asegúrate de que el archivo application.properties tenga la configuración correcta para conectarse a tu base de datos MySQL. Aquí tienes un ejemplo:
-
-spring.datasource.url=jdbc:mysql://localhost:3306/Trackme
-spring.datasource.username=root
-spring.datasource.password=estudiante
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-
-
-6.Instala Angular CLI (si es necesario):
-Si también estás trabajando en el frontend, asegúrate de tener Angular CLI instalado globalmente:
-
+2. **Instala Angular CLI (si aún no lo tienes instalado):**
+   ```sh
    npm install -g @angular/cli
+   ```
 
-7.Compila y Ejecuta el Backend:
+3. **Instala las dependencias del proyecto:**
+   ```sh
+   npm install
+   ```
 
-mvn clean install
-mvn spring-boot:run
+4. **Ejecuta el servidor en modo desarrollo:**
+   ```sh
+   ng serve
+   ```
 
+## Contribuciones
+Si deseas contribuir al proyecto, por favor sigue las mejores prácticas de desarrollo colaborativo, realiza cambios en ramas separadas y envía un pull request con tus modificaciones.
 
+## Licencia
+Este proyecto está bajo la licencia [MIT](LICENSE).
 
-### Instalación del Frontend (Angular)
-
-Navega al Directorio del Frontend
-
-cd <DIRECTORIO_DEL_FRONTEND>
-
-Instala dependencias 
-
-npm install
-
-Ejecuta el servidor en desarrollo 
-
-ng serve    
-
-
+---
+Desarrollado por el equipo de TrackMe.
 
