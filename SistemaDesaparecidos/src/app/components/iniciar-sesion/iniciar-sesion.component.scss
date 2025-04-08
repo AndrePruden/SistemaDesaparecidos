@@ -1,91 +1,126 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: #f1f1f1;
+}
+
 body {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #4070f4;
-    margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Asegura que el contenido principal ocupe el espacio restante */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Centra el contenido del formulario */
 .container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 430px;
-    width: 100%;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    padding: 30px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
+
+/* Estilo para la tarjeta del formulario */
+.forms {
+  max-width: 430px;
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: 100px;
+}
+
 .title {
-    font-size: 27px;
-    font-weight: 600;
-    text-align: center;
+  font-size: 27px;
+  font-weight: 600;
+  text-align: center;
 }
+
 .input-field {
-    position: relative;
-    height: 50px;
-    width: 100%;
-    margin-top: 30px;
+  position: relative;
+  height: 50px;
+  width: 100%;
+  margin-top: 30px;
 }
+
 .input-field input {
-    width: 100%;
-    height: 100%;
-    padding: 0 35px;
-    border: none;
-    outline: none;
-    font-size: 16px;
-    border-bottom: 2px solid #ccc;
-    transition: all 0.2s ease;
+  width: 100%;
+  height: 100%;
+  padding: 0 35px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  border-bottom: 2px solid #ccc;
+  transition: all 0.2s ease;
 }
+
 .input-field input:focus {
-    border-bottom-color: #4070f4;
+  border-bottom-color: #4070f4;
 }
+
 .input-field i {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #999;
-    font-size: 23px;
-    transition: all 0.2s ease;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 23px;
+  transition: all 0.2s ease;
 }
+
 .input-field i.icon {
-    left: 10px;
+  left: 10px;
 }
+
 .input-field i.showHidePw {
-    right: 10px;
-    cursor: pointer;
+  right: 10px;
+  cursor: pointer;
 }
+
 .button {
-    margin-top: 35px;
-    text-align: center;
+  margin-top: 35px;
+  text-align: center;
 }
+
 .button button {
-    border: none;
-    color: #fff;
-    font-size: 17px;
-    font-weight: 500;
-    padding: 10px 20px;
-    border-radius: 6px;
-    background-color: #4070f4;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  border: none;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: 6px;
+  background-color: #4070f4;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
+
 .button button:hover {
-    background-color: #265df2;
+  background-color: #265df2;
 }
+
 .mensaje {
-    margin-top: 20px;
-    text-align: center;
-    color: #4070f4;
-    font-weight: 500;
+  margin-top: 20px;
+  text-align: center;
+  color: #4070f4;
+  font-weight: 500;
 }

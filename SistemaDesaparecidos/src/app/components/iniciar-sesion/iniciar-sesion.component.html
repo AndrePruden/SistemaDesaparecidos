@@ -1,36 +1,42 @@
-<div class="container">
-  <div class="forms">
-    <div class="form signup">
-      <span class="title">Iniciar sesion</span>
-      <form (ngSubmit)="onSubmit()">
-        <div class="input-field">
-          <input
-            type="email"
-            id="email"
-            [(ngModel)]="credenciales.email"
-            name="email"
-            placeholder="Ingrese su email"
-            required
-          />
-          <i class="uil uil-envelope icon"></i>
-        </div>
-        <div class="input-field">
-          <input
-            type="password"
-            id="password"
-            [(ngModel)]="credenciales.password"
-            name="password"
-            placeholder="Ingrese su contraseña"
-            required
-          />
-          <i class="uil uil-lock icon"></i>
-          <i class="uil uil-eye-slash showHidePw"></i>
-        </div>
-        <div class="input-field button">
-          <button type="submit">Iniciar Sesion</button>
-        </div>
-      </form>
-      <p *ngIf="mensaje" class="mensaje">{{ mensaje }}</p>
+<div class="wrapper">
+  <app-header></app-header>
+
+  <main class="container">
+    <div class="forms">
+      <div class="form signup">
+        <span class="title">Iniciar sesión</span>
+        <form (ngSubmit)="onSubmit()">
+          <div class="input-field">
+            <input
+              type="email"
+              id="email"
+              [(ngModel)]="credenciales.email"
+              name="email"
+              placeholder="Ingrese su email"
+              required
+            />
+            <i class="uil uil-envelope icon"></i>
+          </div>
+          <div class="input-field">
+            <input
+              type="password"
+              id="password"
+              [(ngModel)]="credenciales.password"
+              name="password"
+              placeholder="Ingrese su contraseña"
+              required
+            />
+            <i class="uil uil-lock icon"></i>
+            <i class="uil uil-eye-slash showHidePw"></i>
+          </div>
+          <div class="input-field button">
+            <button type="submit">Iniciar Sesión</button>
+          </div>
+        </form>
+        <p *ngIf="mensaje" class="mensaje">{{ mensaje }}</p>
+      </div>
     </div>
-  </div>
+  </main>
+
+  <app-footer></app-footer>
 </div>
