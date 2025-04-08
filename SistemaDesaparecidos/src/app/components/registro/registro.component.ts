@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink], 
   templateUrl: './registro.component.html',
-  styleUrls: ['./registro.component.css'],
+  styleUrls: ['./registro.component.scss'],
 })
 export class RegistroComponent {
   usuario = { nombre: '', email: '', password: '' };

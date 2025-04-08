@@ -2,12 +2,14 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuarioService } from '../../services/usuario.service';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-iniciar-sesion',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,HeaderComponent,FooterComponent],
   templateUrl: './iniciar-sesion.component.html',
   styleUrls: ['./iniciar-sesion.component.scss']
 })
@@ -42,3 +44,4 @@ export class IniciarSesionComponent {
     );
   }  
 }
+
