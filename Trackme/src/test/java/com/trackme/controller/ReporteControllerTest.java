@@ -34,6 +34,7 @@ class ReporteControllerTest {
 
     private PersonaDesaparecida reporte1;
     private PersonaDesaparecida reporte2;
+    private PersonaDesaparecida reporte3;
     private List<PersonaDesaparecida> reportesList;
 
     @BeforeEach
@@ -42,7 +43,8 @@ class ReporteControllerTest {
         
         reporte1 = crearReporteEjemplo(1L, "test@example.com", "Juan Pérez");
         reporte2 = crearReporteEjemplo(2L, "test2@example.com", "María García");
-        reportesList = Arrays.asList(reporte1, reporte2);
+        reporte3 = crearReporteEjemplo(2L, "test2@example.com", "Walter Rocha");
+        reportesList = Arrays.asList(reporte1, reporte2, reporte3);
     }
 
     private PersonaDesaparecida crearReporteEjemplo(Long id, String email, String nombre) {
