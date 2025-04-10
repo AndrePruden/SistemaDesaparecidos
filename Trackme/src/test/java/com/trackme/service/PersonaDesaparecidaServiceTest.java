@@ -31,12 +31,12 @@ class PersonaDesaparecidaServiceTest {
     void setUp() {
         reporte = new PersonaDesaparecida();
         reporte.setIdDesaparecido(1L);
-        reporte.setEmailReportaje("test@example.com");
-        reporte.setNombre("Juan Perez");
+        reporte.setEmailReportaje("andrepruden@gmail.com");
+        reporte.setNombre("AndrePruden");
         reporte.setEdad(30);  // Asigna un valor para la edad
         reporte.setFechaDesaparicion(new Date());  // Establece la fecha actual
-        reporte.setLugarDesaparicion("Ciudad X");  // Asigna un lugar
-        reporte.setDescripcion("Descripción del caso");  // Agrega una descripción
+        reporte.setLugarDesaparicion("CBBA");  // Asigna un lugar
+        reporte.setDescripcion("Prueba Unitaria 2");  // Agrega una descripción
     }
 
     @Test
