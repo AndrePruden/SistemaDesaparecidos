@@ -24,20 +24,15 @@ public class UserController {
             if (usuarioService.obtenerUsuarioPorEmail(usuario.getEmail()).isPresent()) {
                 return ResponseEntity.badRequest().body(new ResponseMessage("El correo ya está registrado."));
             }
-
-            // Crea el nuevo usuario
             usuarioService.crearUsuario(usuario);
 
-            // Respuesta de éxito con el mensaje
             return ResponseEntity.ok(new ResponseMessage("Usuario registrado con éxito."));
         } catch (Exception e) {
-            // En caso de error, devuelve un mensaje de error
             return ResponseEntity.status(500).body(new ResponseMessage("Hubo un error al registrar el usuario: " + e.getMessage()));
         }
     }
 
 
-    // Iniciar sesión
     @PostMapping("/iniciar-sesion")
     public ResponseEntity<ResponseMessage> iniciarSesion(@RequestBody Usuario usuario) {
         Optional<Usuario> existingUser = usuarioService.obtenerUsuarioPorEmail(usuario.getEmail());
@@ -46,7 +41,6 @@ public class UserController {
             return ResponseEntity.status(404).body(new ResponseMessage("El correo electrónico no está registrado."));
         }
 
-        // Verifica si la contraseña es correcta
         if (usuarioService.verificarContraseña(usuario.getPassword(), existingUser.get().getPassword())) {
             return ResponseEntity.ok(new ResponseMessage("Inicio de sesión exitoso."));
         }
@@ -55,7 +49,6 @@ public class UserController {
     }
 
 
-    // Eliminar usuario
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
         if (usuarioService.obtenerUsuarioPorId(id).isPresent()) {
@@ -65,7 +58,6 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-    // Actualizar usuario por ID
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
         Optional<Usuario> existingUser = usuarioService.obtenerUsuarioPorId(id);
