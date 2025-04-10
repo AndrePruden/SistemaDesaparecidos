@@ -16,6 +16,7 @@ export interface ResponseMessage {
 @Injectable({
   providedIn: 'root',
 })
+
 export class UsuarioService {
   private apiUrl = 'http://localhost:8080/usuarios'; // URL de nuestro backend
 
