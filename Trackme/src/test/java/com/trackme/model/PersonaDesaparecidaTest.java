@@ -15,12 +15,12 @@ public class PersonaDesaparecidaTest {
         PersonaDesaparecida persona = new PersonaDesaparecida();
         
         Long id = 1L;
-        String email = "reportador@example.com";
-        String nombre = "Juan Pérez";
+        String email = "nathanaelalba75@gmail.com";
+        String nombre = "Joshua Alba";
         Integer edad = 30;
         Date fechaDesaparicion = new Date();
-        String lugar = "Ciudad de México";
-        String descripcion = "Estatura media, pelo negro, última vez visto con camisa roja";
+        String lugar = "Ciudad de Cochabamba";
+        String descripcion = "Estatura de 173 cm , pantalon blanco ,azul";
         
         persona.setIdDesaparecido(id);
         persona.setEmailReportaje(email);
