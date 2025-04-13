@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -62,6 +63,31 @@ class PersonaDesaparecidaServiceTest {
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void testObtenerTodosLosReportes_Vacio() {
+        when(personaDesaparecidaRepository.findAll()).thenReturn(List.of());
+    
+        List<PersonaDesaparecida> result = personaDesaparecidaService.obtenerTodosLosReportes();
+    
+        assertNotNull(result);
+        assertTrue(result.isEmpty(), "La lista debe estar vacía si no hay reportes en el sistema");
+    }
+
+    @Test
+    void testCrearReporte_CamposNulos() {
+    PersonaDesaparecida reporteParcial = new PersonaDesaparecida(); 
+    when(personaDesaparecidaRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporteParcial);
+
+    PersonaDesaparecida result = personaDesaparecidaService.crearReporte(reporteParcial);
+
+    assertNotNull(result);
+    assertNull(result.getNombre());
+    assertNull(result.getEmailReportaje());
+    assertNull(result.getFechaDesaparicion());
+    assertNull(result.getLugarDesaparicion());
+    assertNull(result.getDescripcion());
     }
 
     @Test
