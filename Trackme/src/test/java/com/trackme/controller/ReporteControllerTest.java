@@ -132,4 +132,41 @@ class ReporteControllerTest {
         );
         verify(personaDesaparecidaService, times(1)).obtenerTodosLosReportes();
     }
+
+    @Test //PRUEBA UNITARIA #1 - ANDRE PRUDENCIO
+    void obtenerReportesPorUsuario_DeberiaRetornarReporteCuandoEmailEsValido() {
+        String email = "test@example.com";
+        when(personaDesaparecidaService.obtenerReportesPorEmail(email)).thenReturn(reportesList);
+
+        ResponseEntity<List<PersonaDesaparecida>> response = reporteController.obtenerReportesPorUsuario(email);
+
+        assertAll(
+                () -> assertNotNull(response, "La respuesta no debería ser nula"),
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "El código de estado debería ser OK"),
+                () -> assertNotNull(response.getBody(), "El cuerpo de la respuesta no debería ser nulo"),
+                () -> assertEquals(2, response.getBody().size(), "Deberían devolverse 2 reportes")
+        );
+
+        // Verificamos que el servicio fue llamado una vez con el email correcto
+        verify(personaDesaparecidaService, times(1)).obtenerReportesPorEmail(email);
+    }
+
+    @Test //PRUEBA UNITARIA #2 - ANDRE PRUDENCIO
+    void obtenerReportesPorUsuario_ConEmailNulo_DeberiaRetornarListaVacia() {
+        String email = null;
+        when(personaDesaparecidaService.obtenerReportesPorEmail(email)).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<PersonaDesaparecida>> response = reporteController.obtenerReportesPorUsuario(email);
+
+        assertAll(
+                () -> assertNotNull(response, "La respuesta no debería ser nula"),
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "El código de estado debería ser OK"),
+                () -> assertNotNull(response.getBody(), "El cuerpo de la respuesta no debería ser nulo"),
+                () -> assertTrue(response.getBody().isEmpty(), "La lista debería estar vacía")
+        );
+
+        verify(personaDesaparecidaService, times(1)).obtenerReportesPorEmail(email);
+    }
+
+
 }
