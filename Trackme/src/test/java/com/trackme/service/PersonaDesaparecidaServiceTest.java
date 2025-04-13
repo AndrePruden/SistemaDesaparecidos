@@ -100,4 +100,26 @@ class PersonaDesaparecidaServiceTest {
         assertNotNull(result);
         assertFalse(result.isEmpty());
     }
+    @Test
+    void testObtenerReportesPorEmail_SinResultados() {
+        
+    when(personaDesaparecidaRepository.findByEmailReportaje("noexist@example.com"))
+        .thenReturn(List.of());
+
+    List<PersonaDesaparecida> resultados = 
+        personaDesaparecidaService.obtenerReportesPorEmail("noexist@example.com");
+
+    assertTrue(resultados.isEmpty());  // Verificar que la lista está vacía
+    verify(personaDesaparecidaRepository, times(1))
+        .findByEmailReportaje("noexist@example.com");
+    }
+    @Test
+    void testCrearReporte_FechaNoNula() {
+        when(personaDesaparecidaRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporte);
+        
+        PersonaDesaparecida resultado = personaDesaparecidaService.crearReporte(reporte);
+        
+        assertNotNull(resultado.getFechaDesaparicion());  // Verificar que la fecha no es nula
+        assertTrue(resultado.getFechaDesaparicion() instanceof Date);  // Verificar que es tipo Date
+    }
 }
