@@ -132,4 +132,26 @@ class ReporteControllerTest {
         );
         verify(personaDesaparecidaService, times(1)).obtenerTodosLosReportes();
     }
+
+    @Test //PRUEBA UNITARIA #1 - ANDRE PRUDENCIO
+    void obtenerReportesPorUsuario_DeberiaRetornarReporteCuandoEmailEsValido() {
+        String email = "test@example.com";
+        when(personaDesaparecidaService.obtenerReportesPorEmail(email)).thenReturn(reportesList);
+
+        ResponseEntity<List<PersonaDesaparecida>> response = reporteController.obtenerReportesPorUsuario(email);
+
+        assertAll(
+                () -> assertNotNull(response, "La respuesta no debería ser nula"),
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "El código de estado debería ser OK"),
+                () -> assertNotNull(response.getBody(), "El cuerpo de la respuesta no debería ser nulo"),
+                () -> assertEquals(2, response.getBody().size(), "Deberían devolverse 2 reportes")
+        );
+
+        // Verificamos que el servicio fue llamado una vez con el email correcto
+        verify(personaDesaparecidaService, times(1)).obtenerReportesPorEmail(email);
+    }
+
+   
+
+
 }
