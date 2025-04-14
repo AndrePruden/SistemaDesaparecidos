@@ -23,7 +23,7 @@ public class ReporteController {
     private static final int MIN_AÑO_DESAPARICION = 2024;
 
     @Value("${feature.create-reports.enabled}")
-    private boolean createReportsEnabled;
+    public boolean createReportsEnabled;
 
     @Autowired
     private PersonaDesaparecidaService personaDesaparecidaService;
