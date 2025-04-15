@@ -34,6 +34,7 @@ class ReporteControllerTest {
 
     private PersonaDesaparecida reporte1;
     private PersonaDesaparecida reporte2;
+    private PersonaDesaparecida reporte3;
     private List<PersonaDesaparecida> reportesList;
 
     @BeforeEach
@@ -42,7 +43,8 @@ class ReporteControllerTest {
         
         reporte1 = crearReporteEjemplo(1L, "test@example.com", "Juan Pérez");
         reporte2 = crearReporteEjemplo(2L, "test2@example.com", "María García");
-        reportesList = Arrays.asList(reporte1, reporte2);
+        reporte3 = crearReporteEjemplo(2L, "test2@example.com", "Walter Rocha");
+        reportesList = Arrays.asList(reporte1, reporte2, reporte3);
     }
 
     private PersonaDesaparecida crearReporteEjemplo(Long id, String email, String nombre) {
@@ -133,6 +135,7 @@ class ReporteControllerTest {
         verify(personaDesaparecidaService, times(1)).obtenerTodosLosReportes();
     }
 
+// PruebasUnitariasSalma - 1
     @Test
     void crearReporte_ConNombreInvalido_DeberiaRetornarBadRequest() {
         reporteController.createReportsEnabled = true;
@@ -140,7 +143,7 @@ class ReporteControllerTest {
         ResponseEntity<?> response = reporteController.crearReporte(reporteInvalido);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "Debería retornar BAD_REQUEST");
     }
-
+// PruebasUnitariasSalma - 2
     @Test
     void crearReporte_FuncionalidadDeshabilitada_DeberiaRetornarForbidden() throws Exception {
         reporteController = new ReporteController() {{
@@ -155,5 +158,43 @@ class ReporteControllerTest {
         );
         verify(personaDesaparecidaService, never()).crearReporte(any());
     }
+
+
+    @Test //PRUEBA UNITARIA #1 - ANDRE PRUDENCIO
+    void obtenerReportesPorUsuario_DeberiaRetornarReporteCuandoEmailEsValido() {
+        String email = "test@example.com";
+        when(personaDesaparecidaService.obtenerReportesPorEmail(email)).thenReturn(reportesList);
+
+        ResponseEntity<List<PersonaDesaparecida>> response = reporteController.obtenerReportesPorUsuario(email);
+
+        assertAll(
+                () -> assertNotNull(response, "La respuesta no debería ser nula"),
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "El código de estado debería ser OK"),
+                () -> assertNotNull(response.getBody(), "El cuerpo de la respuesta no debería ser nulo"),
+                () -> assertEquals(2, response.getBody().size(), "Deberían devolverse 2 reportes")
+        );
+
+        // Verificamos que el servicio fue llamado una vez con el email correcto
+        verify(personaDesaparecidaService, times(1)).obtenerReportesPorEmail(email);
+    }
+
+    @Test //PRUEBA UNITARIA #2 - ANDRE PRUDENCIO
+    void obtenerReportesPorUsuario_ConEmailNulo_DeberiaRetornarListaVacia() {
+        String email = null;
+        when(personaDesaparecidaService.obtenerReportesPorEmail(email)).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<PersonaDesaparecida>> response = reporteController.obtenerReportesPorUsuario(email);
+
+        assertAll(
+                () -> assertNotNull(response, "La respuesta no debería ser nula"),
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "El código de estado debería ser OK"),
+                () -> assertNotNull(response.getBody(), "El cuerpo de la respuesta no debería ser nulo"),
+                () -> assertTrue(response.getBody().isEmpty(), "La lista debería estar vacía")
+        );
+
+        verify(personaDesaparecidaService, times(1)).obtenerReportesPorEmail(email);
+    }
+
+
 
 }

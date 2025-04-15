@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,6 +66,31 @@ class PersonaDesaparecidaServiceTest {
     }
 
     @Test
+    void testObtenerTodosLosReportes_Vacio() {
+        when(personaDesaparecidaRepository.findAll()).thenReturn(List.of());
+    
+        List<PersonaDesaparecida> result = personaDesaparecidaService.obtenerTodosLosReportes();
+    
+        assertNotNull(result);
+        assertTrue(result.isEmpty(), "La lista debe estar vacía si no hay reportes en el sistema");
+    }
+
+    @Test
+    void testCrearReporte_CamposNulos() {
+    PersonaDesaparecida reporteParcial = new PersonaDesaparecida(); 
+    when(personaDesaparecidaRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporteParcial);
+
+    PersonaDesaparecida result = personaDesaparecidaService.crearReporte(reporteParcial);
+
+    assertNotNull(result);
+    assertNull(result.getNombre());
+    assertNull(result.getEmailReportaje());
+    assertNull(result.getFechaDesaparicion());
+    assertNull(result.getLugarDesaparicion());
+    assertNull(result.getDescripcion());
+    }
+
+    @Test
     void testObtenerTodosLosReportes() {
         List<PersonaDesaparecida> reportes = Arrays.asList(reporte);
         when(personaDesaparecidaRepository.findAll()).thenReturn(reportes);
@@ -73,5 +99,27 @@ class PersonaDesaparecidaServiceTest {
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
+    }
+    @Test
+    void testObtenerReportesPorEmail_SinResultados() {
+        
+    when(personaDesaparecidaRepository.findByEmailReportaje("noexist@example.com"))
+        .thenReturn(List.of());
+
+    List<PersonaDesaparecida> resultados = 
+        personaDesaparecidaService.obtenerReportesPorEmail("noexist@example.com");
+
+    assertTrue(resultados.isEmpty());  // Verificar que la lista está vacía
+    verify(personaDesaparecidaRepository, times(1))
+        .findByEmailReportaje("noexist@example.com");
+    }
+    @Test
+    void testCrearReporte_FechaNoNula() {
+        when(personaDesaparecidaRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporte);
+        
+        PersonaDesaparecida resultado = personaDesaparecidaService.crearReporte(reporte);
+        
+        assertNotNull(resultado.getFechaDesaparicion());  // Verificar que la fecha no es nula
+        assertTrue(resultado.getFechaDesaparicion() instanceof Date);  // Verificar que es tipo Date
     }
 }
