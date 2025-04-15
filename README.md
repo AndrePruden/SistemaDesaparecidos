@@ -56,6 +56,17 @@ TrackMe es un sistema diseñado para gestionar información sobre personas desap
          descripcion TEXT,
          FOREIGN KEY (email_reportaje) REFERENCES usuarios(email) ON DELETE CASCADE
      );
+
+     CREATE TABLE avistamientos (
+        id_avistamiento BIGINT AUTO_INCREMENT PRIMARY KEY,
+        email_usuario VARCHAR(100) NOT NULL,
+        id_persona_desaparecida BIGINT NOT NULL,  -- Cambiado a BIGINT
+        fecha DATETIME NOT NULL,
+        ubicacion VARCHAR(255) NOT NULL,
+        descripcion TEXT,
+        FOREIGN KEY (email_usuario) REFERENCES usuarios(email) ON DELETE CASCADE,
+        FOREIGN KEY (id_persona_desaparecida) REFERENCES persona_desaparecida(id_desaparecido) ON DELETE CASCADE
+      );
      ```
 
 4. **Agrega el driver de MySQL en el archivo `pom.xml`:**
