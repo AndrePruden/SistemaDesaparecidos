@@ -135,6 +135,31 @@ class ReporteControllerTest {
         verify(personaDesaparecidaService, times(1)).obtenerTodosLosReportes();
     }
 
+// PruebasUnitariasSalma - 1
+    @Test
+    void crearReporte_ConNombreInvalido_DeberiaRetornarBadRequest() {
+        reporteController.createReportsEnabled = true;
+        PersonaDesaparecida reporteInvalido = crearReporteEjemplo(null, "test@example.com", "1");
+        ResponseEntity<?> response = reporteController.crearReporte(reporteInvalido);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "Debería retornar BAD_REQUEST");
+    }
+// PruebasUnitariasSalma - 2
+    @Test
+    void crearReporte_FuncionalidadDeshabilitada_DeberiaRetornarForbidden() throws Exception {
+        reporteController = new ReporteController() {{
+            personaDesaparecidaService = ReporteControllerTest.this.personaDesaparecidaService;
+            createReportsEnabled = false;
+        }};
+        PersonaDesaparecida reporteValido = crearReporteEjemplo(4L, "usuario@example.com", "Carlos López");
+        ResponseEntity<?> response = reporteController.crearReporte(reporteValido);
+        assertAll(
+                () -> assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode(), "Debería retornar FORBIDDEN"),
+                () -> assertEquals("La funcionalidad de creación de reportes está deshabilitada.", response.getBody())
+        );
+        verify(personaDesaparecidaService, never()).crearReporte(any());
+    }
+
+
     @Test //PRUEBA UNITARIA #1 - ANDRE PRUDENCIO
     void obtenerReportesPorUsuario_DeberiaRetornarReporteCuandoEmailEsValido() {
         String email = "test@example.com";
@@ -169,6 +194,7 @@ class ReporteControllerTest {
 
         verify(personaDesaparecidaService, times(1)).obtenerReportesPorEmail(email);
     }
+
 
 
 }
