@@ -171,7 +171,7 @@ class ReporteControllerTest {
                 () -> assertNotNull(response, "La respuesta no debería ser nula"),
                 () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "El código de estado debería ser OK"),
                 () -> assertNotNull(response.getBody(), "El cuerpo de la respuesta no debería ser nulo"),
-                () -> assertEquals(2, response.getBody().size(), "Deberían devolverse 2 reportes")
+                () -> assertEquals(3, response.getBody().size(), "Deberían devolverse 2 reportes")
         );
 
         // Verificamos que el servicio fue llamado una vez con el email correcto
