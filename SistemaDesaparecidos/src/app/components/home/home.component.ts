@@ -5,11 +5,22 @@ import { CarouselComponent } from '../carousel/carousel.component';
 import { HeaderComponent } from '../header/header.component';
 import { ReportesComponent } from '../reportes/reportes.component';
 import { FooterComponent } from '../footer/footer.component';
+import { CardsReportesComponent } from '../cards-reportes/cards-reportes.component';
+import { ForoAvistamientosComponent } from '../foro-avistamientos/foro-avistamientos.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, CarouselComponent, HeaderComponent, ReportesComponent, FooterComponent], // Importa RouterModule
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    CarouselComponent, 
+    HeaderComponent, 
+    ReportesComponent, 
+    FooterComponent,
+    CardsReportesComponent,
+    ForoAvistamientosComponent
+  ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })

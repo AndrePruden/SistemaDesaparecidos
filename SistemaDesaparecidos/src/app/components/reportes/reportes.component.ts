@@ -1,15 +1,30 @@
 import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { UsuarioService } from '../../services/usuario.service';
+import { FeatureToggleService } from '../../services/feature-toggle.service';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
+import { CardsReportesComponent } from '../cards-reportes/cards-reportes.component';
+import { FormAvistamientosComponent } from '../form-avistamientos/form-avistamientos.component';
+import { ForoAvistamientosComponent } from '../foro-avistamientos/foro-avistamientos.component';
 
 @Component({
   selector: 'app-reportes',
   templateUrl: './reportes.component.html',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    RouterLink,
+    HeaderComponent,
+    FooterComponent,
+    CardsReportesComponent,
+    FormAvistamientosComponent,
+    ForoAvistamientosComponent
+  ],
   styleUrls: ['./reportes.component.scss']
 })
 export class ReportesComponent implements OnInit {
@@ -27,13 +42,16 @@ export class ReportesComponent implements OnInit {
   constructor(
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router
+    private router: Router,
+    private featureToggleService: FeatureToggleService
   ) {}
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.verificarSesion();
-      this.obtenerReportes();
+      if (this.featureToggleService.isFeatureEnabled('reportes')) {
+        this.obtenerReportes();
+      }
     }
   }
 
