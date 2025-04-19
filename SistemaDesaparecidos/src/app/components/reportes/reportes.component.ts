@@ -4,7 +4,7 @@ import { FeatureToggleService } from '../../services/feature-toggle.service';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
@@ -17,8 +17,12 @@ import { ForoAvistamientosComponent } from '../foro-avistamientos/foro-avistamie
   templateUrl: './reportes.component.html',
   imports: [
     CommonModule, 
+<<<<<<< HEAD
     FormsModule, 
     RouterLink,
+=======
+    FormsModule,
+>>>>>>> 4bbb349 (Fix: configuración de CORS y seguridad)
     HeaderComponent,
     FooterComponent,
     CardsReportesComponent,

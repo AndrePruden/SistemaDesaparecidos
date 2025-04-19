@@ -7,7 +7,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
+<<<<<<< HEAD
 @RequestMapping("features")
+=======
+@RequestMapping("feature")
+>>>>>>> 4bbb349 (Fix: configuración de CORS y seguridad)
 @CrossOrigin(origins = "http://localhost:4200")
 public class FeatureToggleController {
     private final FeatureToggleService featureToggleService;

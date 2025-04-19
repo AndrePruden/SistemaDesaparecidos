@@ -16,19 +16,16 @@ import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/reportes")
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
 public class ReporteController {
     private static final int MIN_NOMBRE_LENGTH = 2;
     private static final int MAX_EDAD = 200;
     private static final int MIN_AÑO_DESAPARICION = 2024;
 
-    @Value("${feature.create-reports.enabled}")
-    public boolean createReportsEnabled;
-
-    @Autowired
     private PersonaDesaparecidaService personaDesaparecidaService;
     private final FeatureToggleService featureToggleService;
 
+<<<<<<< HEAD
     public ReporteController(PersonaDesaparecidaService personaDesaparecidaService, FeatureToggleService featureToggleService) {
         this.personaDesaparecidaService = personaDesaparecidaService;
         this.featureToggleService = featureToggleService;
@@ -37,6 +34,23 @@ public class ReporteController {
     @PostMapping("/crear")
     public ResponseEntity<?> crearReporte(@RequestBody PersonaDesaparecida reporte) {
         if (!featureToggleService.isFeatureEnabled("reportes")) {
+=======
+    public ReporteController(PersonaDesaparecidaService personaDesaparecidaService,
+                             FeatureToggleService featureToggleService) {
+        this.personaDesaparecidaService = personaDesaparecidaService;
+        this.featureToggleService = featureToggleService;
+    }
+
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("Backend activo y funcionando");
+    }
+
+
+    @PostMapping("/crear")
+    public ResponseEntity<?> crearReporte(@RequestBody PersonaDesaparecida reporte) {
+        if (!featureToggleService.isCreateReportsEnabled()) {
+>>>>>>> 4bbb349 (Fix: configuración de CORS y seguridad)
             return ResponseEntity.status(403).body("La funcionalidad de creación de reportes está deshabilitada.");
         }
 
