@@ -4,7 +4,7 @@
   gap: 1rem;
   margin-bottom: 2rem;
   padding: 1rem;
-  background-color: #f8f9fa;
+  background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
@@ -15,7 +15,8 @@
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 10px;
-  transition: border 0.2s ease;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+  background-color: #fff;
 }
 
 .contenedor-filtro input:focus {
@@ -25,7 +26,7 @@
 }
 
 .lista-reportes {
-  background-color: white;
+  background-color: #ffffff; // Igual que filtros
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
@@ -33,13 +34,14 @@
 
 .contenedor-cards {
   display: flex;
-  gap: 1.5rem;
+  gap: 2.5rem; 
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   padding-bottom: 1rem;
 }
 
 .card-reporte {
+  position: relative;
   flex: 0 0 280px;
   background-color: #f0f8ff;
   border-left: 4px solid #007EA7;
@@ -48,11 +50,12 @@
   box-shadow: 0 6px 12px rgba(0,126,167,0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   scroll-snap-align: start;
+  margin-right: 0.5rem; // Espacio adicional entre cards
 }
 
 .card-reporte:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 24px rgba(0,126,167,0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0,126,167,0.2);
 }
 
 .imagen-reporte {
@@ -94,4 +97,111 @@
   width: 100px;
   margin-bottom: 1rem;
   opacity: 0.6;
+}
+
+.btn-limpiar {
+  background-color: #007EA7;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.btn-limpiar:hover {
+  background-color: #005f7f;
+}
+
+.btn-popup {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #007EA7;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.btn-popup:hover {
+  background-color: #005f7f;
+}
+
+/* Estilo para el pop-up */
+.popup {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 200px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  animation: slideUp 0.5s ease-out;
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+}
+
+.popup-left {
+  flex: 1;
+  padding-right: 10px;
+}
+
+.popup-left p {
+  margin: 2px 0;
+  font-size: 13px;
+}
+
+.popup-right {
+  flex-shrink: 0;
+}
+
+.popup-right img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.popup button {
+  background-color: #007EA7;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup button:hover {
+  background-color: #005f7f;
+}
+
+/* Animación para que el pop-up se deslice hacia arriba */
+@keyframes slideUp {
+  0% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

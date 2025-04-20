@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AvistamientoService {
@@ -29,4 +30,10 @@ public class AvistamientoService {
     public List<Avistamiento> obtenerTodosLosAvistamientos() {
         return avistamientoRepository.findAll();
     }
+
+    public Optional<Avistamiento> obtenerUltimoAvistamiento(Long idReporte) {
+        List<Avistamiento> lista = avistamientoRepository.findUltimoAvistamientoPorReporte(idReporte);
+        return lista.isEmpty() ? Optional.empty() : Optional.of(lista.get(0));
+    }
+
 }

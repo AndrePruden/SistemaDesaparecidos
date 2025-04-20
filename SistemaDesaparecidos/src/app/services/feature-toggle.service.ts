@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class FeatureToggleService {
   private features: { [key: string]: boolean } = {
-    reportes: true // Puedes poner false para ocultarlo
+    reportes: true 
   };
 
   isFeatureEnabled(featureName: string): boolean {

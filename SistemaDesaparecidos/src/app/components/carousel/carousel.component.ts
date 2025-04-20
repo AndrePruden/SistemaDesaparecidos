@@ -14,11 +14,28 @@ export class CarouselComponent {
   
   currentImage: number = 0;
 
+  constructor() {
+    console.log('CarouselComponent inicializado');
+    console.log(`Imagen actual al iniciar: ${this.currentImage}`);
+  }
+
   nextImage() {
-    this.currentImage = (this.currentImage + 1) % this.images.length;
+    const anterior = this.currentImage;
+    if (this.currentImage < this.images.length - 1) {
+      this.currentImage++;
+    } else {
+      this.currentImage = 0;
+    }
+    console.log(`nextImage() llamado - de ${anterior} a ${this.currentImage}`);
   }
 
   prevImage() {
-    this.currentImage = (this.currentImage - 1 + this.images.length) % this.images.length;
+    const anterior = this.currentImage;
+    if (this.currentImage > 0) {
+      this.currentImage--;
+    } else {
+      this.currentImage = this.images.length - 1;
+    }
+    console.log(`prevImage() llamado - de ${anterior} a ${this.currentImage}`);
   }
 }

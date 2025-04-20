@@ -1,7 +1,9 @@
 <div class="carousel">
-    <div class="carousel-inner">
-      <img [src]="images[currentImage]" alt="Imagen del carrusel">
-    </div>
+  <div class="carousel-inner">
+    <img [src]="images[currentImage]" alt="Imagen del carrusel" />
+  </div>
+  <div class="controls">
     <button class="prev" (click)="prevImage()">❮</button>
     <button class="next" (click)="nextImage()">❯</button>
+  </div>
 </div>

@@ -23,23 +23,31 @@ export class FormReportesComponent {
   imagenPreview: string | ArrayBuffer | null = null;
   mensaje: string = '';
 
-  constructor(private reportesService: ReportesService) {}
+  constructor(private reportesService: ReportesService) {
+    console.log('📄 FormReportesComponent inicializado');
+  }
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
-  if (file) {
-    this.selectedFile = file;
+    if (file) {
+      this.selectedFile = file;
+      console.log('📎 Archivo seleccionado:', file.name);
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.imagenPreview = reader.result;
-    };
-    reader.readAsDataURL(file);
-  }
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagenPreview = reader.result;
+        console.log('🖼️ Imagen cargada y mostrada en preview');
+      };
+      reader.readAsDataURL(file);
+    } else {
+      console.warn('⚠️ No se seleccionó ningún archivo');
+    }
   }
 
   crearReporte(): void {
+    console.log('📤 Intentando crear un nuevo reporte...');
     const emailUsuario = localStorage.getItem('email');
+    console.log('📧 Email del usuario:', emailUsuario);
 
     if (emailUsuario && this.nuevoReporte.nombre && this.nuevoReporte.fechaDesaparicion && this.nuevoReporte.lugarDesaparicion) {
       const formData = new FormData();
@@ -50,13 +58,18 @@ export class FormReportesComponent {
       formData.append('descripcion', this.nuevoReporte.descripcion);
       formData.append('emailReportaje', emailUsuario);
 
+      console.log('📋 Datos del reporte:', this.nuevoReporte);
+
       if (this.selectedFile) {
         formData.append('file', this.selectedFile);
+        console.log('📎 Archivo incluido en el formulario:', this.selectedFile.name);
+      } else {
+        console.log('📎 No se adjuntó imagen al reporte');
       }
 
       this.reportesService.crearReporte(formData).subscribe({
         next: (reporteCreado: any) => {
-          console.log('✅ Reporte creado con imagen:', reporteCreado);
+          console.log('✅ Reporte creado con exito:', reporteCreado);
           this.resetForm();
         },
         error: error => {
@@ -78,5 +91,6 @@ export class FormReportesComponent {
     };
     this.selectedFile = null;
     this.imagenPreview = null;
+    console.log('🔄 Formulario reseteado');
   }
 }

@@ -59,4 +59,12 @@ public class AvistamientoController {
         List<Avistamiento> avistamientos = avistamientoService.obtenerTodosLosAvistamientos();
         return ResponseEntity.ok(avistamientos);
     }
+
+    @GetMapping("/ultimo/{idPersonaDesaparecida}")
+    public ResponseEntity<Avistamiento> obtenerUltimoAvistamiento(@PathVariable Long idPersonaDesaparecida) {
+        return avistamientoService.obtenerUltimoAvistamiento(idPersonaDesaparecida)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 }

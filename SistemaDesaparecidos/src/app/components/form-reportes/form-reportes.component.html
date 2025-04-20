@@ -1,23 +1,36 @@
 <form (ngSubmit)="crearReporte()">
     <div class="input-field">
-        <input type="text" [(ngModel)]="nuevoReporte.nombre" name="nombre" placeholder="Nombre" required>
+      <label for="nombre">Nombre completo *</label>
+      <input type="text" [(ngModel)]="nuevoReporte.nombre" name="nombre" id="nombre" placeholder="Ej. Juan Pérez" required />
     </div>
+  
     <div class="input-field">
-        <input type="number" [(ngModel)]="nuevoReporte.edad" name="edad" placeholder="Edad">
+      <label for="edad">Edad</label>
+      <input type="number" [(ngModel)]="nuevoReporte.edad" name="edad" id="edad" placeholder="Ej. 32" />
     </div>
+  
     <div class="input-field">
-        <input type="date" [(ngModel)]="nuevoReporte.fechaDesaparicion" name="fechaDesaparicion" placeholder="Fecha de Desaparición" required>
+      <label for="fechaDesaparicion">Fecha de desaparición *</label>
+      <input type="date" [(ngModel)]="nuevoReporte.fechaDesaparicion" name="fechaDesaparicion" id="fechaDesaparicion" required />
     </div>
+  
     <div class="input-field">
-        <input type="text" [(ngModel)]="nuevoReporte.lugarDesaparicion" name="lugarDesaparicion" placeholder="Lugar de Desaparición" required>
+      <label for="lugarDesaparicion">Lugar de desaparición *</label>
+      <input type="text" [(ngModel)]="nuevoReporte.lugarDesaparicion" name="lugarDesaparicion" id="lugarDesaparicion" placeholder="Ej. Plaza Colón, Cochabamba" required />
     </div>
+  
     <div class="input-field">
-        <textarea [(ngModel)]="nuevoReporte.descripcion" name="descripcion" placeholder="Descripción"></textarea>
+      <label for="descripcion">Descripción</label>
+      <textarea [(ngModel)]="nuevoReporte.descripcion" name="descripcion" id="descripcion" placeholder="Vestimenta, características físicas, etc."></textarea>
     </div>
-    
-    <div>
-        <label>Subir Imagen:</label>
-        <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+  
+    <div class="input-field file-input">
+      <label for="imagen">Subir imagen</label>
+      <input type="file" id="imagen" (change)="onFileSelected($event)" accept="image/*" />
     </div>
-    <button type="submit">Crear Reporte</button>
-</form>
+  
+    <div class="button-wrapper">
+      <button type="submit">Crear Reporte</button>
+    </div>
+  </form>
+  

@@ -27,4 +27,8 @@ export class ReportesService {
     };
     return this.http.get<any[]>(`${this.baseUrl}/filtrar`, { params });
   }
+
+  getAvistamientosPorReporte(id: number) {
+    return this.http.get<any[]>(`${this.baseUrl}/reporte/${id}`);
+  }  
 }

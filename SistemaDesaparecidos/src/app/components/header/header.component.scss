@@ -8,7 +8,7 @@
 
 nav {
   background: #1b2838;
-  height: 72px;
+  height: 64px;
   width: 100%;
   position: fixed;
   top: 0;
@@ -18,9 +18,8 @@ nav {
 }
 
 nav .container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 0 2rem;
+  max-width: 100%;
+  padding: 0 1rem; /* Espacio reducido */
   height: 100%;
   display: flex;
   align-items: center;
@@ -29,24 +28,27 @@ nav .container {
 
 .logo {
   color: #fff;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 600;
+  padding-left: 1rem;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
+  list-style: none; /* Sin viñetas */
 }
 
 .nav-links li a {
   color: #fff;
-  font-size: 1rem;
-  padding: 8px 12px;
-  border-radius: 6px;
+  font-size: 0.95rem;
+  padding: 6px 10px;
+  border-radius: 4px;
   transition: background 0.3s ease;
   text-transform: uppercase;
   font-weight: 500;
+  text-decoration: none; /* Sin subrayado */
 }
 
 .nav-links li a:hover {
@@ -54,17 +56,18 @@ nav .container {
 }
 
 .hamburger {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   color: white;
   display: none;
   cursor: pointer;
+  margin-right: 1rem;
 }
 
 #menu-toggle {
   display: none;
 }
 
-/* RESPONSIVE NAV */
+/* Responsive nav */
 @media (max-width: 900px) {
   .hamburger {
     display: block;
@@ -72,12 +75,12 @@ nav .container {
 
   .nav-links {
     position: fixed;
-    top: 72px;
+    top: 64px;
     left: -100%;
     flex-direction: column;
     background: #2c3e50;
     width: 100%;
-    height: calc(100vh - 72px);
+    height: calc(100vh - 64px);
     justify-content: center;
     align-items: center;
     gap: 2rem;
@@ -89,7 +92,7 @@ nav .container {
   }
 
   .nav-links li a {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     padding: 10px 20px;
   }
 }

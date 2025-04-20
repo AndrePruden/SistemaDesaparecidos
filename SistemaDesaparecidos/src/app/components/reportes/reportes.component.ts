@@ -39,21 +39,31 @@ export class ReportesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('🔍 Inicializando ReportesComponent');
     if (isPlatformBrowser(this.platformId)) {
+      console.log('🌐 Plataforma del navegador detectada');
       this.verificarSesion();
     }
   }
 
   verificarSesion(): void {
+    console.log('🔑 Verificando sesión del usuario...');
     this.emailUsuario = localStorage.getItem('email');
     this.estaLogueado = !!this.emailUsuario;
+    if (this.estaLogueado) {
+      console.log(`✅ Usuario logueado con correo: ${this.emailUsuario}`);
+    } else {
+      console.log('⚠️ No hay usuario logueado');
+    }
   }
 
   cerrarSesion(): void {
+    console.log('🚪 Cerrando sesión...');
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('email');
       this.estaLogueado = false;
       this.emailUsuario = null;
+      console.log('✔️ Usuario desconectado');
       this.router.navigate(['/']);
     }
   }
