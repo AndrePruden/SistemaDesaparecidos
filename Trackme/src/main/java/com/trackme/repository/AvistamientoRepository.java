@@ -12,6 +12,8 @@ import java.util.List;
 public interface AvistamientoRepository extends JpaRepository<Avistamiento, Long> {
     List<Avistamiento> findByEmailUsuario(String emailUsuario);
     List<Avistamiento> findByPersonaDesaparecida_IdDesaparecido(Long idPersonaDesaparecido);
+
     @Query("SELECT a FROM Avistamiento a WHERE a.personaDesaparecida.idDesaparecido = :idReporte ORDER BY a.fecha DESC")
     List<Avistamiento> findUltimoAvistamientoPorReporte(@Param("idReporte") Long idReporte);
+
 }

@@ -23,8 +23,12 @@ public class AvistamientoService {
     }
 
     public List<Avistamiento> obtenerAvistamientosPorReporte(Long idPersonaDesaparecida) {
+
         return avistamientoRepository.findByPersonaDesaparecida_IdDesaparecido(idPersonaDesaparecida
         );
+
+        return avistamientoRepository.findByPersonaDesaparecida_IdDesaparecido(idPersonaDesaparecida);
+
     }
 
     public List<Avistamiento> obtenerTodosLosAvistamientos() {
