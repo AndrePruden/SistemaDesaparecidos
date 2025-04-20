@@ -31,9 +31,7 @@ class UsuarioServiceTest {
         String email = "test@domain.com";
         Usuario usuario = new Usuario("testuser", "password123", email);
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(usuario));
-
         Optional<Usuario> result = usuarioService.obtenerUsuarioPorEmail(email);
-
         assertTrue(result.isPresent());
         assertEquals(email, result.get().getEmail());
     }
@@ -41,9 +39,7 @@ class UsuarioServiceTest {
     @Test
     void testCrearUsuario() {
         Usuario usuario = new Usuario("newuser", "password123", "new@domain.com");
-
         usuarioService.crearUsuario(usuario);
-
         verify(userRepository, times(1)).save(usuario);
     }
 
@@ -52,13 +48,8 @@ class UsuarioServiceTest {
         Long id = 1L;
         Usuario usuario = new Usuario("testuser", "password123", "test@domain.com");
         usuario.setId(id);
-
         when(userRepository.findById(id)).thenReturn(Optional.of(usuario));
-
         usuarioService.eliminarUsuario(id);
-
         verify(userRepository, times(1)).delete(usuario);
     }
-
-
 }

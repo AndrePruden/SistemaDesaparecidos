@@ -20,14 +20,16 @@ export class IniciarSesionComponent {
   constructor(private usuarioService: UsuarioService, private router: Router) {}
 
   onSubmit(): void {
-    console.log('Credenciales:', this.credenciales);  // Verifica los valores que se están enviando
+    console.log('🔐 Intentando iniciar sesión con:', this.credenciales);  
     this.usuarioService.iniciarSesion(this.credenciales).subscribe(
       (response) => { 
-        console.log('Respuesta del backend:', response);  // Muestra la respuesta
+        console.log('Respuesta del backend:', response);  
         if (response.message === 'Inicio de sesión exitoso.') {
+          console.log('🎉 Inicio de sesión exitoso para el email:', this.credenciales.email);
           localStorage.setItem('email', this.credenciales.email);
-          this.router.navigate(['/']); // Redirigir a la página principal después del inicio de sesión
-        } else {
+          this.router.navigate(['/']); 
+        }  else {
+          console.warn('❌ Error de inicio de sesión: Credenciales incorrectas.');
           this.mensaje = 'Credenciales incorrectas. Inténtalo de nuevo.';
         }
       },
@@ -35,10 +37,13 @@ export class IniciarSesionComponent {
         console.log('Error al iniciar sesión:', error);
         if (error.status === 404) {
           this.mensaje = 'El correo electrónico no está registrado.';
+          console.warn('⚠️ El correo electrónico no está registrado:', this.credenciales.email);
         } else if (error.status === 401) {
           this.mensaje = 'Contraseña incorrecta.';
+          console.warn('⚠️ Contraseña incorrecta para el correo:', this.credenciales.email);
         } else {
           this.mensaje = 'Error al iniciar sesión. Inténtalo de nuevo.';
+          console.error('⚠️ Error inesperado:', error);
         }
       }
     );

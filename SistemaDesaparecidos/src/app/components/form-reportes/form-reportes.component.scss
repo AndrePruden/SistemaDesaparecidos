@@ -1,0 +1,64 @@
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-field label {
+  font-weight: 600;
+  color: #003459;
+}
+
+.input-field input,
+.input-field textarea {
+  width: 95%;
+  padding: 0.75rem;
+  border: 1px solid #007EA7;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-family: inherit;
+}
+
+.input-field input:focus,
+.input-field textarea:focus {
+  border-color: #0048E8;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 72, 232, 0.2);
+}
+
+.input-field textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.file-input input[type="file"] {
+  padding: 0.3rem 0;
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+button[type="submit"] {
+  background-color: #007EA7;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+  background-color: #003459;
+}

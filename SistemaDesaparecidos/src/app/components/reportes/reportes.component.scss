@@ -1,177 +1,42 @@
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #003459; 
-    background-color: #AFFFFF; 
-  }
-  
-  h2 {
-    text-align: center;
-    color: #003459; 
-    margin-bottom: 2rem;
-    font-size: 2.2rem;
-    border-bottom: 2px solid #007EA7; 
-    padding-bottom: 0.5rem;
-    display: inline-block;
-  }
-  
-  h3 {
-    color: #007EA7; 
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-  }
-  
-  .sesion-info {
-    background-color: #0071; 
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #003459;
+}
+
+h2 {
+  text-align: center;
+  color: #003459;
+  margin-bottom: 1rem;
+  font-size: 2.2rem;
+  border-bottom: 2px solid #007EA7;
+  padding-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.formulario,
+.cards-reportes,
+.formulario-avistamientos,
+.foro-avistamientos {
+  background-color: #f8f9fa;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 3rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+  border: 1px solid #d6e9f0;
+}
+
+@media (max-width: 768px) {
+  .container {
     padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    color: black;
   }
-  
-  .sesion-info p {
-    margin: 0;
-    font-weight: 500;
-  }
-  
-  .sesion-info button {
-    background-color: #0048E8; 
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .sesion-info button:hover {
-    background-color: #003459; 
-  }
-  
-  .formulario {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 6px rgba(0,113,247,0.1); 
-    border: 1px solid #007EA7; 
-  }
-  
-  .input-field {
-    margin-bottom: 1.5rem;
-  }
-  
-  .input-field input,
-  .input-field textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #007EA7; 
-    border-radius: 4px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
-  }
-  
-  .input-field input:focus,
-  .input-field textarea:focus {
-    border-color: #0048E8; 
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(0,72,232,0.2); 
-  }
-  
-  .input-field textarea {
-    min-height: 100px;
-    resize: vertical;
-  }
-  
-  button[type="submit"] {
-    background-color: #007EA7; 
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  button[type="submit"]:hover {
-    background-color: #003459; 
-  }
-  
-  .mensaje {
-    background-color: rgba(0,126,167,0.1); 
-    color: #003459; 
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 2rem;
-    text-align: center;
-    border: 1px solid #007EA7; 
-  }
-  
-  .mensaje a {
-    color: #0048E8; 
-    text-decoration: none;
-    font-weight: 500;
-  }
-  
-  .mensaje a:hover {
-    text-decoration: underline;
-  }
-  
-  .lista-reportes {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,113,247,0.1); 
-    border: 1px solid #007EA7; /* Celacion Blue */
-  }
-  
-  .reporte {
-    background-color: rgba(0,126,167,0.05); 
+
+  .formulario,
+  .cards-reportes,
+  .formulario-avistamientos,
+  .foro-avistamientos {
     padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    border-radius: 6px;
-    border-left: 4px solid #0048E8; 
-    transition: transform 0.3s, box-shadow 0.3s;
   }
-  
-  .reporte:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,72,232,0.1); 
-  }
-  
-  .reporte p {
-    margin: 0.5rem 0;
-    line-height: 1.6;
-  }
-  
-  .reporte strong {
-    color: #003459; 
-  }
-  
-  @media (max-width: 768px) {
-    .container {
-      padding: 1rem;
-    }
-    
-    .sesion-info {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    
-    .sesion-info button {
-      margin-top: 1rem;
-      align-self: flex-end;
-    }
-    
-    .formulario,
-    .lista-reportes {
-      padding: 1.5rem;
-    }
-  }
+}

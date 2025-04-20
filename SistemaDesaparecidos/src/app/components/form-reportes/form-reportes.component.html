@@ -1,0 +1,36 @@
+<form (ngSubmit)="crearReporte()">
+    <div class="input-field">
+      <label for="nombre">Nombre completo *</label>
+      <input type="text" [(ngModel)]="nuevoReporte.nombre" name="nombre" id="nombre" placeholder="Ej. Juan Pérez" required />
+    </div>
+  
+    <div class="input-field">
+      <label for="edad">Edad</label>
+      <input type="number" [(ngModel)]="nuevoReporte.edad" name="edad" id="edad" placeholder="Ej. 32" />
+    </div>
+  
+    <div class="input-field">
+      <label for="fechaDesaparicion">Fecha de desaparición *</label>
+      <input type="date" [(ngModel)]="nuevoReporte.fechaDesaparicion" name="fechaDesaparicion" id="fechaDesaparicion" required />
+    </div>
+  
+    <div class="input-field">
+      <label for="lugarDesaparicion">Lugar de desaparición *</label>
+      <input type="text" [(ngModel)]="nuevoReporte.lugarDesaparicion" name="lugarDesaparicion" id="lugarDesaparicion" placeholder="Ej. Plaza Colón, Cochabamba" required />
+    </div>
+  
+    <div class="input-field">
+      <label for="descripcion">Descripción</label>
+      <textarea [(ngModel)]="nuevoReporte.descripcion" name="descripcion" id="descripcion" placeholder="Vestimenta, características físicas, etc."></textarea>
+    </div>
+  
+    <div class="input-field file-input">
+      <label for="imagen">Subir imagen</label>
+      <input type="file" id="imagen" (change)="onFileSelected($event)" accept="image/*" />
+    </div>
+  
+    <div class="button-wrapper">
+      <button type="submit">Crear Reporte</button>
+    </div>
+  </form>
+  

@@ -1,12 +1,22 @@
 <nav>
-    <input type="checkbox" id="check">
-    <label for="check" class="checkbtn">
+    <div class="container">
+      <label class="logo">TrackMe</label>
+      <input type="checkbox" id="menu-toggle">
+      <label for="menu-toggle" class="hamburger">
         <i class="fas fa-bars"></i>
-    </label>
-    <label class="logo">TrackMe</label>
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li><a routerLink="/registro">Registrarse</a></li>
-        <li><a routerLink="/iniciar-sesion">Iniciar Sesion</a></li>
-    </ul>
-</nav>  
+      </label>
+      <ul class="nav-links">
+        <li><a routerLink="/">Home</a></li>
+        <ng-container *ngIf="!estaLogueado">
+          <li><a routerLink="/registro">Registrarse</a></li>
+          <li><a routerLink="/iniciar-sesion">Iniciar Sesión</a></li>
+        </ng-container>
+        <ng-container *ngIf="estaLogueado">
+          <li><a routerLink="/reportes">Reportes</a></li>
+          <li><a routerLink="/perfil">Perfil</a></li>
+          <li><a (click)="cerrarSesion()">Cerrar Sesión</a></li>
+        </ng-container>
+      </ul>
+    </div>
+  </nav>
+  

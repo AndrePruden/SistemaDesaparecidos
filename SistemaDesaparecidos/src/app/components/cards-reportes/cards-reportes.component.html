@@ -1,0 +1,53 @@
+<div class="contenedor-filtro"> 
+  <input type="text" [(ngModel)]="nombreBusqueda" placeholder="Nombre..." (input)="filtrarReportes()">
+  <input type="number" [(ngModel)]="edadBusqueda" placeholder="Edad..." (input)="filtrarReportes()">
+  <input type="text" [(ngModel)]="lugarBusqueda" placeholder="Lugar de desaparición..." (input)="filtrarReportes()">
+  <input type="date" [(ngModel)]="fechaBusqueda" (input)="filtrarReportes()">
+  <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar filtros</button>
+</div>
+
+<div class="lista-reportes">
+  <ng-container *ngIf="reportesFiltrados.length > 0; else noReportes">
+    <div class="contenedor-cards">
+      <div *ngFor="let reporte of reportesFiltrados" class="card-reporte">
+        <img
+          class="imagen-reporte"
+          [src]="reporte.imagen || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTML0gExaohZHdZW3609F12nUmVc14WXYNx_w&s'"
+          alt="Foto del reportado"
+        />
+        <div class="info-reporte">
+          <p><strong>Nombre:</strong> {{ reporte.nombre }}</p>
+          <p><strong>Edad:</strong> {{ reporte.edad }}</p>
+          <p><strong>Fecha:</strong> {{ reporte.fechaDesaparicion | date }}</p>
+          <p><strong>Lugar:</strong> {{ reporte.lugarDesaparicion }}</p>
+          <p class="descripcion-recortada"><strong>Descripción:</strong> {{ reporte.descripcion }}</p>
+        </div>
+        <button class="btn-popup" (click)="mostrarPopup(reporte)">+</button>
+        <div *ngIf="reporte.mostrarPopup" class="popup">
+          <div class="popup-content">
+            <div class="popup-left">
+              <p><strong>Último Avistamiento:</strong></p>
+              <p><strong>Fecha:</strong> {{ reporte.ultimoAvistamiento?.fecha | date }}</p>
+              <p><strong>Lugar:</strong> {{ reporte.ultimoAvistamiento?.lugar }}</p>
+              <p class="descripcion">{{ reporte.ultimoAvistamiento?.descripcion }}</p>
+            </div>
+            <div class="popup-right">
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8vCAqzGjq4P58F1sdodd-SGEHnInFq5RTlQ&s"
+                alt="Mapa"
+              />
+            </div>
+          </div>
+          <button class="cerrar-btn" (click)="cerrarPopup(reporte)">✕</button>
+        </div>        
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #noReportes>
+    <div class="mensaje-vacio">
+      <img src="https://cdn-icons-png.flaticon.com/512/7486/7486898.png" alt="Sin resultados" class="icono-vacio">
+      <p>No se encontraron reportes con los datos ingresados.</p>
+    </div>
+  </ng-template>
+</div>

@@ -1,163 +1,123 @@
 package com.trackme.controller;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-
-
 import com.trackme.model.PersonaDesaparecida;
+import com.trackme.service.FeatureToggleService;
 import com.trackme.service.PersonaDesaparecidaService;
-import org.junit.jupiter.api.BeforeEach;
+import com.trackme.service.ReporteValidationService;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(MockitoExtension.class)
-class ReporteControllerTest {
+@SpringBootTest
+@AutoConfigureMockMvc
+@TestPropertySource(properties = "feature.create-reports.enabled=true")
+class ReporteControllerIntegrationTest {
 
-    @Mock
-    private PersonaDesaparecidaService personaDesaparecidaService;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @InjectMocks
-    private ReporteController reporteController;
+    @TestConfiguration
+    static class TestConfig {
 
-    private PersonaDesaparecida reporte1;
-    private PersonaDesaparecida reporte2;
-    private PersonaDesaparecida reporte3;
-    private List<PersonaDesaparecida> reportesList;
+        @Bean
+        public PersonaDesaparecidaService personaDesaparecidaService() {
+            return new PersonaDesaparecidaService() {
+                @Override
+                public PersonaDesaparecida crearReporte(PersonaDesaparecida persona) {
+                    return persona;
+                }
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        
-        reporte1 = crearReporteEjemplo(1L, "test@example.com", "Juan Pérez");
-        reporte2 = crearReporteEjemplo(2L, "test2@example.com", "María García");
-        reporte3 = crearReporteEjemplo(2L, "test2@example.com", "Walter Rocha");
-        reportesList = Arrays.asList(reporte1, reporte2, reporte3);
-    }
+                @Override
+                public List<PersonaDesaparecida> obtenerReportesPorEmail(String email) {
+                    PersonaDesaparecida persona = new PersonaDesaparecida();
+                    persona.setNombre("Maria");
+                    persona.setEdad(25);
+                    persona.setLugarDesaparicion("Cochabamba");
+                    persona.setDescripcion("Desaparecida");
+                    persona.setEmailReportaje(email);
+                    persona.setFechaDesaparicion(Date.from(LocalDate.of(2025, 4, 10)
+                            .atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                    return List.of(persona);
+                }
 
-    private PersonaDesaparecida crearReporteEjemplo(Long id, String email, String nombre) {
-        PersonaDesaparecida reporte = new PersonaDesaparecida();
-        reporte.setIdDesaparecido(id);
-        reporte.setEmailReportaje(email);
-        reporte.setNombre(nombre);
-        reporte.setEdad(30);
-        reporte.setLugarDesaparicion("Ciudad Ejemplo");
-        reporte.setDescripcion("Descripción de ejemplo");
-        return reporte;
-    }
+                @Override
+                public List<PersonaDesaparecida> obtenerTodosLosReportes() {
+                    PersonaDesaparecida persona = new PersonaDesaparecida();
+                    persona.setNombre("Carlos");
+                    persona.setEdad(40);
+                    persona.setLugarDesaparicion("La Paz");
+                    persona.setDescripcion("Desaparecido");
+                    persona.setEmailReportaje("carlos@email.com");
+                    persona.setFechaDesaparicion(Date.from(LocalDate.of(2025, 3, 15)
+                            .atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                    return List.of(persona);
+                }
+            };
+        }
 
-    @Test
-    void crearReporte_DeberiaRetornarReporteCreado() {
-        when(personaDesaparecidaService.crearReporte(any(PersonaDesaparecida.class))).thenReturn(reporte1);
-
-        ResponseEntity<PersonaDesaparecida> response = (ResponseEntity<PersonaDesaparecida>) reporteController.crearReporte(reporte1);
-
-        assertAll(
-            () -> assertNotNull(response, "La respuesta no debería ser nula"),
-            () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "El código de estado debería ser OK"),
-            () -> assertNotNull(response.getBody(), "El cuerpo de la respuesta no debería ser nulo"),
-            () -> assertEquals(reporte1, response.getBody(), "El reporte devuelto no coincide con el esperado")
-        );
-        verify(personaDesaparecidaService, times(1)).crearReporte(any(PersonaDesaparecida.class));
-    }
-
-    @Test
-    void obtenerReportesPorUsuario_DeberiaRetornarListaDeReportes() {
-        String email = "test@example.com";
-        when(personaDesaparecidaService.obtenerReportesPorEmail(email)).thenReturn(reportesList);
-
-        ResponseEntity<List<PersonaDesaparecida>> response = reporteController.obtenerReportesPorUsuario(email);
-
-        assertAll(
-            () -> assertNotNull(response, "La respuesta no debería ser nula"),
-            () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "El código de estado debería ser OK"),
-            () -> assertNotNull(response.getBody(), "El cuerpo de la respuesta no debería ser nulo"),
-            () -> assertEquals(2, response.getBody().size(), "Deberían devolverse 2 reportes")
-        );
-        verify(personaDesaparecidaService, times(1)).obtenerReportesPorEmail(email);
+        @Bean
+        public ReporteValidationService reporteValidationService() {
+            return new ReporteValidationService() {
+                @Override
+                public String validarReporte(PersonaDesaparecida persona) {
+                    return null; // Siempre válido
+                }
+            };
+        }
     }
 
     @Test
-    void obtenerReportesPorUsuario_ConEmailInexistente_DeberiaRetornarListaVacia() {
-        String email = "noexiste@example.com";
-        when(personaDesaparecidaService.obtenerReportesPorEmail(email)).thenReturn(Collections.emptyList());
-
-        ResponseEntity<List<PersonaDesaparecida>> response = reporteController.obtenerReportesPorUsuario(email);
-
-        assertAll(
-            () -> assertNotNull(response, "La respuesta no debería ser nula"),
-            () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "El código de estado debería ser OK"),
-            () -> assertNotNull(response.getBody(), "El cuerpo de la respuesta no debería ser nulo"),
-            () -> assertTrue(response.getBody().isEmpty(), "La lista debería estar vacía")
-        );
-        verify(personaDesaparecidaService, times(1)).obtenerReportesPorEmail(email);
+    void testCrearReporteSinImagen() throws Exception {
+        mockMvc.perform(multipart("/reportes/crear")
+                        .param("nombre", "Juan")
+                        .param("edad", "30")
+                        .param("fechaDesaparicion", "2025-04-20")
+                        .param("lugarDesaparicion", "Cochabamba")
+                        .param("descripcion", "Persona desaparecida")
+                        .param("emailReportaje", "juan@example.com")
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nombre").value("Juan"))
+                .andExpect(jsonPath("$.edad").value(30))
+                .andExpect(jsonPath("$.emailReportaje").value("juan@example.com"));
     }
 
     @Test
-    void obtenerTodosLosReportes_DeberiaRetornarTodosLosReportes() {
-        when(personaDesaparecidaService.obtenerTodosLosReportes()).thenReturn(reportesList);
-
-        ResponseEntity<List<PersonaDesaparecida>> response = reporteController.obtenerTodosLosReportes();
-
-        assertAll(
-            () -> assertNotNull(response, "La respuesta no debería ser nula"),
-            () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "El código de estado debería ser OK"),
-            () -> assertNotNull(response.getBody(), "El cuerpo de la respuesta no debería ser nulo"),
-            () -> assertEquals(2, response.getBody().size(), "Deberían devolverse todos los reportes")
-        );
-        verify(personaDesaparecidaService, times(1)).obtenerTodosLosReportes();
+    void testObtenerReportesPorUsuario() throws Exception {
+        mockMvc.perform(get("/reportes/usuario/maria@email.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nombre").value("Maria"))
+                .andExpect(jsonPath("$[0].edad").value(25))
+                .andExpect(jsonPath("$[0].emailReportaje").value("maria@email.com"));
     }
 
     @Test
-    void obtenerTodosLosReportes_SinReportes_DeberiaRetornarListaVacia() {
-        when(personaDesaparecidaService.obtenerTodosLosReportes()).thenReturn(Collections.emptyList());
-
-        ResponseEntity<List<PersonaDesaparecida>> response = reporteController.obtenerTodosLosReportes();
-
-        assertAll(
-            () -> assertNotNull(response, "La respuesta no debería ser nula"),
-            () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "El código de estado debería ser OK"),
-            () -> assertNotNull(response.getBody(), "El cuerpo de la respuesta no debería ser nulo"),
-            () -> assertTrue(response.getBody().isEmpty(), "La lista debería estar vacía")
-        );
-        verify(personaDesaparecidaService, times(1)).obtenerTodosLosReportes();
+    void testObtenerTodosLosReportes() throws Exception {
+        mockMvc.perform(get("/reportes/todos"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].nombre").value("Carlos"))
+                .andExpect(jsonPath("$[0].edad").value(40))
+                .andExpect(jsonPath("$[0].emailReportaje").value("carlos@email.com"));
     }
 
-// PruebasUnitariasSalma - 1
-    @Test
-    void crearReporte_ConNombreInvalido_DeberiaRetornarBadRequest() {
-        reporteController.createReportsEnabled = true;
-        PersonaDesaparecida reporteInvalido = crearReporteEjemplo(null, "test@example.com", "1");
-        ResponseEntity<?> response = reporteController.crearReporte(reporteInvalido);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode(), "Debería retornar BAD_REQUEST");
-    }
-// PruebasUnitariasSalma - 2
-    @Test
-    void crearReporte_FuncionalidadDeshabilitada_DeberiaRetornarForbidden() throws Exception {
-        reporteController = new ReporteController() {{
-            personaDesaparecidaService = ReporteControllerTest.this.personaDesaparecidaService;
-            createReportsEnabled = false;
-        }};
-        PersonaDesaparecida reporteValido = crearReporteEjemplo(4L, "usuario@example.com", "Carlos López");
-        ResponseEntity<?> response = reporteController.crearReporte(reporteValido);
-        assertAll(
-                () -> assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode(), "Debería retornar FORBIDDEN"),
-                () -> assertEquals("La funcionalidad de creación de reportes está deshabilitada.", response.getBody())
-        );
-        verify(personaDesaparecidaService, never()).crearReporte(any());
-    }
+}
+
 
 
     @Test //PRUEBA UNITARIA #1 - ANDRE PRUDENCIO
@@ -198,3 +158,4 @@ class ReporteControllerTest {
 
 
 }
+

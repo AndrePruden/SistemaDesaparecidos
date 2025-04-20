@@ -29,6 +29,9 @@ public class PersonaDesaparecida {
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
+    @Column(columnDefinition = "TEXT")
+    private String imagen;
+
     // Getters y Setters
     public Long getIdDesaparecido() { return idDesaparecido; }
     public void setIdDesaparecido(Long idDesaparecido) { this.idDesaparecido = idDesaparecido; }
@@ -44,4 +47,6 @@ public class PersonaDesaparecida {
     public void setLugarDesaparicion(String lugarDesaparicion) { this.lugarDesaparicion = lugarDesaparicion; }
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public String getImagen() { return imagen; }
+    public void setImagen(String imagen) { this.imagen = imagen; }
 }
