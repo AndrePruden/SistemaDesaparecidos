@@ -68,7 +68,6 @@ h3 {
   
   .descripcion-recortada {
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* número de líneas a mostrar */
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;

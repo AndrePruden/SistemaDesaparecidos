@@ -1,15 +1,4 @@
 import { Component } from '@angular/core';
-<<<<<<< Updated upstream
-
-@Component({
-  selector: 'app-form-reportes',
-  imports: [],
-  templateUrl: './form-reportes.component.html',
-  styleUrl: './form-reportes.component.scss'
-})
-export class FormReportesComponent {
-
-=======
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReportesService } from '../../services/reportes.service';
@@ -90,5 +79,4 @@ export class FormReportesComponent {
     this.selectedFile = null;
     this.imagenPreview = null;
   }
->>>>>>> Stashed changes
 }

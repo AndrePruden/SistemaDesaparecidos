@@ -5,8 +5,15 @@ import com.trackme.service.FeatureToggleService;
 import com.trackme.service.PersonaDesaparecidaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.nio.file.*;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -18,6 +25,7 @@ import java.util.regex.Pattern;
 @RequestMapping("/reportes")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ReporteController {
+
     private static final int MIN_NOMBRE_LENGTH = 2;
     private static final int MAX_EDAD = 200;
     private static final int MIN_AÑO_DESAPARICION = 2024;
@@ -29,27 +37,55 @@ public class ReporteController {
     private PersonaDesaparecidaService personaDesaparecidaService;
     private final FeatureToggleService featureToggleService;
 
-    public ReporteController(PersonaDesaparecidaService personaDesaparecidaService, FeatureToggleService featureToggleService) {
+    public ReporteController(PersonaDesaparecidaService personaDesaparecidaService,
+                             FeatureToggleService featureToggleService) {
         this.personaDesaparecidaService = personaDesaparecidaService;
         this.featureToggleService = featureToggleService;
     }
 
     @PostMapping("/crear")
-    public ResponseEntity<?> crearReporte(@RequestBody PersonaDesaparecida reporte) {
-        if (!featureToggleService.isFeatureEnabled("reportes")) {
+    public ResponseEntity<?> crearReporteConImagen(
+            @RequestParam("nombre") String nombre,
+            @RequestParam("edad") Integer edad,
+            @RequestParam("fechaDesaparicion") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaDesaparicion,
+            @RequestParam("lugarDesaparicion") String lugarDesaparicion,
+            @RequestParam("descripcion") String descripcion,
+            @RequestParam("emailReportaje") String emailReportaje,
+            @RequestParam(value = "file", required = false) MultipartFile file
+    ) {
+        if (!createReportsEnabled) {
             return ResponseEntity.status(403).body("La funcionalidad de creación de reportes está deshabilitada.");
         }
 
-        // Validaciones
+        PersonaDesaparecida reporte = new PersonaDesaparecida();
+        reporte.setNombre(nombre);
+        reporte.setEdad(edad);
+        reporte.setFechaDesaparicion(Date.from(fechaDesaparicion.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        reporte.setLugarDesaparicion(lugarDesaparicion);
+        reporte.setDescripcion(descripcion);
+        reporte.setEmailReportaje(emailReportaje);
+
+        // ✅ Guardar archivo en /uploads y generar URL
+        if (file != null && !file.isEmpty()) {
+            try {
+                String nombreArchivo = System.currentTimeMillis() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+                Path uploadDir = Paths.get("uploads");
+                if (!Files.exists(uploadDir)) Files.createDirectories(uploadDir);
+
+                Path rutaArchivo = uploadDir.resolve(nombreArchivo);
+                Files.copy(file.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+
+                String urlImagen = "http://localhost:8080/uploads/" + nombreArchivo;
+                reporte.setImagen(urlImagen); // 👈 campo que se agregará abajo
+
+            } catch (IOException e) {
+                return ResponseEntity.status(500).body("Error al guardar imagen: " + e.getMessage());
+            }
+        }
+
         String validacion = validarReporte(reporte);
         if (validacion != null) {
             return ResponseEntity.badRequest().body(validacion);
-        }
-
-        // Asignar fecha actual si no hay fecha
-        if (reporte.getFechaDesaparicion() == null) {
-            reporte.setFechaDesaparicion(Date.from(LocalDate.now()
-                    .atStartOfDay(ZoneId.systemDefault()).toInstant()));
         }
 
         PersonaDesaparecida nuevoReporte = personaDesaparecidaService.crearReporte(reporte);

@@ -27,8 +27,4 @@ export class HeaderComponent implements OnInit{
       window.location.href = '/';
     }
   }
-<<<<<<< Updated upstream
 }
-=======
-}
->>>>>>> Stashed changes

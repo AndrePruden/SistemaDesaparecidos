@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface AvistamientoRepository extends JpaRepository<Avistamiento, Long> {
     List<Avistamiento> findByEmailUsuario(String emailUsuario);
-    List<Avistamiento> findByIdPersonaDesaparecida(Long idPersonaDesaparecida);
+    List<Avistamiento> findByPersonaDesaparecida_IdDesaparecido(Long idPersonaDesaparecido);
 }

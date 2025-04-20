@@ -14,12 +14,7 @@ import { ForoAvistamientosComponent } from '../foro-avistamientos/foro-avistamie
     CommonModule, 
     RouterModule, 
     CarouselComponent, 
-<<<<<<< Updated upstream
-    HeaderComponent, 
-    ReportesComponent, 
-=======
     HeaderComponent,
->>>>>>> Stashed changes
     FooterComponent,
     CardsReportesComponent,
     ForoAvistamientosComponent
