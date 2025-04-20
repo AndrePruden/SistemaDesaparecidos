@@ -54,6 +54,7 @@ TrackMe es un sistema diseñado para gestionar información sobre personas desap
          fecha_desaparicion DATE NOT NULL,
          lugar_desaparicion VARCHAR(255) NOT NULL,
          descripcion TEXT,
+         imagen TEXT
          FOREIGN KEY (email_reportaje) REFERENCES usuarios(email) ON DELETE CASCADE
      );
 
