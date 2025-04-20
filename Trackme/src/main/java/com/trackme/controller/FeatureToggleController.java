@@ -7,7 +7,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
+<<<<<<< Updated upstream
 @RequestMapping("features")
+=======
+@RequestMapping("feature")
+>>>>>>> Stashed changes
 @CrossOrigin(origins = "http://localhost:4200")
 public class FeatureToggleController {
     private final FeatureToggleService featureToggleService;

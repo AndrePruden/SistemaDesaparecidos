@@ -1,4 +1,5 @@
 <div class="lista-reportes">
+<<<<<<< Updated upstream
     <h3>Reportes Existentes</h3>
     <!-- <div *ngFor="let reporte of reportes" class="reporte">
         <p><strong>Nombre:</strong> {{ reporte.nombre }}</p>
@@ -9,3 +10,21 @@
     </div> -->
     <p>CARDS</p>
 </div>
+=======
+    <div class="contenedor-cards">
+      <div *ngFor="let reporte of reportes" class="card-reporte">
+        <img class="imagen-reporte"
+     [src]="reporte.imagen || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTML0gExaohZHdZW3609F12nUmVc14WXYNx_w&s'"
+     alt="Foto del reportado">
+        <div class="info-reporte">
+          <p><strong>Nombre:</strong> {{ reporte.nombre }}</p>
+          <p><strong>Edad:</strong> {{ reporte.edad }}</p>
+          <p><strong>Fecha:</strong> {{ reporte.fechaDesaparicion }}</p>
+          <p><strong>Lugar:</strong> {{ reporte.lugarDesaparicion }}</p>
+          <p class="descripcion-recortada"><strong>Descripción:</strong> {{ reporte.descripcion }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+>>>>>>> Stashed changes

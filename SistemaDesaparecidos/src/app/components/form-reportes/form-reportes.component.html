@@ -1,1 +1,27 @@
+<<<<<<< Updated upstream
 <p>form-reportes works!</p>
+=======
+<form (ngSubmit)="crearReporte()">
+    <div class="input-field">
+        <input type="text" [(ngModel)]="nuevoReporte.nombre" name="nombre" placeholder="Nombre" required>
+    </div>
+    <div class="input-field">
+        <input type="number" [(ngModel)]="nuevoReporte.edad" name="edad" placeholder="Edad">
+    </div>
+    <div class="input-field">
+        <input type="date" [(ngModel)]="nuevoReporte.fechaDesaparicion" name="fechaDesaparicion" placeholder="Fecha de Desaparición" required>
+    </div>
+    <div class="input-field">
+        <input type="text" [(ngModel)]="nuevoReporte.lugarDesaparicion" name="lugarDesaparicion" placeholder="Lugar de Desaparición" required>
+    </div>
+    <div class="input-field">
+        <textarea [(ngModel)]="nuevoReporte.descripcion" name="descripcion" placeholder="Descripción"></textarea>
+    </div>
+    
+    <div>
+        <label>Subir Imagen:</label>
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+    </div>
+    <button type="submit">Crear Reporte</button>
+</form>
+>>>>>>> Stashed changes
