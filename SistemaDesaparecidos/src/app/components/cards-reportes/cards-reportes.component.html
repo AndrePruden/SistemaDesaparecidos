@@ -1,16 +1,34 @@
+<div class="contenedor-filtro">
+  <input type="text" [(ngModel)]="nombreBusqueda" placeholder="Nombre..." (input)="filtrarReportes()">
+  <input type="number" [(ngModel)]="edadBusqueda" placeholder="Edad..." (input)="filtrarReportes()">
+  <input type="text" [(ngModel)]="lugarBusqueda" placeholder="Lugar de desaparición..." (input)="filtrarReportes()">
+  <input type="date" [(ngModel)]="fechaBusqueda" (input)="filtrarReportes()">
+</div>
+
 <div class="lista-reportes">
+  <ng-container *ngIf="reportesFiltrados.length > 0; else noReportes">
     <div class="contenedor-cards">
-      <div *ngFor="let reporte of reportes" class="card-reporte">
-        <img class="imagen-reporte"
-     [src]="reporte.imagen || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTML0gExaohZHdZW3609F12nUmVc14WXYNx_w&s'"
-     alt="Foto del reportado">
+      <div *ngFor="let reporte of reportesFiltrados" class="card-reporte">
+        <img
+          class="imagen-reporte"
+          [src]="reporte.imagen || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTML0gExaohZHdZW3609F12nUmVc14WXYNx_w&s'"
+          alt="Foto del reportado"
+        >
         <div class="info-reporte">
           <p><strong>Nombre:</strong> {{ reporte.nombre }}</p>
           <p><strong>Edad:</strong> {{ reporte.edad }}</p>
-          <p><strong>Fecha:</strong> {{ reporte.fechaDesaparicion }}</p>
+          <p><strong>Fecha:</strong> {{ reporte.fechaDesaparicion | date }}</p>
           <p><strong>Lugar:</strong> {{ reporte.lugarDesaparicion }}</p>
           <p class="descripcion-recortada"><strong>Descripción:</strong> {{ reporte.descripcion }}</p>
         </div>
       </div>
     </div>
-  </div>
+  </ng-container>
+
+  <ng-template #noReportes>
+    <div class="mensaje-vacio">
+      <img src="https://cdn-icons-png.flaticon.com/512/7486/7486898.png" alt="Sin resultados" class="icono-vacio">
+      <p>No se encontraron reportes con los datos ingresados.</p>
+    </div>
+  </ng-template>
+</div>

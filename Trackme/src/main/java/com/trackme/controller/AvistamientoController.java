@@ -19,22 +19,28 @@ public class AvistamientoController {
 
     @PostMapping("/crear")
     public ResponseEntity<Avistamiento> crearAvistamiento(@RequestBody Avistamiento avistamiento) {
-        // Validaciones básicas
-        if (avistamiento.getEmailUsuario() == null || avistamiento.getEmailUsuario().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (avistamiento.getPersonaDesaparecida() == null || avistamiento.getPersonaDesaparecida().getIdDesaparecido() == null) {
+        if (!esAvistamientoValido(avistamiento)) {
             return ResponseEntity.badRequest().build();
         }
 
-        // Asignar fecha actual si no viene especificada
         if (avistamiento.getFecha() == null) {
-            avistamiento.setFecha(new Date());
+            asignarFechaActual(avistamiento);
         }
 
-        Avistamiento nuevoAvistamiento = avistamientoService.crearAvistamiento(avistamiento);
-        return ResponseEntity.ok(nuevoAvistamiento);
+        Avistamiento nuevo = avistamientoService.crearAvistamiento(avistamiento);
+        return ResponseEntity.ok(nuevo);
     }
+
+    private boolean esAvistamientoValido(Avistamiento avistamiento) {
+        return avistamiento.getEmailUsuario() != null && !avistamiento.getEmailUsuario().isEmpty()
+                && avistamiento.getPersonaDesaparecida() != null
+                && avistamiento.getPersonaDesaparecida().getIdDesaparecido() != null;
+    }
+
+    private void asignarFechaActual(Avistamiento avistamiento) {
+        avistamiento.setFecha(new Date());
+    }
+
 
     @GetMapping("/usuario/{email}")
     public ResponseEntity<List<Avistamiento>> obtenerAvistamientosPorUsuario(@PathVariable String email) {

@@ -17,4 +17,14 @@ export class ReportesService {
   crearReporte(reporte: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/crear`, reporte);
   }
+
+  obtenerReportesFiltrados(nombre: string, edad: number, lugar: string, fecha: string) {
+    const params = {
+      nombre,
+      edad: edad ? edad.toString() : '',
+      lugar,
+      fecha
+    };
+    return this.http.get<any[]>(`${this.baseUrl}/filtrar`, { params });
+  }
 }

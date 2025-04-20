@@ -16,11 +16,9 @@ public class UserController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // Registrar nuevo usuario
     @PostMapping("/registro")
     public ResponseEntity<ResponseMessage> registrarUsuario(@RequestBody Usuario usuario) {
         try {
-            // Verifica si el correo ya está registrado
             if (usuarioService.obtenerUsuarioPorEmail(usuario.getEmail()).isPresent()) {
                 return ResponseEntity.badRequest().body(new ResponseMessage("El correo ya está registrado."));
             }
@@ -32,22 +30,17 @@ public class UserController {
         }
     }
 
-
     @PostMapping("/iniciar-sesion")
     public ResponseEntity<ResponseMessage> iniciarSesion(@RequestBody Usuario usuario) {
         Optional<Usuario> existingUser = usuarioService.obtenerUsuarioPorEmail(usuario.getEmail());
-
         if (!existingUser.isPresent()) {
             return ResponseEntity.status(404).body(new ResponseMessage("El correo electrónico no está registrado."));
         }
-
         if (usuarioService.verificarContraseña(usuario.getPassword(), existingUser.get().getPassword())) {
             return ResponseEntity.ok(new ResponseMessage("Inicio de sesión exitoso."));
         }
-
         return ResponseEntity.status(401).body(new ResponseMessage("Contraseña incorrecta."));
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
@@ -62,7 +55,7 @@ public class UserController {
     public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
         Optional<Usuario> existingUser = usuarioService.obtenerUsuarioPorId(id);
         if (existingUser.isPresent()) {
-            usuario.setId(id); // Asegurarse de que no cambie el ID
+            usuario.setId(id);
             Usuario usuarioActualizado = usuarioService.actualizarUsuario(usuario);
             return ResponseEntity.ok(usuarioActualizado);
         }
