@@ -55,14 +55,16 @@ class UsuarioControllerTest {
     @Test
     void testIniciarSesionExitoso() {
         Usuario usuario = new Usuario("validuser", "validpassword", "valid@domain.com");
-        when(usuarioService.obtenerUsuarioPorEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
-
+        when(usuarioService.obtenerUsuarioPorEmail(usuario.getEmail()))
+                .thenReturn(Optional.of(usuario));
+        when(usuarioService.verificarContraseña("validpassword", "validpassword"))
+                .thenReturn(true);
         ResponseEntity<ResponseMessage> response = userController.iniciarSesion(usuario);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Inicio de sesión exitoso.", response.getBody().getMessage());
     }
+
 
     @Test
     void testIniciarSesionFallidoCorreoNoRegistrado() {
