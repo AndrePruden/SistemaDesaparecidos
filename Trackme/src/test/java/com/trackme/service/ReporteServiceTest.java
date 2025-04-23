@@ -1,7 +1,7 @@
 package com.trackme.service;
 
 import com.trackme.model.PersonaDesaparecida;
-import com.trackme.repository.PersonaDesaparecidaRepository;
+import com.trackme.repository.ReporteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 class PersonaDesaparecidaServiceTest {
 
     @Mock
-    private PersonaDesaparecidaRepository personaDesaparecidaRepository;
+    private ReporteRepository reporteRepository;
 
     @InjectMocks
     private PersonaDesaparecidaService personaDesaparecidaService;
@@ -42,7 +42,7 @@ class PersonaDesaparecidaServiceTest {
 
     @Test
     void testCrearReporte() {
-        when(personaDesaparecidaRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporte);
+        when(reporteRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporte);
         PersonaDesaparecida result = personaDesaparecidaService.crearReporte(reporte);
 
         assertNotNull(result);
@@ -57,7 +57,7 @@ class PersonaDesaparecidaServiceTest {
     @Test
     void testObtenerReportesPorEmail() {
         List<PersonaDesaparecida> reportes = Arrays.asList(reporte);
-        when(personaDesaparecidaRepository.findByEmailReportaje("test@example.com")).thenReturn(reportes);
+        when(reporteRepository.findByEmailReportaje("test@example.com")).thenReturn(reportes);
 
         List<PersonaDesaparecida> result = personaDesaparecidaService.obtenerReportesPorEmail("test@example.com");
 
@@ -67,7 +67,7 @@ class PersonaDesaparecidaServiceTest {
 
     @Test
     void testObtenerTodosLosReportes_Vacio() {
-        when(personaDesaparecidaRepository.findAll()).thenReturn(List.of());
+        when(reporteRepository.findAll()).thenReturn(List.of());
     
         List<PersonaDesaparecida> result = personaDesaparecidaService.obtenerTodosLosReportes();
     
@@ -78,7 +78,7 @@ class PersonaDesaparecidaServiceTest {
     @Test
     void testCrearReporte_CamposNulos() {
     PersonaDesaparecida reporteParcial = new PersonaDesaparecida(); 
-    when(personaDesaparecidaRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporteParcial);
+    when(reporteRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporteParcial);
 
     PersonaDesaparecida result = personaDesaparecidaService.crearReporte(reporteParcial);
 
@@ -93,7 +93,7 @@ class PersonaDesaparecidaServiceTest {
     @Test
     void testObtenerTodosLosReportes() {
         List<PersonaDesaparecida> reportes = Arrays.asList(reporte);
-        when(personaDesaparecidaRepository.findAll()).thenReturn(reportes);
+        when(reporteRepository.findAll()).thenReturn(reportes);
 
         List<PersonaDesaparecida> result = personaDesaparecidaService.obtenerTodosLosReportes();
 
@@ -103,19 +103,19 @@ class PersonaDesaparecidaServiceTest {
     @Test
     void testObtenerReportesPorEmail_SinResultados() {
         
-    when(personaDesaparecidaRepository.findByEmailReportaje("noexist@example.com"))
+    when(reporteRepository.findByEmailReportaje("noexist@example.com"))
         .thenReturn(List.of());
 
     List<PersonaDesaparecida> resultados = 
         personaDesaparecidaService.obtenerReportesPorEmail("noexist@example.com");
 
     assertTrue(resultados.isEmpty());  // Verificar que la lista está vacía
-    verify(personaDesaparecidaRepository, times(1))
+    verify(reporteRepository, times(1))
         .findByEmailReportaje("noexist@example.com");
     }
     @Test
     void testCrearReporte_FechaNoNula() {
-        when(personaDesaparecidaRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporte);
+        when(reporteRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporte);
         
         PersonaDesaparecida resultado = personaDesaparecidaService.crearReporte(reporte);
         
