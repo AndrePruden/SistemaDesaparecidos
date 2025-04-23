@@ -2,8 +2,10 @@ package com.trackme.controller;
 
 import com.trackme.model.PersonaDesaparecida;
 import com.trackme.service.FeatureToggleService;
-import com.trackme.service.PersonaDesaparecidaService;
+import com.trackme.service.ReporteService;
 import com.trackme.service.ReporteValidationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,11 +27,13 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "http://localhost:4200")
 public class ReporteController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ReporteController.class);
+
     @Value("${feature.create-reports.enabled}")
     public boolean createReportsEnabled;
 
     @Autowired
-    private PersonaDesaparecidaService personaDesaparecidaService;
+    private ReporteService reporteService;
 
     @Autowired
     private ReporteValidationService reporteValidationService;
@@ -47,7 +51,10 @@ public class ReporteController {
             @RequestParam("emailReportaje") String emailReportaje,
             @RequestParam(value = "file", required = false) MultipartFile file
     ) {
+        logger.info("Intentando crear un nuevo reporte para: {}", nombre);
+
         if (!createReportsEnabled) {
+            logger.warn("Intento de crear reporte mientras el feature toggle está desactivado.");
             return ResponseEntity.status(403).body("La funcionalidad de creación de reportes está deshabilitada.");
         }
 
@@ -59,50 +66,42 @@ public class ReporteController {
         reporte.setDescripcion(descripcion);
         reporte.setEmailReportaje(emailReportaje);
 
-        // Guardar archivo en /uploads y generar URL
         if (file != null && !file.isEmpty()) {
+            logger.info("Se recibió un archivo: {}", file.getOriginalFilename());
             String urlImagen = guardarImagen(file);
             if (urlImagen == null) {
+                logger.error("Error al guardar imagen para el reporte de {}", nombre);
                 return ResponseEntity.status(500).body("Error al guardar imagen.");
             }
-            reporte.setImagen(urlImagen); // Campo de la imagen
+            reporte.setImagen(urlImagen);
+            logger.debug("Imagen guardada correctamente: {}", urlImagen);
         }
 
-        // Validar el reporte
         String validacion = reporteValidationService.validarReporte(reporte);
         if (validacion != null) {
+            logger.warn("Validación fallida para reporte de {}: {}", nombre, validacion);
             return ResponseEntity.badRequest().body(validacion);
         }
 
-        PersonaDesaparecida nuevoReporte = personaDesaparecidaService.crearReporte(reporte);
+        PersonaDesaparecida nuevoReporte = reporteService.crearReporte(reporte);
+        logger.info("Reporte creado exitosamente con ID: {}", nuevoReporte.getIdDesaparecido());
         return ResponseEntity.ok(nuevoReporte);
     }
 
     @GetMapping("/usuario/{email}")
     public ResponseEntity<List<PersonaDesaparecida>> obtenerReportesPorUsuario(@PathVariable String email) {
-        List<PersonaDesaparecida> reportes = personaDesaparecidaService.obtenerReportesPorEmail(email);
+        logger.info("Obteniendo reportes para el usuario con email: {}", email);
+        List<PersonaDesaparecida> reportes = reporteService.obtenerReportesPorEmail(email);
+        logger.debug("Se encontraron {} reportes para el usuario {}", reportes.size(), email);
         return ResponseEntity.ok(reportes);
     }
 
     @GetMapping("/todos")
     public ResponseEntity<List<PersonaDesaparecida>> obtenerTodosLosReportes() {
-        List<PersonaDesaparecida> reportes = personaDesaparecidaService.obtenerTodosLosReportes();
+        logger.info("Solicitud para obtener todos los reportes");
+        List<PersonaDesaparecida> reportes = reporteService.obtenerTodosLosReportes();
+        logger.debug("Total de reportes encontrados: {}", reportes.size());
         return ResponseEntity.ok(reportes);
-    }
-
-    private String guardarImagen(MultipartFile file) {
-        try {
-            String nombreArchivo = System.currentTimeMillis() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
-            Path uploadDir = Paths.get("uploads");
-            if (!Files.exists(uploadDir)) Files.createDirectories(uploadDir);
-
-            Path rutaArchivo = uploadDir.resolve(nombreArchivo);
-            Files.copy(file.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
-
-            return "http://localhost:8080/uploads/" + nombreArchivo;
-        } catch (IOException e) {
-            return null;
-        }
     }
 
     @GetMapping("/filtrar")
@@ -112,7 +111,9 @@ public class ReporteController {
             @RequestParam(value = "lugar", required = false) String lugar,
             @RequestParam(value = "fecha", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
 
-        List<PersonaDesaparecida> reportes = personaDesaparecidaService.obtenerTodosLosReportes();
+        logger.info("Aplicando filtros a los reportes: nombre={}, edad={}, lugar={}, fecha={}", nombre, edad, lugar, fecha);
+
+        List<PersonaDesaparecida> reportes = reporteService.obtenerTodosLosReportes();
 
         if (nombre != null && !nombre.isEmpty()) {
             reportes = reportes.stream()
@@ -134,7 +135,24 @@ public class ReporteController {
                     .filter(r -> r.getFechaDesaparicion().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().equals(fecha))
                     .collect(Collectors.toList());
         }
+        logger.debug("Total de reportes después del filtrado: {}", reportes.size());
         return ResponseEntity.ok(reportes);
+    }
+
+    private String guardarImagen(MultipartFile file) {
+        try {
+            String nombreArchivo = System.currentTimeMillis() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+            Path uploadDir = Paths.get("uploads");
+            if (!Files.exists(uploadDir)) Files.createDirectories(uploadDir);
+
+            Path rutaArchivo = uploadDir.resolve(nombreArchivo);
+            Files.copy(file.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+
+            return "http://localhost:8080/uploads/" + nombreArchivo;
+        } catch (IOException e) {
+            logger.error("Error al guardar imagen: {}", e.getMessage(), e);
+            return null;
+        }
     }
 
 }

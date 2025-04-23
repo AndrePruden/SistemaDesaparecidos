@@ -18,13 +18,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PersonaDesaparecidaServiceTest {
+class ReporteServiceTest {
 
     @Mock
     private ReporteRepository reporteRepository;
 
     @InjectMocks
-    private PersonaDesaparecidaService personaDesaparecidaService;
+    private ReporteService reporteService;
 
     private PersonaDesaparecida reporte;
 
@@ -43,7 +43,7 @@ class PersonaDesaparecidaServiceTest {
     @Test
     void testCrearReporte() {
         when(reporteRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporte);
-        PersonaDesaparecida result = personaDesaparecidaService.crearReporte(reporte);
+        PersonaDesaparecida result = reporteService.crearReporte(reporte);
 
         assertNotNull(result);
         assertEquals(reporte.getIdDesaparecido(), result.getIdDesaparecido());
@@ -59,7 +59,7 @@ class PersonaDesaparecidaServiceTest {
         List<PersonaDesaparecida> reportes = Arrays.asList(reporte);
         when(reporteRepository.findByEmailReportaje("test@example.com")).thenReturn(reportes);
 
-        List<PersonaDesaparecida> result = personaDesaparecidaService.obtenerReportesPorEmail("test@example.com");
+        List<PersonaDesaparecida> result = reporteService.obtenerReportesPorEmail("test@example.com");
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -69,7 +69,7 @@ class PersonaDesaparecidaServiceTest {
     void testObtenerTodosLosReportes_Vacio() {
         when(reporteRepository.findAll()).thenReturn(List.of());
     
-        List<PersonaDesaparecida> result = personaDesaparecidaService.obtenerTodosLosReportes();
+        List<PersonaDesaparecida> result = reporteService.obtenerTodosLosReportes();
     
         assertNotNull(result);
         assertTrue(result.isEmpty(), "La lista debe estar vacía si no hay reportes en el sistema");
@@ -80,7 +80,7 @@ class PersonaDesaparecidaServiceTest {
     PersonaDesaparecida reporteParcial = new PersonaDesaparecida(); 
     when(reporteRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporteParcial);
 
-    PersonaDesaparecida result = personaDesaparecidaService.crearReporte(reporteParcial);
+    PersonaDesaparecida result = reporteService.crearReporte(reporteParcial);
 
     assertNotNull(result);
     assertNull(result.getNombre());
@@ -95,7 +95,7 @@ class PersonaDesaparecidaServiceTest {
         List<PersonaDesaparecida> reportes = Arrays.asList(reporte);
         when(reporteRepository.findAll()).thenReturn(reportes);
 
-        List<PersonaDesaparecida> result = personaDesaparecidaService.obtenerTodosLosReportes();
+        List<PersonaDesaparecida> result = reporteService.obtenerTodosLosReportes();
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -107,7 +107,7 @@ class PersonaDesaparecidaServiceTest {
         .thenReturn(List.of());
 
     List<PersonaDesaparecida> resultados = 
-        personaDesaparecidaService.obtenerReportesPorEmail("noexist@example.com");
+        reporteService.obtenerReportesPorEmail("noexist@example.com");
 
     assertTrue(resultados.isEmpty());  // Verificar que la lista está vacía
     verify(reporteRepository, times(1))
@@ -117,7 +117,7 @@ class PersonaDesaparecidaServiceTest {
     void testCrearReporte_FechaNoNula() {
         when(reporteRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporte);
         
-        PersonaDesaparecida resultado = personaDesaparecidaService.crearReporte(reporte);
+        PersonaDesaparecida resultado = reporteService.crearReporte(reporte);
         
         assertNotNull(resultado.getFechaDesaparicion());  // Verificar que la fecha no es nula
         assertTrue(resultado.getFechaDesaparicion() instanceof Date);  // Verificar que es tipo Date

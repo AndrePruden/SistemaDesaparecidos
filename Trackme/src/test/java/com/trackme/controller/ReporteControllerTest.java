@@ -1,8 +1,7 @@
 package com.trackme.controller;
 
 import com.trackme.model.PersonaDesaparecida;
-import com.trackme.service.FeatureToggleService;
-import com.trackme.service.PersonaDesaparecidaService;
+import com.trackme.service.ReporteService;
 import com.trackme.service.ReporteValidationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -36,8 +34,8 @@ class ReporteControllerIntegrationTest {
     static class TestConfig {
 
         @Bean
-        public PersonaDesaparecidaService personaDesaparecidaService() {
-            return new PersonaDesaparecidaService() {
+        public ReporteService personaDesaparecidaService() {
+            return new ReporteService() {
                 @Override
                 public PersonaDesaparecida crearReporte(PersonaDesaparecida persona) {
                     return persona;

@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PersonaDesaparecidaRepository extends JpaRepository<PersonaDesaparecida, Long> {
+public interface ReporteRepository extends JpaRepository<PersonaDesaparecida, Long> {
     List<PersonaDesaparecida> findByEmailReportaje(String emailReportaje);
 }
