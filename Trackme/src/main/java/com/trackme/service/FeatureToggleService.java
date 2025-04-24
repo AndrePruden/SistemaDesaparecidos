@@ -15,14 +15,26 @@ public class FeatureToggleService {
 
     private final Map<String, Boolean> featureToggles = new HashMap<>();
 
-    public FeatureToggleService(@Value("${feature.create-reports.enabled:false}") boolean createReportsEnabled) {
+    public FeatureToggleService(
+            @Value("${feature.create-reports.enabled:false}") boolean createReportsEnabled,
+            @Value("${feature.create-sightings.enabled:false}") boolean createSightingsEnabled
+    ) {
         featureToggles.put("create-reports", createReportsEnabled);
+        featureToggles.put("create-sightings", createSightingsEnabled);
+
         logger.info("Inicializado feature toggle: 'create-reports' = {}", createReportsEnabled);
+        logger.info("Inicializado feature toggle: 'create-sightings' = {}", createSightingsEnabled);
     }
 
     public boolean isCreateReportsEnabled() {
         boolean estado = featureToggles.getOrDefault("create-reports", false);
         logger.debug("Consultado estado de 'create-reports': {}", estado);
+        return estado;
+    }
+
+    public boolean isCreateSightingsEnabled() {
+        boolean estado = featureToggles.getOrDefault("create-sightings", false);
+        logger.debug("Consultado estado de 'create-sightings': {}", estado);
         return estado;
     }
 

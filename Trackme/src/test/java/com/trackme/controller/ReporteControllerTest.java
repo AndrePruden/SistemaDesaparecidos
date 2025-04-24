@@ -2,12 +2,11 @@ package com.trackme.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trackme.model.PersonaDesaparecida;
-import com.trackme.model.Usuario;
 import com.trackme.repository.ReporteRepository;
 import com.trackme.repository.UserRepository;
+import com.trackme.service.FeatureToggleService;
 import com.trackme.service.ReporteService;
 import com.trackme.service.ReporteValidationService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -44,16 +43,10 @@ class ReporteControllerTest {
     @Autowired
     private UserRepository usuarioRepository;
 
-    private final String testEmail = "test@example.com";
+    @Autowired
+    private FeatureToggleService featureToggleService;
 
-    @BeforeEach
-    void setUp() {
-        Usuario usuario = new Usuario();
-        usuario.setEmail(testEmail);
-        usuario.setUsername("Test User");
-        usuario.setPassword("test123");
-        usuarioRepository.save(usuario);
-    }
+    private final String testEmail = "test@example.com";
 
     @TestConfiguration
     static class TestConfig {
@@ -104,23 +97,30 @@ class ReporteControllerTest {
         }
     }
 
-//    @Test
-//    public void testCrearReporteSinImagen() throws Exception {
-//        PersonaDesaparecida reporte = new PersonaDesaparecida();
-//        reporte.setNombre("Carlos");
-//        reporte.setEdad(30);
-//        reporte.setEmailReportaje(testEmail);
-//        reporte.setFechaDesaparicion(Date.from(LocalDate.of(2023, 1, 1)
-//                .atStartOfDay(ZoneId.systemDefault()).toInstant()));
-//        reporte.setLugarDesaparicion("Ciudad");
-//        reporte.setDescripcion("Desaparecido en zona urbana");
-//
-//        mockMvc.perform(post("/reportes")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(reporte)))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.mensaje").value("Reporte creado correctamente"));
-//    }
+    @Test
+    public void testCrearReporteConToggleDesactivado() throws Exception {
+        featureToggleService.setFeatureEnabled("create-reports", false);
+
+        PersonaDesaparecida reporte = new PersonaDesaparecida();
+        reporte.setNombre("Carlos");
+        reporte.setEdad(30);
+        reporte.setEmailReportaje(testEmail);
+        reporte.setFechaDesaparicion(Date.from(LocalDate.of(2025, 4, 10)
+                .atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        reporte.setLugarDesaparicion("Ciudad");
+        reporte.setDescripcion("Desaparecido en zona urbana");
+
+        mockMvc.perform(post("/reportes/crear")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("nombre", reporte.getNombre())
+                        .param("edad", String.valueOf(reporte.getEdad()))
+                        .param("fechaDesaparicion", reporte.getFechaDesaparicion().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().toString())
+                        .param("lugarDesaparicion", reporte.getLugarDesaparicion())
+                        .param("descripcion", reporte.getDescripcion())
+                        .param("emailReportaje", reporte.getEmailReportaje()))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string("La funcionalidad de creación de reportes está deshabilitada."));
+    }
 
     @Test
     public void testObtenerReportesPorUsuario() throws Exception {

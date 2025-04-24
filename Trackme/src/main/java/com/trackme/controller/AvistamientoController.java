@@ -2,6 +2,7 @@ package com.trackme.controller;
 
 import com.trackme.model.Avistamiento;
 import com.trackme.service.AvistamientoService;
+import com.trackme.service.FeatureToggleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,17 @@ public class AvistamientoController {
     @Autowired
     private AvistamientoService avistamientoService;
 
+    @Autowired
+    private FeatureToggleService featureToggleService;
+
     @PostMapping("/crear")
     public ResponseEntity<Avistamiento> crearAvistamiento(@RequestBody Avistamiento avistamiento) {
         logger.info("Solicitud para crear avistamiento: {}", avistamiento);
+
+        if (!featureToggleService.isCreateSightingsEnabled()) {
+            logger.warn("Avistamiento inválido recibido: {}", avistamiento);
+            return ResponseEntity.status(403).body(null);
+        }
 
         if (!esAvistamientoValido(avistamiento)) {
             logger.warn("Avistamiento inválido recibido: {}", avistamiento);
@@ -53,7 +62,6 @@ public class AvistamientoController {
     private void asignarFechaActual(Avistamiento avistamiento) {
         avistamiento.setFecha(new Date());
     }
-
 
     @GetMapping("/usuario/{email}")
     public ResponseEntity<List<Avistamiento>> obtenerAvistamientosPorUsuario(@PathVariable String email) {
@@ -92,5 +100,4 @@ public class AvistamientoController {
                     return ResponseEntity.notFound().build();
                 });
     }
-
 }
