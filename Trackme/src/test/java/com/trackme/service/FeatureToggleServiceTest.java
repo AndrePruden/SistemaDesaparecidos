@@ -2,10 +2,9 @@ package com.trackme.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Value;
-import static org.mockito.Mockito.*;
+
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,42 +14,45 @@ class FeatureToggleServiceTest {
     @InjectMocks
     private FeatureToggleService featureToggleService;
 
-    @Mock
-    @Value("${feature.create-reports.enabled:false}")
-    private boolean createReportsEnabled;
-
     @BeforeEach
     void setUp() {
-        createReportsEnabled = false;
+        featureToggleService = new FeatureToggleService(false, false);
     }
 
     @Test
-    void constructor_deberiaInicializarConValoresPorDefecto() {
-        featureToggleService = new FeatureToggleService(createReportsEnabled);
+    void constructor_deberiaInicializarConValoresCorrectos() {
         Map<String, Boolean> toggles = featureToggleService.getAllToggles();
+
         assertTrue(toggles.containsKey("create-reports"));
-        assertEquals(false, toggles.get("create-reports"));
+        assertTrue(toggles.containsKey("create-sightings"));
+        assertFalse(toggles.get("create-reports"));
+        assertFalse(toggles.get("create-sightings"));
     }
 
     @Test
-    void isCreateReportsEnabled_deberiaRetornarValorCorrecto() {
-        featureToggleService = new FeatureToggleService(createReportsEnabled);
+    void isCreateReportsEnabled_deberiaRetornarFalsePorDefecto() {
         assertFalse(featureToggleService.isCreateReportsEnabled());
+    }
+
+    @Test
+    void isCreateSightingsEnabled_deberiaRetornarFalsePorDefecto() {
+        assertFalse(featureToggleService.isCreateSightingsEnabled());
     }
 
     @Test
     void setFeatureEnabled_deberiaActualizarElEstadoDeUnFeature() {
-        featureToggleService = new FeatureToggleService(false);
-        assertFalse(featureToggleService.isCreateReportsEnabled());
         featureToggleService.setFeatureEnabled("create-reports", true);
         assertTrue(featureToggleService.isCreateReportsEnabled());
+
+        featureToggleService.setFeatureEnabled("create-sightings", true);
+        assertTrue(featureToggleService.isCreateSightingsEnabled());
     }
 
     @Test
     void getAllToggles_deberiaRetornarElMapaDeToggles() {
-        featureToggleService = new FeatureToggleService(createReportsEnabled);
         Map<String, Boolean> toggles = featureToggleService.getAllToggles();
-        assertNotNull(toggles);
-        assertEquals(1, toggles.size());
+        assertEquals(2, toggles.size());
+        assertTrue(toggles.containsKey("create-reports"));
+        assertTrue(toggles.containsKey("create-sightings"));
     }
 }
