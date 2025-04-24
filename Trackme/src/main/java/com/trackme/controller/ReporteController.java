@@ -7,7 +7,6 @@ import com.trackme.service.ReporteValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -28,9 +27,6 @@ import java.util.stream.Collectors;
 public class ReporteController {
 
     private static final Logger logger = LoggerFactory.getLogger(ReporteController.class);
-
-    @Value("${feature.create-reports.enabled}")
-    public boolean createReportsEnabled;
 
     @Autowired
     private ReporteService reporteService;
@@ -53,7 +49,7 @@ public class ReporteController {
     ) {
         logger.info("Intentando crear un nuevo reporte para: {}", nombre);
 
-        if (!createReportsEnabled) {
+        if (!featureToggleService.isCreateReportsEnabled()) {
             logger.warn("Intento de crear reporte mientras el feature toggle está desactivado.");
             return ResponseEntity.status(403).body("La funcionalidad de creación de reportes está deshabilitada.");
         }
