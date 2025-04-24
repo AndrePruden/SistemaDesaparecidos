@@ -3,6 +3,7 @@ package com.trackme.controller;
 import com.trackme.model.Avistamiento;
 import com.trackme.model.PersonaDesaparecida;
 import com.trackme.service.AvistamientoService;
+import com.trackme.service.FeatureToggleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -23,11 +24,15 @@ class AvistamientoControllerTest {
     @Mock
     private AvistamientoService avistamientoService;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     private AutoCloseable closeable;
 
     @BeforeEach
     void setup() {
         closeable = MockitoAnnotations.openMocks(this);
+        when(featureToggleService.isCreateSightingsEnabled()).thenReturn(true);
     }
 
     @Test
@@ -51,6 +56,23 @@ class AvistamientoControllerTest {
         ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento);
 
         assertEquals(400, response.getStatusCodeValue());
+        verify(avistamientoService, never()).crearAvistamiento(any());
+    }
+//Test
+    @Test
+    void crearAvistamiento_DeberiaRetornar403_SiFeatureToggleDesactivado() {
+        when(featureToggleService.isCreateSightingsEnabled()).thenReturn(false);
+
+        Avistamiento avistamiento = new Avistamiento();
+        avistamiento.setEmailUsuario("test@example.com");
+
+        PersonaDesaparecida persona = new PersonaDesaparecida();
+        persona.setIdDesaparecido(1L);
+        avistamiento.setPersonaDesaparecida(persona);
+
+        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento);
+
+        assertEquals(403, response.getStatusCodeValue());
         verify(avistamientoService, never()).crearAvistamiento(any());
     }
 
