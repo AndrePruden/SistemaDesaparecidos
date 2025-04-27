@@ -1,121 +1,67 @@
-/* Fuente general */
-body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #eff7fb, #c7eaff); /* tonos pastel celeste */
-    color: #003459; /* azul pastel fuerte */
-    margin: 0;
-    padding: 0;
-    animation: fadeIn 1.5s ease-in;
-  }
-  
-  /* Contenedor principal */
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
+.form-container {
+    max-width: 600px;
+    margin: 2rem auto;
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.35); /* blanco translúcido pastel */
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px);
+    background: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   }
   
-  /* Título */
-  h2, h1 {
+  .form-container h2 {
     text-align: center;
-    font-family: 'Montserrat', sans-serif;
-    color: #00171F; /* negro azulado pastel */
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    color: #333;
+  }
+  
+  .form-group {
     margin-bottom: 1.5rem;
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 700;
-    border-bottom: 3px solid #00A8E8; /* vivid cerulean */
-    padding-bottom: 0.5rem;
-    display: inline-block;
-    animation: slideDown 1s ease-out;
+    display: flex;
+    flex-direction: column;
   }
   
-  /* Formulario */
-  .formulario-avistamientos {
-    background: linear-gradient(145deg, #e0f7ff, #d0ecf4); /* azules muy suaves */
-    padding: 2.5rem;
-    border-radius: 16px;
-    margin-bottom: 3rem;
-    box-shadow: 8px 8px 16px #bddfee, -8px -8px 16px #f1fcff;
-    border: 1px solid #c5e4f7;
-    animation: fadeInUp 1s ease-out;
-    color: #003459;
-  }
-  
-  .formulario-avistamientos label {
-    display: block;
+  .form-group label {
+    font-weight: bold;
     margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #003459;
+    color: #555;
   }
   
-  input,
-  textarea,
-  select {
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 0.7rem;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: #4caf50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    outline: none;
+  }
+  
+  button[type="submit"] {
     width: 100%;
     padding: 1rem;
-    margin-bottom: 1.5rem;
-    border-radius: 8px;
-    border: 1px solid #a0cde8;
-    background-color: #ffffff;
-    color: #00171F;
-    font-size: 1rem;
-    transition: border-color 0.3s ease, background-color 0.3s ease;
-  }
-  
-  input:focus,
-  textarea:focus,
-  select:focus {
-    border-color: #00A8E8;
-    outline: none;
-    background-color: #f0fbff;
-  }
-  
-  /* Botón */
-  .btn {
-    padding: 0.75rem 1.5rem;
+    background-color: #4caf50;
+    color: white;
     border: none;
-    border-radius: 12px;
-    background: linear-gradient(to right, #007EA7, #00A8E8);
-    color: #ffffff;
-    font-weight: bold;
-    font-size: 1rem;
+    border-radius: 0.7rem;
+    font-size: 1.2rem;
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s;
   }
   
-  .btn:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 168, 232, 0.3);
+  button[type="submit"]:hover {
+    background-color: #45a049;
   }
   
-  /* Responsive */
-  @media (max-width: 768px) {
-    .container {
-      padding: 1rem;
-    }
-  
-    .formulario-avistamientos {
-      padding: 1.5rem;
-    }
-  }
-  
-  /* Animaciones */
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  @keyframes slideDown {
-    from { transform: translateY(-30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-  
-  @keyframes fadeInUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+  button[type="submit"]:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
   }
   
