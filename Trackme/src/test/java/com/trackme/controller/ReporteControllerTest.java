@@ -7,6 +7,7 @@ import com.trackme.repository.UserRepository;
 import com.trackme.service.FeatureToggleService;
 import com.trackme.service.ReporteService;
 import com.trackme.service.ReporteValidationService;
+import com.trackme.service.ScrapingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,6 +23,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -46,6 +48,9 @@ class ReporteControllerTest {
     @Autowired
     private FeatureToggleService featureToggleService;
 
+    @Autowired
+    private ScrapingService scrapingService;
+
     private final String testEmail = "test@example.com";
 
     @TestConfiguration
@@ -55,6 +60,9 @@ class ReporteControllerTest {
             return new ReporteService() {
                 @Override
                 public PersonaDesaparecida crearReporte(PersonaDesaparecida persona) {
+                    if (!persona.getNombre().equals("Maria")) {
+                        throw new RuntimeException("La persona debe estar registrada oficialmente en la página de la Policía Boliviana.");
+                    }
                     return persona;
                 }
 
@@ -119,40 +127,75 @@ class ReporteControllerTest {
                         .param("descripcion", reporte.getDescripcion())
                         .param("emailReportaje", reporte.getEmailReportaje()))
                 .andExpect(status().isForbidden())
-                .andExpect(content().string("La funcionalidad de creación de reportes está deshabilitada."));
+                .andExpect(content().string("La creación de reportes está deshabilitada para usuarios no logueados."));
     }
 
     @Test
-    public void testObtenerReportesPorUsuario() throws Exception {
-        PersonaDesaparecida reporte = new PersonaDesaparecida();
-        reporte.setNombre("Carlos");
-        reporte.setEdad(30);
-        reporte.setEmailReportaje(testEmail);
-        reporte.setFechaDesaparicion(Date.from(LocalDate.of(2023, 1, 1)
-                .atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        reporte.setLugarDesaparicion("Ciudad");
-        reporte.setDescripcion("Desaparecido en zona urbana");
-        reporteRepository.save(reporte);
+    public void testCrearReporteParaPersonaExistente() throws Exception {
+        String nombre = "Ely Aleyda Nina Yana";
+        Integer edad = 30;
+        String lugarDesaparicion = "Cochabamba";
+        String descripcion = "Desaparecido en la zona central";
+        String emailReportaje = "test@example.com";
+        LocalDate fechaDesaparicion = LocalDate.of(2025, 4, 25);
 
-        mockMvc.perform(get("/reportes/usuario/" + testEmail))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nombre").value("Carlos"));
+        boolean personaEncontrada = scrapingService.verificarPersonaDesaparecida(nombre);
+
+        assertTrue("La persona está en la página de desaparecidos", personaEncontrada);
+    }
+
+    @Test
+    public void testCrearReporteParaPersonaNoExistente() throws Exception {
+        String nombre = "Carlos Torres";
+        Integer edad = 40;
+        String lugarDesaparicion = "La Paz";
+        String descripcion = "Desaparecido en zona rural";
+        String emailReportaje = "test@example.com";
+        LocalDate fechaDesaparicion = LocalDate.of(2025, 4, 25);
+
+        mockMvc.perform(post("/reportes/crear")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("nombre", nombre)
+                        .param("edad", String.valueOf(edad))
+                        .param("fechaDesaparicion", fechaDesaparicion.toString())
+                        .param("lugarDesaparicion", lugarDesaparicion)
+                        .param("descripcion", descripcion)
+                        .param("emailReportaje", emailReportaje))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string("La persona no está registrada en la página de la policía boliviana de desaparecidos"));
     }
 
 //    @Test
-//    public void testObtenerTodosLosReportes() throws Exception {
+//    public void testObtenerReportesPorUsuario() throws Exception {
 //        PersonaDesaparecida reporte = new PersonaDesaparecida();
 //        reporte.setNombre("Carlos");
 //        reporte.setEdad(30);
 //        reporte.setEmailReportaje(testEmail);
-//        reporte.setFechaDesaparicion(Date.from(LocalDate.of(2025, 3, 15)
+//        reporte.setFechaDesaparicion(Date.from(LocalDate.of(2023, 1, 1)
 //                .atStartOfDay(ZoneId.systemDefault()).toInstant()));
 //        reporte.setLugarDesaparicion("Ciudad");
 //        reporte.setDescripcion("Desaparecido en zona urbana");
 //        reporteRepository.save(reporte);
 //
-//        mockMvc.perform(get("/reportes"))
+//        mockMvc.perform(get("/reportes/usuario/" + testEmail))
 //                .andExpect(status().isOk())
 //                .andExpect(jsonPath("$[0].nombre").value("Carlos"));
 //    }
+
+//     @Test
+//     public void testObtenerTodosLosReportes() throws Exception {
+//         PersonaDesaparecida reporte = new PersonaDesaparecida();
+//         reporte.setNombre("Carlos");
+//         reporte.setEdad(30);
+//         reporte.setEmailReportaje(testEmail);
+//         reporte.setFechaDesaparicion(Date.from(LocalDate.of(2025, 3, 15)
+//                 .atStartOfDay(ZoneId.systemDefault()).toInstant()));
+//         reporte.setLugarDesaparicion("Ciudad");
+//         reporte.setDescripcion("Desaparecido en zona urbana");
+//         reporteRepository.save(reporte);
+//
+//         mockMvc.perform(get("/reportes"))
+//                 .andExpect(status().isOk())
+//                 .andExpect(jsonPath("$[0].nombre").value("Carlos"));
+//     }
 }

@@ -17,8 +17,18 @@ public class ReporteService {
     @Autowired
     private ReporteRepository reporteRepository;
 
+    @Autowired
+    private ScrapingService scrapingService;
+
     public PersonaDesaparecida crearReporte(PersonaDesaparecida reporte) {
         logger.info("Creando nuevo reporte para: {}", reporte.getNombre());
+        boolean personaRegistrada = scrapingService.verificarPersonaDesaparecida(reporte.getNombre());
+
+        if (!personaRegistrada) {
+            logger.warn("La persona {} no está registrada oficialmente en la página de la Policía Boliviana", reporte.getNombre());
+            throw new RuntimeException("La persona debe estar registrada oficialmente en la página de la Policía Boliviana.");
+        }
+
         return reporteRepository.save(reporte);
     }
 

@@ -4,6 +4,7 @@ import com.trackme.model.PersonaDesaparecida;
 import com.trackme.service.FeatureToggleService;
 import com.trackme.service.ReporteService;
 import com.trackme.service.ReporteValidationService;
+import com.trackme.service.ScrapingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class ReporteController {
     private ReporteService reporteService;
 
     @Autowired
+    private ScrapingService scrapingService;
+
+    @Autowired
     private ReporteValidationService reporteValidationService;
 
     @Autowired
@@ -45,13 +49,19 @@ public class ReporteController {
             @RequestParam("lugarDesaparicion") String lugarDesaparicion,
             @RequestParam("descripcion") String descripcion,
             @RequestParam("emailReportaje") String emailReportaje,
-            @RequestParam(value = "file", required = false) MultipartFile file
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "isLoggedIn", defaultValue = "false") boolean isLoggedIn
     ) {
         logger.info("Intentando crear un nuevo reporte para: {}", nombre);
 
-        if (!featureToggleService.isCreateReportsEnabled()) {
-            logger.warn("Intento de crear reporte mientras el feature toggle está desactivado.");
-            return ResponseEntity.status(403).body("La funcionalidad de creación de reportes está deshabilitada.");
+        if (!isLoggedIn && !featureToggleService.isCreateReportsEnabled()) {
+            logger.warn("Intento de crear reporte por usuario no logueado mientras el feature toggle está desactivado.");
+            return ResponseEntity.status(403).body("La creación de reportes está deshabilitada para usuarios no logueados.");
+        }
+
+        if (!scrapingService.verificarPersonaDesaparecida(nombre)) {
+            logger.warn("La persona {} no está registrada oficialmente en la página de la Policía Boliviana", nombre);
+            return ResponseEntity.status(403).body("La persona no está registrada en la página de la policía boliviana de desaparecidos");
         }
 
         PersonaDesaparecida reporte = new PersonaDesaparecida();
