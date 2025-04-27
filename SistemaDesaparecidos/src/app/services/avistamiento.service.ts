@@ -2,41 +2,27 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface Avistamiento {
-  idAvistamiento: number;
-  fecha: string;
-  lugar: string;
-  descripcion: string;
-  personaDesaparecida: any;
-  emailUsuario: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })
 export class AvistamientoService {
-  private apiUrl = 'http://localhost:8080/avistamientos';
+  private baseUrl = 'http://localhost:8080/avistamientos';
 
   constructor(private http: HttpClient) {}
 
-  // Ya existentes
-  obtenerTodos(): Observable<Avistamiento[]> {
-    return this.http.get<Avistamiento[]>(`${this.apiUrl}/todos`);
+  crearAvistamiento(avistamiento: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/crear`, avistamiento);
   }
 
-  crear(avistamiento: Avistamiento): Observable<Avistamiento> {
-    return this.http.post<Avistamiento>(`${this.apiUrl}/crear`, avistamiento);
+  obtenerAvistamientosPorUsuario(email: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/usuario/${email}`);
   }
 
-  obtenerPorUsuario(email: string): Observable<Avistamiento[]> {
-    return this.http.get<Avistamiento[]>(`${this.apiUrl}/usuario/${email}`);
+  obtenerAvistamientosPorReporte(id: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/reporte/${id}`);
   }
 
-  obtenerPorReporte(idReporte: number): Observable<Avistamiento[]> {
-    return this.http.get<Avistamiento[]>(`${this.apiUrl}/reporte/${idReporte}`);
-  }
-
-  obtenerUltimoAvistamiento(idReporte: number): Observable<Avistamiento> {
-    return this.http.get<Avistamiento>(`${this.apiUrl}/ultimo/${idReporte}`);
+  obtenerUltimoAvistamiento(idReporte: number): Observable<any> {
+    return this.http.get<any[]>(`${this.baseUrl}/ultimo/${idReporte}`);
   }
 }
