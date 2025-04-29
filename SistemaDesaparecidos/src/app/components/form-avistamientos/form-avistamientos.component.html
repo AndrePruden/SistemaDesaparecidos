@@ -1,1 +1,58 @@
-<h1>FORMULARIO AVISTAMIENTOS</h1>
+<div class="form-container">
+    <h2>📍 Registrar Avistamiento</h2>
+  
+    <form (ngSubmit)="crearAvistamiento()" #avistamientoForm="ngForm">
+      <div class="form-group">
+        <label for="fecha">📅 Fecha del avistamiento</label>
+        <input
+          type="date"
+          id="fecha"
+          name="fecha"
+          [(ngModel)]="nuevoAvistamiento.fecha"
+          required
+        />
+      </div>
+  
+      <div class="form-group">
+        <label for="lugar">🌍 Lugar del avistamiento</label>
+        <input
+          type="text"
+          id="lugar"
+          name="lugar"
+          [(ngModel)]="nuevoAvistamiento.lugar"
+          placeholder="Ej. Plaza Central, Ciudad"
+          required
+        />
+      </div>
+  
+      <div class="form-group">
+        <label for="descripcion">📝 Descripción</label>
+        <textarea
+          id="descripcion"
+          name="descripcion"
+          [(ngModel)]="nuevoAvistamiento.descripcion"
+          placeholder="Describe lo que viste..."
+          rows="4"
+        ></textarea>
+      </div>
+  
+      <div class="form-group">
+        <label for="personaDesaparecida">🆔 Seleccionar Reporte</label>
+        <select
+          id="personaDesaparecida"
+          name="personaDesaparecida"
+          [(ngModel)]="nuevoAvistamiento.personaDesaparecida.idDesaparecido"
+          required
+        >
+          <option *ngFor="let reporte of reportes" [value]="reporte.idDesaparecido">
+            {{ reporte.nombre }} - {{ reporte.lugar }} - {{ reporte.fecha }}
+          </option>
+        </select>
+      </div>
+  
+      <button type="submit" [disabled]="!avistamientoForm.form.valid">
+        🚀 Enviar Avistamiento
+      </button>
+    </form>
+  </div>
+  
