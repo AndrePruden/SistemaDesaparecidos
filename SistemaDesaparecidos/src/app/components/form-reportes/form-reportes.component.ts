@@ -22,7 +22,6 @@ export class FormReportesComponent {
 
   selectedFile: File | null = null;
   imagenPreview: string | ArrayBuffer | null = null;
-  mensaje: string = '';
 
   constructor(
     private reportesService: ReportesService,
@@ -31,7 +30,7 @@ export class FormReportesComponent {
     console.log('📄 FormReportesComponent inicializado');
   }
 
-  onFileSelected(event: any): void {
+  onFileSelected(event: any): void { 
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = file;
@@ -94,6 +93,14 @@ export class FormReportesComponent {
             },
             error: error => {
               console.error('❌ Error al crear el reporte:', error);
+
+              const errorMsg = error?.error;
+              
+              if (typeof errorMsg === 'string' && errorMsg.includes("La persona no está registrada en la página de la policía boliviana de desaparecidos.")) {
+                alert('❌ No se puede crear el reporte: la persona debe estar registrada oficialmente en la página de la Policía Boliviana de Desaparecidos.');
+              } else {
+                alert('❌ Ocurrió un error al crear el reporte. Por favor, intenta nuevamente.');
+              }
             }
           });
         } else {
