@@ -30,5 +30,10 @@ export class ReportesService {
 
   getAvistamientosPorReporte(id: number) {
     return this.http.get<any[]>(`${this.baseUrl}/reporte/${id}`);
-  }  
+  }
+
+  // 🆕 NUEVO método para guardar avistamientos
+  crearAvistamiento(avistamiento: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/avistamientos/crear`, avistamiento);
+  }
 }
