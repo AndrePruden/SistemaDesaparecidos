@@ -2,12 +2,14 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuarioService } from '../../services/usuario.service';
-import { RouterLink } from '@angular/router';
+import { HeaderComponent } from '../header/header.component';
+import { FooterComponent } from '../footer/footer.component';
+
 
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink], 
+  imports: [CommonModule, FormsModule,HeaderComponent,FooterComponent], 
   templateUrl: './registro.component.html',
   styleUrls: ['./registro.component.scss'],
 })
@@ -15,8 +17,12 @@ export class RegistroComponent {
   usuario = { nombre: '', email: '', password: '' };
   mensaje: string = '';
   mensajeError: string = '';
+  mostrarPassword: boolean = false; 
 
   constructor(private usuarioService: UsuarioService) {}
+  togglePasswordVisibility(): void {
+    this.mostrarPassword = !this.mostrarPassword;
+  }
 
   private emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
