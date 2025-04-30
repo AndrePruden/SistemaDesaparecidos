@@ -18,6 +18,11 @@ export class AvistamientoService {
     return this.http.get<any[]>(`${this.baseUrl}/usuario/${email}`);
   }
 
+  obtenerTodosLosAvistamientos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/todos`);
+  }
+  
+
   obtenerAvistamientosPorReporte(id: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/reporte/${id}`);
   }
