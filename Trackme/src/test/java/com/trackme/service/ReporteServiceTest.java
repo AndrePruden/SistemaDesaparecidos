@@ -40,19 +40,19 @@ class ReporteServiceTest {
         reporte.setDescripcion("Descripción del caso");  // Agrega una descripción
     }
 
-//    @Test
-//    void testCrearReporte() {
-//        when(reporteRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporte);
-//        PersonaDesaparecida result = reporteService.crearReporte(reporte);
-//
-//        assertNotNull(result);
-//        assertEquals(reporte.getIdDesaparecido(), result.getIdDesaparecido());
-//        assertEquals(reporte.getNombre(), result.getNombre());
-//        assertEquals(reporte.getEdad(), result.getEdad());
-//        assertNotNull(result.getFechaDesaparicion());
-//        assertEquals(reporte.getLugarDesaparicion(), result.getLugarDesaparicion());
-//        assertEquals(reporte.getDescripcion(), result.getDescripcion());
-//    }
+    @Test
+    void testCrearReporte() {
+        when(reporteRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporte);
+        PersonaDesaparecida result = reporteService.crearReporte(reporte);
+
+        assertNotNull(result);
+        assertEquals(reporte.getIdDesaparecido(), result.getIdDesaparecido());
+        assertEquals(reporte.getNombre(), result.getNombre());
+        assertEquals(reporte.getEdad(), result.getEdad());
+        assertNotNull(result.getFechaDesaparicion());
+        assertEquals(reporte.getLugarDesaparicion(), result.getLugarDesaparicion());
+        assertEquals(reporte.getDescripcion(), result.getDescripcion());
+    }
 
     @Test
     void testObtenerReportesPorEmail() {
@@ -75,20 +75,20 @@ class ReporteServiceTest {
         assertTrue(result.isEmpty(), "La lista debe estar vacía si no hay reportes en el sistema");
     }
 
-//    @Test
-//    void testCrearReporte_CamposNulos() {
-//    PersonaDesaparecida reporteParcial = new PersonaDesaparecida();
-//    when(reporteRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporteParcial);
-//
-//    PersonaDesaparecida result = reporteService.crearReporte(reporteParcial);
-//
-//    assertNotNull(result);
-//    assertNull(result.getNombre());
-//    assertNull(result.getEmailReportaje());
-//    assertNull(result.getFechaDesaparicion());
-//    assertNull(result.getLugarDesaparicion());
-//    assertNull(result.getDescripcion());
-//    }
+    @Test
+    void testCrearReporte_CamposNulos() {
+    PersonaDesaparecida reporteParcial = new PersonaDesaparecida(); 
+    when(reporteRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporteParcial);
+
+    PersonaDesaparecida result = reporteService.crearReporte(reporteParcial);
+
+    assertNotNull(result);
+    assertNull(result.getNombre());
+    assertNull(result.getEmailReportaje());
+    assertNull(result.getFechaDesaparicion());
+    assertNull(result.getLugarDesaparicion());
+    assertNull(result.getDescripcion());
+    }
 
     @Test
     void testObtenerTodosLosReportes() {
@@ -113,13 +113,13 @@ class ReporteServiceTest {
     verify(reporteRepository, times(1))
         .findByEmailReportaje("noexist@example.com");
     }
-//    @Test
-//    void testCrearReporte_FechaNoNula() {
-//        when(reporteRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporte);
-//
-//        PersonaDesaparecida resultado = reporteService.crearReporte(reporte);
-//
-//        assertNotNull(resultado.getFechaDesaparicion());  // Verificar que la fecha no es nula
-//        assertTrue(resultado.getFechaDesaparicion() instanceof Date);  // Verificar que es tipo Date
-//    }
+    @Test
+    void testCrearReporte_FechaNoNula() {
+        when(reporteRepository.save(any(PersonaDesaparecida.class))).thenReturn(reporte);
+        
+        PersonaDesaparecida resultado = reporteService.crearReporte(reporte);
+        
+        assertNotNull(resultado.getFechaDesaparicion());  // Verificar que la fecha no es nula
+        assertTrue(resultado.getFechaDesaparicion() instanceof Date);  // Verificar que es tipo Date
+    }
 }
