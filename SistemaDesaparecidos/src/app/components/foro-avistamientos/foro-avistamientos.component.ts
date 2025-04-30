@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router'; // Importar ActivatedRoute
 import { AvistamientoService } from '../../services/avistamiento.service';
 
 @Component({
@@ -12,15 +13,18 @@ import { AvistamientoService } from '../../services/avistamiento.service';
 export class ForoAvistamientosComponent implements OnInit {
   avistamientos: any[] = [];
   mensaje: string = '';
+  idReporte!: number;
 
-  constructor(private avistamientosService: AvistamientoService) {}
+  constructor(private avistamientosService: AvistamientoService , private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    this.idReporte = +this.route.snapshot.paramMap.get('id')!;
+    console.log('ID del reporte:', this.idReporte);
     this.cargarAvistamientos();
   }
 
   cargarAvistamientos(): void {
-    const idReporte = 1; // Replace with the appropriate idReporte value
+    const idReporte = 1; 
     this.avistamientosService.obtenerTodosLosAvistamientos().subscribe({
       next: (data) => {
         this.avistamientos = data;

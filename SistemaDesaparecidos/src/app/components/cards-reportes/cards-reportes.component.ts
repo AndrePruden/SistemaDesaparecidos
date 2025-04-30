@@ -6,11 +6,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { isPlatformBrowser } from '@angular/common';
 import { AvistamientoService } from '../../services/avistamiento.service';
+import { RouterModule } from '@angular/router'; // Asegúrate de importar RouterModule aquí
+
 
 @Component({
   selector: 'app-cards-reportes',
   templateUrl: './cards-reportes.component.html',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,RouterModule],
   styleUrls: ['./cards-reportes.component.scss']
 })
 export class CardsReportesComponent implements OnInit {
@@ -86,4 +88,7 @@ export class CardsReportesComponent implements OnInit {
     console.log('[POPUP] Cerrando popup del reporte:', reporte.idDesaparecido);
     reporte.mostrarPopup = false;
   }
+
+
+
 }

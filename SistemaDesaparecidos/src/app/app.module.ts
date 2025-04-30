@@ -12,6 +12,7 @@ import { CarouselComponent } from './components/carousel/carousel.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { CardsReportesComponent } from './components/cards-reportes/cards-reportes.component';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router'; // Asegúrate de tener esta línea
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { CommonModule } from '@angular/common';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    CommonModule
+    CommonModule,
+    RouterModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -22,6 +22,13 @@
           <p><strong>Lugar:</strong> {{ reporte.lugarDesaparicion }}</p>
           <p class="descripcion-recortada"><strong>Descripción:</strong> {{ reporte.descripcion }}</p>
         </div>
+
+<!-- Botón que usa routerLink -->
+<button [routerLink]="['/foro-avistamientos', reporte.idDesaparecido]" class="btn-foro">
+  Ver Foro
+</button>
+
+
         <button class="btn-popup" (click)="mostrarPopup(reporte)">+</button>
         <div *ngIf="reporte.mostrarPopup" class="popup">
           <div class="popup-content">
