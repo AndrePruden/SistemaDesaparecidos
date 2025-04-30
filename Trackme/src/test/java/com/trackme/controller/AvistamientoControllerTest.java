@@ -42,7 +42,7 @@ class AvistamientoControllerTest {
         persona.setIdDesaparecido(1L);
         avistamiento.setPersonaDesaparecida(persona);
 
-        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, true);
+        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento);
 
         assertEquals(400, response.getStatusCodeValue());
         verify(avistamientoService, never()).crearAvistamiento(any());
@@ -53,14 +53,14 @@ class AvistamientoControllerTest {
         Avistamiento avistamiento = new Avistamiento();
         avistamiento.setEmailUsuario("test@example.com");
 
-        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, true);
+        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento);
 
         assertEquals(400, response.getStatusCodeValue());
         verify(avistamientoService, never()).crearAvistamiento(any());
     }
 //Test
     @Test
-    void crearAvistamiento_DeberiaRetornar403_SiFeatureToggleDesactivadoYNoLogueado() {
+    void crearAvistamiento_DeberiaRetornar403_SiFeatureToggleDesactivado() {
         when(featureToggleService.isCreateSightingsEnabled()).thenReturn(false);
 
         Avistamiento avistamiento = new Avistamiento();
@@ -70,33 +70,10 @@ class AvistamientoControllerTest {
         persona.setIdDesaparecido(1L);
         avistamiento.setPersonaDesaparecida(persona);
 
-        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, false);
+        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento);
 
         assertEquals(403, response.getStatusCodeValue());
         verify(avistamientoService, never()).crearAvistamiento(any());
-    }
-
-    @Test
-    void crearAvistamiento_DeberiaCrearAvistamientoSiLogueadoOFeatureToggleActivado() {
-        Avistamiento avistamiento = new Avistamiento();
-        avistamiento.setEmailUsuario("test@example.com");
-
-        PersonaDesaparecida persona = new PersonaDesaparecida();
-        persona.setIdDesaparecido(1L);
-        avistamiento.setPersonaDesaparecida(persona);
-
-        when(avistamientoService.crearAvistamiento(any())).thenAnswer(i -> i.getArgument(0));
-
-        // Caso 1: Usuario logueado
-        ResponseEntity<Avistamiento> responseLoggedIn = controller.crearAvistamiento(avistamiento, true);
-        assertEquals(200, responseLoggedIn.getStatusCodeValue());
-        verify(avistamientoService, times(1)).crearAvistamiento(any());
-
-        // Caso 2: Usuario no logueado pero feature toggle activado
-        when(featureToggleService.isCreateSightingsEnabled()).thenReturn(true);
-        ResponseEntity<Avistamiento> responseNotLoggedIn = controller.crearAvistamiento(avistamiento, false);
-        assertEquals(200, responseNotLoggedIn.getStatusCodeValue());
-        verify(avistamientoService, times(2)).crearAvistamiento(any());
     }
 
     @Test
@@ -110,7 +87,7 @@ class AvistamientoControllerTest {
 
         when(avistamientoService.crearAvistamiento(any())).thenAnswer(i -> i.getArgument(0));
 
-        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, true);
+        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento);
 
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody().getFecha());
@@ -130,7 +107,7 @@ class AvistamientoControllerTest {
 
         when(avistamientoService.crearAvistamiento(any())).thenAnswer(i -> i.getArgument(0));
 
-        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, true);
+        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento);
 
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(fecha, response.getBody().getFecha());

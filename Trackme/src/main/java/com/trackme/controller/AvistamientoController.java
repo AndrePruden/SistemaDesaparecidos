@@ -26,14 +26,11 @@ public class AvistamientoController {
     private FeatureToggleService featureToggleService;
 
     @PostMapping("/crear")
-    public ResponseEntity<Avistamiento> crearAvistamiento(
-            @RequestBody Avistamiento avistamiento,
-            @RequestParam(value = "isLoggedIn", defaultValue = "false") boolean isLoggedIn
-        ) {
+    public ResponseEntity<Avistamiento> crearAvistamiento(@RequestBody Avistamiento avistamiento) {
         logger.info("Solicitud para crear avistamiento: {}", avistamiento);
 
-        if (!isLoggedIn && !featureToggleService.isCreateSightingsEnabled()) {
-            logger.warn("Avistamiento inválido recibido por usuario no logueado mientras el feature toggle está desactivado.");
+        if (!featureToggleService.isCreateSightingsEnabled()) {
+            logger.warn("Avistamiento inválido recibido: {}", avistamiento);
             return ResponseEntity.status(403).body(null);
         }
 
