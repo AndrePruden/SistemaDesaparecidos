@@ -24,6 +24,11 @@ export class FormAvistamientosComponent implements OnInit {
   reportes: any[] = [];
   mensaje: string = '';
 
+  // Nuevas propiedades para el mapa
+  leaflet: any;
+  mapa: any;
+  marcador: any;
+
   constructor(
     private avistamientosService: AvistamientoService,
     private reportesService: ReportesService
@@ -31,6 +36,45 @@ export class FormAvistamientosComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarReportes();
+    this.cargarMapa();
+  }
+
+  cargarMapa(): void {
+    // Cargar el módulo de Leaflet
+    import('leaflet').then((leafletModule) => {
+      this.leaflet = leafletModule;
+      this.mapa = this.leaflet.map('mapaAvistamiento').setView([-17.3935, -66.1570], 13);
+
+      // Cargar las capas del mapa
+      this.leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(this.mapa);
+
+      // Crear un ícono para el marcador
+      const iconoMarcador = this.leaflet.icon({
+        iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png',
+        shadowSize: [41, 41]
+      });
+
+      // Evento de clic en el mapa
+      this.mapa.on('click', (e: any) => {
+        const latlng = e.latlng;
+        this.nuevoAvistamiento.lugar = `${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
+
+        // Si ya hay marcador, lo eliminamos
+        if (this.marcador) {
+          this.mapa.removeLayer(this.marcador);
+        }
+
+        // Añadir un nuevo marcador con el ícono personalizado
+        this.marcador = this.leaflet.marker(latlng, { icon: iconoMarcador }).addTo(this.mapa);
+        console.log('📍 Coordenadas seleccionadas:', this.nuevoAvistamiento.lugar);
+      });
+    });
   }
 
   cargarReportes(): void {
@@ -69,7 +113,7 @@ export class FormAvistamientosComponent implements OnInit {
       ubicacion: this.nuevoAvistamiento.lugar,
       descripcion: this.nuevoAvistamiento.descripcion
     };
-  
+    console.log('Ubicación guardada:', this.nuevoAvistamiento.lugar);
     console.log('Enviando avistamiento:', avistamientoData);
   
     this.avistamientosService.crearAvistamiento(avistamientoData).subscribe({
