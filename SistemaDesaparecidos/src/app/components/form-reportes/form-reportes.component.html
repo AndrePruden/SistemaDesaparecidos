@@ -16,8 +16,11 @@
   
     <div class="input-field">
       <label for="lugarDesaparicion">Lugar de desaparición *</label>
-      <input type="text" [(ngModel)]="nuevoReporte.lugarDesaparicion" name="lugarDesaparicion" id="lugarDesaparicion" placeholder="Ej. Plaza Colón, Cochabamba" required />
+      <!-- No hay un campo de texto, solo el mapa interactivo -->
     </div>
+    
+    <!-- Mapa siempre visible y interactivo -->
+    <div id="mapa" style="height: 300px; margin-bottom: 1em;"></div>
   
     <div class="input-field">
       <label for="descripcion">Descripción</label>
