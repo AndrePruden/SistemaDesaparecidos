@@ -13,6 +13,9 @@ import { FooterComponent } from './components/footer/footer.component';
 import { CardsReportesComponent } from './components/cards-reportes/cards-reportes.component';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router'; // Asegúrate de tener esta línea
+import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { faMapMarkedAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
+
 
 @NgModule({
   declarations: [
@@ -20,18 +23,25 @@ import { RouterModule } from '@angular/router'; // Asegúrate de tener esta lín
     HomeComponent,
     CarouselComponent,
     FooterComponent,
-    CardsReportesComponent
+    CardsReportesComponent,
+    FontAwesomeModule
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     CommonModule,
-    RouterModule
+    RouterModule,
+    FontAwesomeModule 
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(library: FaIconLibrary) {
+    // Añade los iconos que necesites a la librería
+    library.addIcons(faMapMarkedAlt, faTimes);
+  }
+ }
 
 export const appConfig: ApplicationConfig = {
   providers: [
