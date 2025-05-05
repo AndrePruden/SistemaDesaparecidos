@@ -13,8 +13,9 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
   avistamientos: any[] = [];
   mensaje: string = '';
   avistamientoSeleccionado: any = null;
-  mapa: any = null;
   coordenadasValidas: boolean = false;
+  private leaflet: any;
+  private mapa: any;
 
   constructor(
     private avistamientoService: AvistamientoService,
@@ -34,7 +35,6 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
       next: (data) => {
         console.log('Avistamientos recibidos:', data);
         this.avistamientos = data.map(avistamiento => {
-          // Asegurarnos de que la ubicación esté en el formato correcto
           return {
             ...avistamiento,
             ubicacion: avistamiento.ubicacion || avistamiento.lugar || 'Coordenadas no disponibles'
@@ -56,60 +56,108 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
     this.avistamientoSeleccionado = avistamiento;
     this.coordenadasValidas = false;
     
-    // Esperar a que el DOM se actualice
-    setTimeout(async () => {
-      if (isPlatformBrowser(this.platformId)) {
-        const L = await import('leaflet');
-        const divMapa = document.getElementById('mapaAvistamiento');
-  
-        if (divMapa) {
-          this.limpiarMapa();
-          divMapa.innerHTML = ''; // Limpiar cualquier contenido previo
-          
-          // Normalizar el campo de ubicación (puede venir como 'ubicacion' o 'lugar')
-          const ubicacion = avistamiento.ubicacion || avistamiento.lugar || '';
-          const coords = this.parsearCoordenadas(ubicacion);
-          
-          if (coords) {
-            this.coordenadasValidas = true;
-            this.inicializarMapa(L, divMapa, coords, avistamiento);
-          } else {
-            this.mostrarMensajeSinCoordenadas(divMapa);
-          }
+    // Esperar a que Angular actualice la vista
+    await new Promise(resolve => setTimeout(resolve, 0));
+    
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        // Cargar Leaflet solo si no está cargado
+        if (!this.leaflet) {
+          this.leaflet = await import('leaflet');
+          // Configurar iconos por defecto
+          this.leaflet.Icon.Default.mergeOptions({
+            iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png'
+          });
         }
+        
+        await this.inicializarMapa(this.leaflet, avistamiento);
+      } catch (error) {
+        console.error('Error al cargar Leaflet:', error);
+        this.mostrarMensajeError();
       }
-    }, 0);
+    }
+  }
+  
+  private async inicializarMapa(L: any, avistamiento: any) {
+    const divMapa = document.getElementById('mapaAvistamiento');
+    
+    if (!divMapa) {
+      console.error('Elemento del mapa no encontrado');
+      return;
+    }
+    
+    // Limpiar cualquier contenido previo
+    this.limpiarMapa();
+    divMapa.innerHTML = '';
+    divMapa.style.height = '400px';
+    divMapa.style.width = '100%';
+    
+    // Limpiar mapa existente
+    if ((divMapa as any)._leaflet_map) {
+      (divMapa as any)._leaflet_map.remove();
+    }
+        
+    // Normalizar coordenadas
+    const ubicacion = avistamiento.ubicacion || avistamiento.lugar || '';
+    const coords = this.parsearCoordenadas(ubicacion);
+    
+    if (coords) {
+      this.coordenadasValidas = true;
+      
+      try {
+        // Crear nuevo mapa
+        this.mapa = L.map(divMapa).setView(coords, 15);
+        
+        // Capa base
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors',
+          maxZoom: 19
+        }).addTo(this.mapa);
+        
+        // Marcador
+        L.marker(coords)
+          .addTo(this.mapa)
+          .bindPopup(`
+            <b>${avistamiento.personaDesaparecida?.nombre || 'Desconocido'}</b><br>
+            <b>Fecha:</b> ${new Date(avistamiento.fecha).toLocaleDateString()}<br>
+            <b>Coordenadas:</b> ${coords[0].toFixed(6)}, ${coords[1].toFixed(6)}
+          `)
+          .openPopup();
+        
+        // Forzar redimensionamiento
+        setTimeout(() => {
+          this.mapa.invalidateSize();
+        }, 100);
+      } catch (error) {
+        console.error('Error al inicializar mapa:', error);
+        this.mostrarMensajeError(divMapa);
+      }
+    } else {
+      this.mostrarMensajeSinCoordenadas(divMapa);
+    }
   }
 
-  inicializarMapa(L: any, divMapa: HTMLElement, coords: [number, number], avistamiento: any) {
-    this.mapa = L.map(divMapa).setView(coords, 15);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(this.mapa);
-
-    const customIcon = L.icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34]
-    });
-
-    L.marker(coords, { icon: customIcon }).addTo(this.mapa)
-      .bindPopup(`<b>${avistamiento.personaDesaparecida?.nombre || 'Desconocido'}</b><br>
-                  <b>Fecha:</b> ${new Date(avistamiento.fecha).toLocaleDateString()}<br>
-                  <b>Lugar:</b> ${avistamiento.ubicacion || avistamiento.lugar || 'Coordenadas no disponibles'}<br>
-                  <b>Descripción:</b> ${avistamiento.descripcion || 'No hay descripción disponible'}`);
+  private mostrarMensajeError(divMapa?: HTMLElement) {
+    const container = divMapa || document.getElementById('mapaAvistamiento');
+    if (container) {
+      container.innerHTML = `
+        <div class="map-error-message">
+          <i class="error-icon">❌</i>
+          <p>Error al cargar el mapa</p>
+        </div>
+      `;
+    }
   }
 
-  mostrarMensajeSinCoordenadas(divMapa: HTMLElement) {
+  private mostrarMensajeSinCoordenadas(divMapa: HTMLElement) {
     divMapa.innerHTML = `
       <div class="no-coords-message">
         <i class="icono-advertencia">⚠️</i>
         <p>No hay coordenadas disponibles para mostrar el mapa</p>
       </div>
     `;
-    divMapa.classList.add('no-coords');
   }
 
   parsearCoordenadas(coordenadasStr: string): [number, number] | null {
@@ -134,10 +182,18 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
   }
 
   limpiarMapa(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+  
     if (this.mapa) {
       this.mapa.off();
       this.mapa.remove();
       this.mapa = null;
+    }
+    
+    // Limpiar también el contenedor del DOM
+    const divMapa = document.getElementById('mapaAvistamiento');
+    if (divMapa) {
+      divMapa.innerHTML = '';
     }
   }
 
