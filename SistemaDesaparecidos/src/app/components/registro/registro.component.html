@@ -1,7 +1,7 @@
+<app-header></app-header>
 <div class="container">
   <div class="forms">
     <div class="form signup">
-      <i class="uil uil-home home-icon" routerLink="/"></i>
       <span class="title">Registro de Usuario</span>
       <form (ngSubmit)="onSubmit()">
         <div class="input-field">
@@ -29,7 +29,7 @@
         </div>
         <div class="input-field">
           <input
-            type="password"
+            [type]="mostrarPassword ? 'text' : 'password'"
             id="password"
             [(ngModel)]="usuario.password"
             name="password"
@@ -37,7 +37,11 @@
             required
           />
           <i class="uil uil-lock icon"></i>
-          <i class="uil uil-eye-slash showHidePw"></i>
+          <i
+            class="uil"
+            [ngClass]="mostrarPassword ? 'uil-eye' : 'uil-eye-slash'"
+            (click)="togglePasswordVisibility()"
+          ></i>
         </div>
         <small class="text-muted">
           La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial.
@@ -51,3 +55,4 @@
     </div>
   </div>
 </div>
+<app-footer></app-footer>
