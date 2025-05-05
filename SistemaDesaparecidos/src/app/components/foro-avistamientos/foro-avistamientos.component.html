@@ -1,1 +1,35 @@
-<h1>FORO DE AVISTAMIENTOS</h1>
+<div class="foro-container">
+  <h2>📌 Avistamientos Reportados</h2>
+
+  <p *ngIf="mensaje" class="error">{{ mensaje }}</p>
+
+  <div *ngIf="avistamientos.length === 0 && !mensaje" class="sin-avistamientos">
+    <p>No hay avistamientos reportados aún.</p>
+  </div>
+
+  <div *ngFor="let avistamiento of avistamientos" class="avistamiento-card">
+    <h3>{{ avistamiento.personaDesaparecida?.nombre || 'Desconocido' }}</h3>
+    <p><strong>Lugar:</strong> {{ avistamiento.ubicacion }}</p>
+    <p><strong>Fecha:</strong> {{ avistamiento.fecha | date:'mediumDate' }}</p>
+    <p><strong>Descripción:</strong> {{ avistamiento.descripcion || 'No hay descripción disponible' }}</p>
+    
+    <button class="btn-mapa" (click)="mostrarMapa(avistamiento)">📍 Ver Mapa</button>
+  </div>
+
+  <!-- Popup del Mapa -->
+  <div *ngIf="avistamientoSeleccionado" class="popup">
+    <div class="popup-content">
+      <div class="popup-left">
+        <h3>{{ avistamientoSeleccionado.personaDesaparecida?.nombre || 'Desconocido' }}</h3>
+        <p><strong>Fecha:</strong> {{ avistamientoSeleccionado.fecha | date:'medium' }}</p>
+        <p><strong>Lugar:</strong> {{ avistamientoSeleccionado.ubicacion }}</p>
+        <p><strong>Descripción:</strong> {{ avistamientoSeleccionado.descripcion || 'No hay descripción disponible' }}</p>
+      </div>
+      
+      <div class="popup-right">
+        <div class="mapa-popup" id="mapaAvistamiento"></div>
+      </div>
+    </div>
+    <button class="cerrar-btn" (click)="cerrarMapa()">✕ Cerrar</button>
+  </div>
+</div>

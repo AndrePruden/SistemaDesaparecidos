@@ -26,7 +26,7 @@
 }
 
 .lista-reportes {
-  background-color: #ffffff; // Igual que filtros
+  background-color: #ffffff;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
@@ -50,7 +50,7 @@
   box-shadow: 0 6px 12px rgba(0,126,167,0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   scroll-snap-align: start;
-  margin-right: 0.5rem; // Espacio adicional entre cards
+  margin-right: 0.5rem;
 }
 
 .card-reporte:hover {
@@ -139,69 +139,189 @@
   background-color: #005f7f;
 }
 
-/* Estilo para el pop-up */
 .popup {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 200px;
-  padding: 10px;
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease;
-  animation: slideUp 0.5s ease-out;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .popup-content {
+  background-color: white;
+  width: 80%;
+  max-width: 1000px;
+  max-height: 80vh;
+  border-radius: 12px;
+  overflow: hidden;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
 }
 
 .popup-left {
   flex: 1;
-  padding-right: 10px;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.popup-left h3 {
+  margin-top: 0;
+  color: #003459;
+  font-size: 1.5rem;
 }
 
 .popup-left p {
-  margin: 2px 0;
-  font-size: 13px;
+  margin: 0.75rem 0;
+  line-height: 1.6;
+}
+
+.popup-left strong {
+  color: #003459;
+}
+
+.ultimo-avistamiento {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.ultimo-avistamiento h4 {
+  margin: 0 0 1rem 0;
+  color: #007EA7;
 }
 
 .popup-right {
-  flex-shrink: 0;
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+  padding: 2rem;
 }
 
-.popup-right img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
+.mapa-popup {
+  height: 100%;
+  min-height: 400px;
+  width: 100%;
   border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #fff;
 }
 
-.popup button {
+.mapa-leyenda {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.leyenda-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+.leyenda-color.rojo {
+  background-color: #e74c3c;
+}
+
+.leyenda-color.azul {
+  background-color: #3498db;
+}
+
+.cerrar-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.cerrar-btn:hover {
+  transform: scale(1.2);
+  color: #007EA7;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+.btn-foro {
+  flex: 1;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-foro:hover {
+  background-color: #218838;
+}
+
+.btn-refrescar {
+  margin-top: 1rem;
   background-color: #007EA7;
   color: white;
   border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.popup button:hover {
+.btn-refrescar:hover {
   background-color: #005f7f;
 }
 
-/* Animación para que el pop-up se deslice hacia arriba */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @keyframes slideUp {
-  0% {
-    transform: translateY(10px);
-    opacity: 0;
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .popup-content {
+    flex-direction: column;
+    width: 95%;
+    max-height: 90vh;
   }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
+  
+  .popup-right {
+    min-height: 300px;
+  }
+  
+  .mapa-popup {
+    min-height: 300px;
   }
 }

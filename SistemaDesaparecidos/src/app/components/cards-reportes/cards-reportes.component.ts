@@ -6,11 +6,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { isPlatformBrowser } from '@angular/common';
 import { AvistamientoService } from '../../services/avistamiento.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-cards-reportes',
   templateUrl: './cards-reportes.component.html',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   styleUrls: ['./cards-reportes.component.scss']
 })
 export class CardsReportesComponent implements OnInit {
@@ -20,9 +21,13 @@ export class CardsReportesComponent implements OnInit {
   edadBusqueda: number | null = null;
   lugarBusqueda: string = '';
   fechaBusqueda: string = '';
+  mapas: any = {};
+  reporteSeleccionado: any = null;
 
-  constructor(private reportesService: ReportesService,
-    private avistamientoService: AvistamientoService
+  constructor(
+    private reportesService: ReportesService,
+    private avistamientoService: AvistamientoService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
@@ -71,19 +76,92 @@ export class CardsReportesComponent implements OnInit {
     this.filtrarReportes(); 
   }
 
-  mostrarPopup(reporte: any) {
+  async mostrarPopup(reporte: any) {
     console.log('[POPUP] Solicitando último avistamiento para el reporte:', reporte.idDesaparecido);
+  
     this.avistamientoService.obtenerUltimoAvistamiento(reporte.idDesaparecido).subscribe(avistamiento => {
       console.log('[POPUP] Último avistamiento recibido:', avistamiento);
-      reporte.ultimoAvistamiento = avistamiento;
-      reporte.mostrarPopup = true;
+      
+      this.reporteSeleccionado = {...reporte};
+      this.reporteSeleccionado.ultimoAvistamiento = avistamiento;
+  
+      const desaparicionCoords = this.parsearCoordenadas(reporte.lugarDesaparicion);
+      
+      setTimeout(async () => {
+        if (isPlatformBrowser(this.platformId)) {
+          const L = await import('leaflet');
+          const mapaId = 'mapaPopup-' + this.reporteSeleccionado.idDesaparecido;
+          const divMapa = document.getElementById(mapaId);
+  
+          if (divMapa) {
+            if (this.mapas[mapaId]) {
+              this.mapas[mapaId].remove();
+            }
+            
+            const mapa = L.map(mapaId, {
+              center: desaparicionCoords || [0, 0],
+              zoom: 13
+            });
+            this.mapas[mapaId] = mapa;
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(mapa);
+  
+            if (desaparicionCoords) {
+              L.marker(desaparicionCoords, {
+                icon: L.icon({
+                  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                  iconSize: [25, 41],
+                  iconAnchor: [12, 41],
+                  popupAnchor: [1, -34]
+                })
+              }).addTo(mapa)
+              .bindPopup(`<b>Lugar de desaparición</b><br>${reporte.lugarDesaparicion}`);
+            }
+  
+            if (avistamiento?.ubicacion) {
+              const avistamientoCoords = this.parsearCoordenadas(avistamiento.ubicacion);
+              if (avistamientoCoords) {
+                L.marker(avistamientoCoords, {
+                  icon: L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34]
+                  })
+                }).addTo(mapa)
+                .bindPopup(`<b>Último avistamiento</b><br>${new Date(avistamiento.fecha).toLocaleDateString()}<br>${avistamiento.descripcion}`);
+                
+                if (desaparicionCoords) {
+                  const bounds = L.latLngBounds([desaparicionCoords, avistamientoCoords]);
+                  mapa.fitBounds(bounds, { padding: [50, 50] });
+                } else {
+                  mapa.setView(avistamientoCoords, 15);
+                }
+              }
+            } else if (desaparicionCoords) {
+              mapa.setView(desaparicionCoords, 15);
+            }
+          }
+        }
+      }, 100);
     }, error => {
       console.error('[ERROR] Error al obtener último avistamiento:', error);
     });
   }
 
-  cerrarPopup(reporte: any): void {
-    console.log('[POPUP] Cerrando popup del reporte:', reporte.idDesaparecido);
-    reporte.mostrarPopup = false;
+  parsearCoordenadas(coordenadasStr: string): [number, number] | null {
+    if (!coordenadasStr) return null;
+    
+    const parts = coordenadasStr.split(',').map(part => parseFloat(part.trim()));
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+      return [parts[0], parts[1]];
+    }
+    return null;
+  }
+
+  cerrarPopup() {
+    this.reporteSeleccionado = null;
   }
 }

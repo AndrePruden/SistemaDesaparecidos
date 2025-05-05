@@ -16,30 +16,21 @@
           alt="Foto del reportado"
         />
         <div class="info-reporte">
-          <p><strong>Nombre:</strong> {{ reporte.nombre }}</p>
+          <h3>{{ reporte.nombre }}</h3>
           <p><strong>Edad:</strong> {{ reporte.edad }}</p>
-          <p><strong>Fecha:</strong> {{ reporte.fechaDesaparicion | date }}</p>
+          <p><strong>Fecha desaparición:</strong> {{ reporte.fechaDesaparicion | date:'mediumDate' }}</p>
           <p><strong>Lugar:</strong> {{ reporte.lugarDesaparicion }}</p>
-          <p class="descripcion-recortada"><strong>Descripción:</strong> {{ reporte.descripcion }}</p>
+          <p class="descripcion-recortada"><strong>Descripción:</strong> {{ reporte.descripcion || 'No hay descripción disponible' }}</p>
         </div>
-        <button class="btn-popup" (click)="mostrarPopup(reporte)">+</button>
-        <div *ngIf="reporte.mostrarPopup" class="popup">
-          <div class="popup-content">
-            <div class="popup-left">
-              <p><strong>Último Avistamiento:</strong></p>
-              <p><strong>Fecha:</strong> {{ reporte.ultimoAvistamiento?.fecha | date }}</p>
-              <p><strong>Lugar:</strong> {{ reporte.ultimoAvistamiento?.lugar }}</p>
-              <p class="descripcion">{{ reporte.ultimoAvistamiento?.descripcion }}</p>
-            </div>
-            <div class="popup-right">
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8vCAqzGjq4P58F1sdodd-SGEHnInFq5RTlQ&s"
-                alt="Mapa"
-              />
-            </div>
-          </div>
-          <button class="cerrar-btn" (click)="cerrarPopup(reporte)">✕</button>
-        </div>        
+
+        <div class="card-actions">
+          <button [routerLink]="['/foro-avistamientos', reporte.idDesaparecido]" class="btn-foro">
+            <i class="fas fa-comments"></i> Ver Foro
+          </button>
+          <button class="btn-popup" (click)="mostrarPopup(reporte)">
+            <i class="fas fa-map-marked-alt"></i> 
+          </button>
+        </div>
       </div>
     </div>
   </ng-container>
@@ -48,6 +39,46 @@
     <div class="mensaje-vacio">
       <img src="https://cdn-icons-png.flaticon.com/512/7486/7486898.png" alt="Sin resultados" class="icono-vacio">
       <p>No se encontraron reportes con los datos ingresados.</p>
+      <button class="btn-refrescar" (click)="obtenerReportes()">
+        <i class="fas fa-sync-alt"></i> Recargar reportes
+      </button>
     </div>
   </ng-template>
+</div>
+
+<!-- Popup fuera del contenedor de cards -->
+<div *ngIf="reporteSeleccionado" class="popup">
+  <div class="popup-content">
+    <div class="popup-left">
+      <h3>{{ reporteSeleccionado.nombre }}</h3>
+      <p><strong>Edad:</strong> {{ reporteSeleccionado.edad }}</p>
+      <p><strong>Desaparecido desde:</strong> {{ reporteSeleccionado.fechaDesaparicion | date:'mediumDate' }}</p>
+      <p><strong>Lugar de desaparición:</strong> {{ reporteSeleccionado.lugarDesaparicion }}</p>
+      <p><strong>Descripción:</strong> {{ reporteSeleccionado.descripcion || 'No hay descripción disponible' }}</p>
+      
+      <div *ngIf="reporteSeleccionado.ultimoAvistamiento" class="ultimo-avistamiento">
+        <h4><i class="fas fa-binoculars"></i> Último Avistamiento</h4>
+        <p><strong>Fecha:</strong> {{ reporteSeleccionado.ultimoAvistamiento.fecha | date:'medium' }}</p>
+        <p class="descripcion"><strong>Detalles:</strong> {{ reporteSeleccionado.ultimoAvistamiento.descripcion || 'No hay detalles adicionales' }}</p>
+      </div>
+      <div *ngIf="!reporteSeleccionado.ultimoAvistamiento" class="sin-avistamientos">
+        <p><i class="fas fa-info-circle"></i> No hay avistamientos registrados</p>
+      </div>
+    </div>
+    
+    <div class="popup-right">
+      <div class="mapa-popup" [id]="'mapaPopup-' + reporteSeleccionado.idDesaparecido"></div>
+      <div class="mapa-leyenda">
+        <div class="leyenda-item">
+          <span class="leyenda-color rojo"></span>
+          <span>Lugar de desaparición</span>
+        </div>
+        <div class="leyenda-item" *ngIf="reporteSeleccionado.ultimoAvistamiento">
+          <span class="leyenda-color azul"></span>
+          <span>Último avistamiento</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="cerrar-btn" (click)="cerrarPopup()">✕</button>
 </div>

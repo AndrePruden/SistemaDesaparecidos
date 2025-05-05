@@ -18,6 +18,7 @@ export class AvistamientoService {
     return this.http.get<any[]>(`${this.baseUrl}/usuario/${email}`);
   }
 
+
   obtenerAvistamientosPorReporte(id: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/reporte/${id}`);
   }
@@ -25,4 +26,10 @@ export class AvistamientoService {
   obtenerUltimoAvistamiento(idReporte: number): Observable<any> {
     return this.http.get<any[]>(`${this.baseUrl}/ultimo/${idReporte}`);
   }
+
+  obtenerTodosLosAvistamientos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/todos`);
+  }
+  
+  
 }
