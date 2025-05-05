@@ -1,7 +1,5 @@
 import { ReportesService } from '../../services/reportes.service';
 import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { UsuarioService } from '../../services/usuario.service';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { isPlatformBrowser } from '@angular/common';
@@ -15,8 +13,8 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./cards-reportes.component.scss']
 })
 export class CardsReportesComponent implements OnInit {
-  reportes: any[] = []; 
-  reportesFiltrados: any[] = []; 
+  reportes: any[] = [];
+  reportesFiltrados: any[] = [];
   nombreBusqueda: string = '';
   edadBusqueda: number | null = null;
   lugarBusqueda: string = '';
@@ -42,11 +40,26 @@ export class CardsReportesComponent implements OnInit {
         console.log('[HTTP] Reportes recibidos:', data);
         this.reportes = data;
         this.reportesFiltrados = data;
+        this.cargarUltimosAvistamientos();
       },
       (error) => {
         console.error('[ERROR] Error al obtener reportes:', error);
       }
     );
+  }
+
+  cargarUltimosAvistamientos(): void {
+    this.reportesFiltrados.forEach(reporte => {
+      this.avistamientoService.obtenerUltimoAvistamiento(reporte.idDesaparecido).subscribe(
+        avistamiento => {
+          reporte.ultimoAvistamiento = avistamiento;
+        },
+        error => {
+          console.error(`[ERROR] Error al obtener el último avistamiento para el reporte ${reporte.idDesaparecido}:`, error);
+          reporte.ultimoAvistamiento = null; // Manejar el caso de error
+        }
+      );
+    });
   }
 
   filtrarReportes() {
@@ -65,6 +78,8 @@ export class CardsReportesComponent implements OnInit {
       return nombreCoincide && edadCoincide && lugarCoincide && fechaCoincide;
     });
     console.log('[FILTRO] Resultados filtrados:', this.reportesFiltrados);
+
+    this.cargarUltimosAvistamientos();
   }
 
   limpiarFiltros() {
@@ -73,20 +88,21 @@ export class CardsReportesComponent implements OnInit {
     this.edadBusqueda = null;
     this.lugarBusqueda = '';
     this.fechaBusqueda = '';
-    this.filtrarReportes(); 
+    this.filtrarReportes();
   }
 
-  async mostrarPopup(reporte: any) {
+ async mostrarPopup(reporte: any) {
     console.log('[POPUP] Solicitando último avistamiento para el reporte:', reporte.idDesaparecido);
   
-    this.avistamientoService.obtenerUltimoAvistamiento(reporte.idDesaparecido).subscribe(avistamiento => {
-      console.log('[POPUP] Último avistamiento recibido:', avistamiento);
-      
-      this.reporteSeleccionado = {...reporte};
-      this.reporteSeleccionado.ultimoAvistamiento = avistamiento;
+    try {
+      // Obtener el último avistamiento (si no se ha cargado ya)
+      if (!reporte.ultimoAvistamiento) {
+        reporte.ultimoAvistamiento = await this.avistamientoService.obtenerUltimoAvistamiento(reporte.idDesaparecido).toPromise();
+      }
   
+      this.reporteSeleccionado = { ...reporte };
       const desaparicionCoords = this.parsearCoordenadas(reporte.lugarDesaparicion);
-      
+  
       setTimeout(async () => {
         if (isPlatformBrowser(this.platformId)) {
           const L = await import('leaflet');
@@ -97,17 +113,18 @@ export class CardsReportesComponent implements OnInit {
             if (this.mapas[mapaId]) {
               this.mapas[mapaId].remove();
             }
-            
+  
             const mapa = L.map(mapaId, {
               center: desaparicionCoords || [0, 0],
               zoom: 13
             });
             this.mapas[mapaId] = mapa;
-
+  
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              attribution: '&copy; OpenStreetMap contributors'
+              attribution: '© OpenStreetMap contributors'
             }).addTo(mapa);
   
+            // Marcador de lugar de desaparición
             if (desaparicionCoords) {
               L.marker(desaparicionCoords, {
                 icon: L.icon({
@@ -117,11 +134,12 @@ export class CardsReportesComponent implements OnInit {
                   popupAnchor: [1, -34]
                 })
               }).addTo(mapa)
-              .bindPopup(`<b>Lugar de desaparición</b><br>${reporte.lugarDesaparicion}`);
+                .bindPopup(`<b>Lugar de desaparición</b><br>${reporte.lugarDesaparicion}`);
             }
   
-            if (avistamiento?.ubicacion) {
-              const avistamientoCoords = this.parsearCoordenadas(avistamiento.ubicacion);
+            // Marcador de último avistamiento
+            if (reporte.ultimoAvistamiento?.ubicacion) {
+              const avistamientoCoords = this.parsearCoordenadas(reporte.ultimoAvistamiento.ubicacion);
               if (avistamientoCoords) {
                 L.marker(avistamientoCoords, {
                   icon: L.icon({
@@ -131,8 +149,8 @@ export class CardsReportesComponent implements OnInit {
                     popupAnchor: [1, -34]
                   })
                 }).addTo(mapa)
-                .bindPopup(`<b>Último avistamiento</b><br>${new Date(avistamiento.fecha).toLocaleDateString()}<br>${avistamiento.descripcion}`);
-                
+                  .bindPopup(`<b>Último avistamiento</b><br>${new Date(reporte.ultimoAvistamiento.fecha).toLocaleDateString()}<br>${reporte.ultimoAvistamiento.descripcion}`);
+  
                 if (desaparicionCoords) {
                   const bounds = L.latLngBounds([desaparicionCoords, avistamientoCoords]);
                   mapa.fitBounds(bounds, { padding: [50, 50] });
@@ -146,14 +164,16 @@ export class CardsReportesComponent implements OnInit {
           }
         }
       }, 100);
-    }, error => {
-      console.error('[ERROR] Error al obtener último avistamiento:', error);
-    });
+    } catch (error) {
+      console.error('[ERROR] Error al mostrar el popup:', error);
+    }
   }
+  
+  
 
   parsearCoordenadas(coordenadasStr: string): [number, number] | null {
     if (!coordenadasStr) return null;
-    
+
     const parts = coordenadasStr.split(',').map(part => parseFloat(part.trim()));
     if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
       return [parts[0], parts[1]];

@@ -47,7 +47,7 @@ export class FormAvistamientosComponent implements OnInit {
 
       // Cargar las capas del mapa
       this.leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '© OpenStreetMap contributors'
       }).addTo(this.mapa);
 
       // Crear un ícono para el marcador
@@ -91,31 +91,38 @@ export class FormAvistamientosComponent implements OnInit {
 
   crearAvistamiento(): void {
     const emailUsuario = localStorage.getItem('email');
-  
+
     if (!emailUsuario) {
       this.mensaje = 'Debes iniciar sesión para reportar un avistamiento';
       console.error(this.mensaje);
       return;
     }
-  
+
     if (!this.nuevoAvistamiento.personaDesaparecida.idDesaparecido) {
       this.mensaje = 'Debes seleccionar un reporte válido';
       console.error(this.mensaje);
       return;
     }
-  
+
+    // Asegúrate de que las coordenadas están en el formato correcto
+    if (!this.nuevoAvistamiento.lugar) {
+      this.mensaje = 'Debes seleccionar una ubicación en el mapa';
+      console.error(this.mensaje);
+      return;
+    }
+
     const avistamientoData = {
       emailUsuario: emailUsuario,
       personaDesaparecida: {
         idDesaparecido: this.nuevoAvistamiento.personaDesaparecida.idDesaparecido
       },
       fecha: this.nuevoAvistamiento.fecha,
-      ubicacion: this.nuevoAvistamiento.lugar,
+      ubicacion: this.nuevoAvistamiento.lugar, // Asegúrate que esto coincide con lo que espera el backend
       descripcion: this.nuevoAvistamiento.descripcion
     };
-    console.log('Ubicación guardada:', this.nuevoAvistamiento.lugar);
-    console.log('Enviando avistamiento:', avistamientoData);
-  
+
+    console.log('Datos del avistamiento a enviar:', avistamientoData);
+
     this.avistamientosService.crearAvistamiento(avistamientoData).subscribe({
       next: (response) => {
         console.log('Avistamiento creado:', response);
@@ -124,11 +131,10 @@ export class FormAvistamientosComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al crear avistamiento:', error);
-        this.mensaje = 'Error al registrar el avistamiento';
+        this.mensaje = 'Error al registrar el avistamiento: ' + (error.error?.message || error.message);
       }
     });
   }
-  
 
   resetForm(): void {
     this.nuevoAvistamiento = {
@@ -139,5 +145,9 @@ export class FormAvistamientosComponent implements OnInit {
         idDesaparecido: null
       }
     };
+       // Si ya hay marcador, lo eliminamos
+       if (this.marcador) {
+        this.mapa.removeLayer(this.marcador);
+      }
   }
 }

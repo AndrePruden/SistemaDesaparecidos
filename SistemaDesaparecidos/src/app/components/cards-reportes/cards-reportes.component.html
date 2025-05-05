@@ -1,4 +1,4 @@
-<div class="contenedor-filtro"> 
+<div class="contenedor-filtro">
   <input type="text" [(ngModel)]="nombreBusqueda" placeholder="Nombre..." (input)="filtrarReportes()">
   <input type="number" [(ngModel)]="edadBusqueda" placeholder="Edad..." (input)="filtrarReportes()">
   <input type="text" [(ngModel)]="lugarBusqueda" placeholder="Lugar de desaparición..." (input)="filtrarReportes()">
@@ -24,7 +24,7 @@
         </div>
 
         <div class="card-actions">
-          <button [routerLink]="['/foro-avistamientos', reporte.idDesaparecido]" class="btn-foro">
+          <button [routerLink]="['/foro-avistamientos']" class="btn-foro">
             <i class="fas fa-comments"></i> Ver Foro
           </button>
           <button class="btn-popup" (click)="mostrarPopup(reporte)">
