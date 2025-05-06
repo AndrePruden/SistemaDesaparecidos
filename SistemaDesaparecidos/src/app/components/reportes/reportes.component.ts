@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { FeatureToggleService } from '../../services/feature-toggle.service';
+import { FeatureFlagsService } from '../../services/feature-flags.service';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -30,12 +30,13 @@ import { FormReportesComponent } from '../form-reportes/form-reportes.component'
 export class ReportesComponent implements OnInit {
   emailUsuario: string | null = null;
   estaLogueado: boolean = false;
+  puedeCrearReportes: boolean = false;
 
   constructor(
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
-    private featureToggleService: FeatureToggleService
+    private featureFlagsService: FeatureFlagsService
   ) {}
 
   ngOnInit(): void {
@@ -43,6 +44,7 @@ export class ReportesComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       console.log('🌐 Plataforma del navegador detectada');
       this.verificarSesion();
+      this.verificarPermisosParaCrearReportes();
     }
   }
 
@@ -54,6 +56,24 @@ export class ReportesComponent implements OnInit {
       console.log(`✅ Usuario logueado con correo: ${this.emailUsuario}`);
     } else {
       console.log('⚠️ No hay usuario logueado');
+    }
+  }
+
+  verificarPermisosParaCrearReportes(): void {
+    if (this.estaLogueado) {
+      this.puedeCrearReportes = true;
+      console.log('🚦 Usuario logueado, puede crear reportes');
+    } else {
+      this.featureFlagsService.getFeatureFlag('create-reports').subscribe({
+        next: (flagActivo: boolean) => {
+          this.puedeCrearReportes = flagActivo;
+          console.log(`🚦 Feature 'create-reports' consultado. ¿Puede crear reportes? ${this.puedeCrearReportes}`);
+        },
+        error: (error) => {
+          console.error('❌ Error al consultar el feature flag:', error);
+          this.puedeCrearReportes = false;
+        }
+      });
     }
   }
 
