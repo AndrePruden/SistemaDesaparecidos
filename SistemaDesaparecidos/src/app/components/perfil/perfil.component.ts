@@ -4,16 +4,19 @@ import { UsuarioService } from '../../services/usuario.service';
 import { HeaderComponent } from '../header/header.component';
 import { FooterComponent } from '../footer/footer.component';
 import { StorageService } from '../../services/storage.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, FooterComponent],
+  imports: [CommonModule, HeaderComponent, FooterComponent, FormsModule],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.scss']
 })
 export class PerfilComponent implements OnInit {
-  usuario: any = null;
+  usuario: any = {};
+  modoEdicion: boolean = false;
+  mensaje: string = '';
   mensajeError: string = '';
 
   constructor(private storageService: StorageService,
@@ -36,4 +39,30 @@ export class PerfilComponent implements OnInit {
       }
     );
   }
+
+  habilitarEdicion(): void {
+    this.modoEdicion = true;
+  }
+
+  cancelarEdicion(): void {
+    this.ngOnInit(); // Recarga datos originales
+    this.modoEdicion = false;
+    this.mensaje = '';
+    this.mensajeError = '';
+  }
+
+  guardarCambios(): void {
+    this.usuarioService.actualizarUsuario(this.usuario).subscribe(
+      (response: any) => {
+        this.mensaje = '✅ Cambios guardados exitosamente.';
+        this.modoEdicion = false;
+      },
+      (error: any) => {
+        console.error('Error al guardar cambios:', error);
+        this.mensajeError = '❌ No se pudieron guardar los cambios.';
+      }
+    );
+  }
 }
+
+

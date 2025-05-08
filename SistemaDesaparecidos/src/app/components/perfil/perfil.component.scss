@@ -11,6 +11,8 @@
     text-align: center;
     margin-bottom: 20px;
     color: #2c3e50;
+    font-size: 24px;
+    font-weight: 600;
   }
 
   ul {
@@ -23,17 +25,87 @@
       font-size: 16px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
 
       strong {
         color: #34495e;
         min-width: 180px;
       }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="password"],
+      input[type="number"],
+      input[type="date"] {
+        flex: 1;
+        padding: 10px 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 14px;
+        background-color: #f9f9f9;
+        transition: border-color 0.3s ease, background-color 0.3s ease;
+        margin-left: 10px;
+      }
+
+      input[type="text"]:focus,
+      input[type="email"]:focus,
+      input[type="password"]:focus,
+      input[type="number"]:focus,
+      input[type="date"]:focus {
+        border-color: #3498db;
+        background-color: #eaf4ff;
+        outline: none;
+      }
     }
   }
 
+  /* Botones */
+  .acciones {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  button {
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .editar {
+    background-color: #3498db;
+    color: white;
+  }
+
+  .guardar {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .cancelar {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  button:hover {
+    background-color: #2c3e50;
+    transform: scale(1.05);
+  }
+
+  button:active {
+    transform: scale(0.98);
+  }
+
+  /* Mensajes de Error */
   p {
     color: red;
     text-align: center;
     font-weight: bold;
+    margin-top: 15px;
   }
 }
