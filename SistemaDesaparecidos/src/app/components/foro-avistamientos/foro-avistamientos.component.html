@@ -1,35 +1,43 @@
+<div class="contenedor-filtro">
+  <input type="text" [(ngModel)]="nombreBusqueda" placeholder="Nombre..." (input)="filtrarAvistamientos()">
+  <input type="text" [(ngModel)]="lugarBusqueda" placeholder="Lugar..." (input)="filtrarAvistamientos()">
+  <input type="date" [(ngModel)]="fechaBusqueda" (input)="filtrarAvistamientos()">
+  <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar filtros</button>
+</div>
+
 <div class="foro-container">
-  <h2>📌 Avistamientos Reportados</h2>
-
-  <p *ngIf="mensaje" class="error">{{ mensaje }}</p>
-
-  <div *ngIf="avistamientos.length === 0 && !mensaje" class="sin-avistamientos">
-    <p>No hay avistamientos reportados aún.</p>
-  </div>
-
-  <div *ngFor="let avistamiento of avistamientos" class="avistamiento-card">
-    <h3>{{ avistamiento.personaDesaparecida?.nombre || 'Desconocido' }}</h3>
-    <p><strong>Lugar:</strong> {{ avistamiento.ubicacion || avistamiento.lugar || 'Coordenadas no disponibles' }}</p>
-    <p><strong>Fecha:</strong> {{ avistamiento.fecha | date:'mediumDate' }}</p>
-    <p><strong>Descripción:</strong> {{ avistamiento.descripcion || 'No hay descripción disponible' }}</p>
-
-    <button class="btn-mapa" (click)="mostrarMapa(avistamiento)">📍 Ver Mapa</button>
-  </div>
-
-  <!-- Popup del Mapa -->
-  <div *ngIf="avistamientoSeleccionado" class="popup">
-    <div class="popup-content">
-      <div class="popup-left">
-        <h3>{{ avistamientoSeleccionado.personaDesaparecida?.nombre || 'Desconocido' }}</h3>
-        <p><strong>Fecha:</strong> {{ avistamientoSeleccionado.fecha | date:'medium' }}</p>
-        <p><strong>Lugar:</strong> {{ avistamientoSeleccionado.ubicacion || avistamientoSeleccionado.lugar || 'Coordenadas no disponibles' }}</p>
-        <p><strong>Descripción:</strong> {{ avistamientoSeleccionado.descripcion || 'No hay descripción disponible' }}</p>
-      </div>
-
-      <div class="popup-right">
-        <div class="mapa-popup" id="mapaAvistamiento" [class.no-coords]="!coordenadasValidas"></div>
-      </div>
+  <ng-container *ngIf="avistamientosFiltrados.length > 0; else noAvistamientos">
+    <div *ngFor="let avistamiento of avistamientosFiltrados" class="avistamiento-card">
+      <h3>{{ avistamiento.personaDesaparecida?.nombre}}</h3>
+      <p><strong>Lugar:</strong> {{ avistamiento.ubicacion }}</p>
+      <p><strong>Fecha:</strong> {{ avistamiento.fecha }}</p>
+      <p><strong>Descripción:</strong> {{ avistamiento.descripcion }}</p>
+      <button class="btn-mapa" (click)="mostrarMapa(avistamiento)">📍 Ver Mapa</button>
     </div>
-    <button class="cerrar-btn" (click)="cerrarMapa()">✕ Cerrar</button>
-  </div>
+
+    <div *ngIf="avistamientoSeleccionado" class="popup">
+      <div class="popup-content">
+        <div class="popup-left">
+          <h3>{{ avistamientoSeleccionado.personaDesaparecida?.nombre || 'Desconocido' }}</h3>
+          <p><strong>Fecha:</strong> {{ avistamientoSeleccionado.fecha | date:'medium' }}</p>
+          <p><strong>Lugar:</strong> {{ avistamientoSeleccionado.ubicacion || 'No especificado' }}</p>
+          <p><strong>Descripción:</strong> {{ avistamientoSeleccionado.descripcion || 'No hay descripción disponible' }}</p>
+        </div>
+        <div class="popup-right">
+          <div class="mapa-popup" id="mapaAvistamiento" [class.no-coords]="!coordenadasValidas"></div>
+        </div>
+      </div>
+      <button class="cerrar-btn" (click)="cerrarMapa()">✕ Cerrar</button>
+    </div>
+  </ng-container>
+
+  <ng-template #noAvistamientos>
+    <div class="mensaje-vacio">
+      <img src="https://cdn-icons-png.flaticon.com/512/7486/7486898.png" alt="Sin resultados" class="icono-vacio">
+      <p>No se encontraron avistamientos con los filtros aplicados.</p>
+      <button class="btn-refrescar" (click)="obtenerAvistamientos()">
+        <i class="fas fa-sync-alt"></i> Recargar avistamientos
+      </button>
+    </div>
+  </ng-template>
 </div>

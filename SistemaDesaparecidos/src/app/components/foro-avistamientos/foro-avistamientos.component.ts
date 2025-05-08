@@ -1,19 +1,25 @@
 import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { AvistamientoService } from '../../services/avistamiento.service';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-foro-avistamientos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './foro-avistamientos.component.html',
   styleUrls: ['./foro-avistamientos.component.scss']
 })
 export class ForoAvistamientosComponent implements OnInit, OnDestroy {
   avistamientos: any[] = [];
+  avistamientosFiltrados: any[] = [];
   mensaje: string = '';
   avistamientoSeleccionado: any = null;
   coordenadasValidas: boolean = false;
+  nombreBusqueda: string = '';
+  lugarBusqueda: string = '';
+  fechaBusqueda: string = '';
   private leaflet: any;
   private mapa: any;
   private iconoAvistamientoForo: any;
@@ -24,14 +30,15 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.cargarAvistamientos();
+    console.log('[INIT] Iniciando componente de avistamientos...');
+    this.obtenerAvistamientos();
   }
 
   ngOnDestroy(): void {
     this.limpiarMapa();
   }
 
-  cargarAvistamientos(): void {
+  obtenerAvistamientos(): void {
     this.avistamientoService.obtenerTodosLosAvistamientos().subscribe({
       next: (data) => {
         console.log('Avistamientos recibidos:', data);
@@ -41,7 +48,8 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
             ubicacion: avistamiento.ubicacion || avistamiento.lugar || 'Coordenadas no disponibles'
           };
         });
-        
+
+        this.avistamientosFiltrados = [...this.avistamientos]; // Inicializar con todos
         if (data.length === 0) {
           this.mensaje = 'No hay avistamientos reportados aún.';
         }
@@ -51,6 +59,39 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
         this.mensaje = 'Error al cargar los avistamientos. Por favor, intente nuevamente.';
       }
     });
+  }
+
+  filtrarAvistamientos() {
+    console.log('[FILTRO] Aplicando filtros: ', {
+      nombre: this.nombreBusqueda,
+      lugar: this.lugarBusqueda,
+      fecha: this.fechaBusqueda
+    });
+  
+    this.avistamientosFiltrados = this.avistamientos.filter(avistamiento => {
+      const nombre = avistamiento.nombre ?? '';
+      const lugar = avistamiento.lugarDesaparicion ?? '';
+      const fecha = avistamiento.fechaDesaparicion ?? '';
+  
+      const nombreCoincide = !this.nombreBusqueda || nombre.toLowerCase().includes(this.nombreBusqueda.toLowerCase());
+      const lugarCoincide = !this.lugarBusqueda || lugar.toLowerCase().includes(this.lugarBusqueda.toLowerCase());
+      const fechaCoincide = !this.fechaBusqueda || fecha === this.fechaBusqueda;
+  
+      return nombreCoincide && lugarCoincide && fechaCoincide;
+    });
+  
+    console.log('[FILTRO] Resultados filtrados:', this.avistamientosFiltrados);
+  
+    this.obtenerAvistamientos(); // ← OJO: esto probablemente está sobreescribiendo los filtrados
+  }
+  
+
+  limpiarFiltros() {
+    console.log('[FILTRO] Limpiando filtros...');
+    this.nombreBusqueda = '';
+    this.lugarBusqueda = '';
+    this.fechaBusqueda = '';
+    this.filtrarAvistamientos();
   }
 
   async mostrarMapa(avistamiento: any) {

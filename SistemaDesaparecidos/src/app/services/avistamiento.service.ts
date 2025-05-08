@@ -61,4 +61,13 @@ export class AvistamientoService {
     console.error('Ocurrió un error:', error);
     return throwError(() => new Error(error.message || 'Error en el servicio'));
   }
+
+  obtenerReportesFiltrados(nombre: string, lugar: string, fecha: string) {
+    const params = {
+      nombre,
+      lugar,
+      fecha
+    };
+    return this.http.get<any[]>(`${this.baseUrl}/filtrar`, { params });
+  }
 }

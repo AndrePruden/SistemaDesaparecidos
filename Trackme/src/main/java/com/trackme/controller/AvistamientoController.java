@@ -1,14 +1,17 @@
 package com.trackme.controller;
 
 import com.trackme.model.Avistamiento;
+import com.trackme.model.PersonaDesaparecida;
 import com.trackme.service.AvistamientoService;
 import com.trackme.service.FeatureToggleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +24,7 @@ public class AvistamientoController {
     private static final Logger logger = LoggerFactory.getLogger(AvistamientoController.class);
 
     @Autowired
-    private AvistamientoService avistamientoService;
+    public AvistamientoService avistamientoService;
 
     @Autowired
     private FeatureToggleService featureToggleService;
@@ -93,5 +96,15 @@ public class AvistamientoController {
             logger.warn("No se encontró ningún avistamiento para ID: {}", idPersonaDesaparecida);
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/filtrar")
+    public ResponseEntity<List<Avistamiento>> obtenerAvistamientosFiltrados (
+            @RequestParam(value = "nombre", required = false) String nombre,
+            @RequestParam(value = "lugar", required = false) String lugar,
+            @RequestParam(value = "fecha", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+
+        List<Avistamiento> avistamientos = avistamientoService.obtenerAvistamientosFiltrados(nombre, lugar, fecha);
+        return ResponseEntity.ok(avistamientos);
     }
 }

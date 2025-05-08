@@ -1,14 +1,18 @@
 package com.trackme.service;
 
 import com.trackme.model.Avistamiento;
+import com.trackme.model.PersonaDesaparecida;
 import com.trackme.repository.AvistamientoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AvistamientoService {
@@ -58,5 +62,27 @@ public class AvistamientoService {
             logger.info("Último avistamiento encontrado con ID: {}", ultimoAvistamiento.getIdAvistamiento());
             return Optional.of(lista.get(0));
         }
+    }
+
+    public List<Avistamiento> obtenerAvistamientosFiltrados(String nombre, String lugar, LocalDate fecha) {
+        List<Avistamiento> avistamientos = obtenerTodosLosAvistamientos();
+
+        if (nombre != null && !nombre.isEmpty()) {
+            avistamientos = avistamientos.stream()
+                    .filter(r -> r.getPersonaDesaparecida().getNombre().toLowerCase().contains(nombre.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        if (lugar != null && !lugar.isEmpty()) {
+            avistamientos = avistamientos.stream()
+                    .filter(r -> r.getUbicacion().toLowerCase().contains(lugar.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        if (fecha != null) {
+            avistamientos = avistamientos.stream()
+                    .filter(r -> r.getFecha().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().equals(fecha))
+                    .collect(Collectors.toList());
+        }
+
+        return avistamientos;
     }
 }
