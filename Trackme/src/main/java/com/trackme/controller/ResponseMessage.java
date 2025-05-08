@@ -11,5 +11,7 @@ public class ResponseMessage {
     public String getMessage() {
         return message;
     }
+
+    public void setMensaje(String mensaje) { this.message = mensaje; }
 }
 

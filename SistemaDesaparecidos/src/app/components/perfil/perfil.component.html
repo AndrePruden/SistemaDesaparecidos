@@ -1,0 +1,51 @@
+<app-header></app-header>
+<div class="perfil-container">
+  <h2>Mi Perfil</h2>
+
+  <ul>
+    <li><strong>Nombre:</strong> 
+      <span *ngIf="!modoEdicion">{{ usuario.nombre }}</span>
+      <input *ngIf="modoEdicion" [(ngModel)]="usuario.nombre" type="text">
+    </li>
+
+    <li><strong>CI:</strong> 
+      <span>{{ usuario.ci }}</span>
+    </li>
+
+    <li><strong>Fecha de Nacimiento:</strong> 
+      <span *ngIf="!modoEdicion">{{ usuario.fechaNacimiento }}</span>
+      <input *ngIf="modoEdicion" type="date" [(ngModel)]="usuario.fechaNacimiento">
+    </li>
+
+    <li><strong>Celular:</strong> 
+      <span *ngIf="!modoEdicion">{{ usuario.celular }}</span>
+      <input *ngIf="modoEdicion" [(ngModel)]="usuario.celular" type="number">
+    </li>
+
+    <li><strong>Dirección:</strong> 
+      <span *ngIf="!modoEdicion">{{ usuario.direccion }}</span>
+      <input *ngIf="modoEdicion" [(ngModel)]="usuario.direccion" type="text">
+    </li>
+
+    <li><strong>Email:</strong> 
+      <span>{{ usuario.email }}</span>
+    </li>
+
+    <li><strong>Recibir notificaciones:</strong> 
+      <span *ngIf="!modoEdicion">{{ usuario.notificaciones ? 'Sí' : 'No' }}</span>
+      <input *ngIf="modoEdicion" type="checkbox" [(ngModel)]="usuario.notificaciones">
+    </li>
+  </ul>
+
+  <div class="acciones">
+    <button *ngIf="!modoEdicion" class="editar" (click)="habilitarEdicion()">Editar</button>
+    <div *ngIf="modoEdicion">
+      <button class="guardar" (click)="guardarCambios()">Guardar</button>
+      <button class="cancelar" (click)="cancelarEdicion()">Cancelar</button>
+    </div>
+  </div>
+
+  <p style="color: green;" *ngIf="mensaje">{{ mensaje }}</p>
+  <p style="color: red;" *ngIf="mensajeError">{{ mensajeError }}</p>
+</div>
+<app-footer></app-footer>

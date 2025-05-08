@@ -31,5 +31,14 @@ export class UsuarioService {
   iniciarSesion(credenciales: { email: string, password: string }): Observable<ResponseMessage> {
     return this.http.post<ResponseMessage>(`${this.apiUrl}/iniciar-sesion`, credenciales);
   }
-  
+
+  obtenerUsuarioPorEmail(email: string) {
+    return this.http.get<any>(`${this.apiUrl}/email/${email}`);
+  }  
+
+  actualizarUsuario(usuario: any): Observable<any> {
+    const id = usuario.id; // Asegúrate de que 'usuario' tenga el campo 'id'
+    return this.http.put<any>(`${this.apiUrl}/${id}`, usuario);
+  }
+
 }

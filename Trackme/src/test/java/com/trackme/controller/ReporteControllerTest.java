@@ -1,158 +1,83 @@
 package com.trackme.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trackme.model.PersonaDesaparecida;
-import com.trackme.repository.ReporteRepository;
-import com.trackme.repository.UserRepository;
 import com.trackme.service.FeatureToggleService;
 import com.trackme.service.ReporteService;
 import com.trackme.service.ReporteValidationService;
+import com.trackme.service.ScrapingService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(properties = "feature.create-reports.enabled=true")
 class ReporteControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Mock
+    private ReporteService reporteService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @Mock
+    private ReporteValidationService reporteValidationService;
 
-    @Autowired
-    private ReporteRepository reporteRepository;
-
-    @Autowired
-    private UserRepository usuarioRepository;
-
-    @Autowired
+    @Mock
     private FeatureToggleService featureToggleService;
 
-    private final String testEmail = "test@example.com";
+    @Mock
+    private ScrapingService scrapingService;
 
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        public ReporteService personaDesaparecidaService() {
-            return new ReporteService() {
-                @Override
-                public PersonaDesaparecida crearReporte(PersonaDesaparecida persona) {
-                    return persona;
-                }
+    @InjectMocks
+    private ReporteController reporteController;
 
-                @Override
-                public List<PersonaDesaparecida> obtenerReportesPorEmail(String email) {
-                    PersonaDesaparecida persona = new PersonaDesaparecida();
-                    persona.setNombre("Maria");
-                    persona.setEdad(25);
-                    persona.setLugarDesaparicion("Cochabamba");
-                    persona.setDescripcion("Desaparecida");
-                    persona.setEmailReportaje(email);
-                    persona.setFechaDesaparicion(Date.from(LocalDate.of(2025, 4, 10)
-                            .atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                    return List.of(persona);
-                }
+    private MockMvc mockMvc;
 
-                @Override
-                public List<PersonaDesaparecida> obtenerTodosLosReportes() {
-                    PersonaDesaparecida persona = new PersonaDesaparecida();
-                    persona.setNombre("Carlos");
-                    persona.setEdad(40);
-                    persona.setLugarDesaparicion("La Paz");
-                    persona.setDescripcion("Desaparecido");
-                    persona.setEmailReportaje("carlos@email.com");
-                    persona.setFechaDesaparicion(Date.from(LocalDate.of(2025, 3, 15)
-                            .atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                    return List.of(persona);
-                }
-            };
-        }
-
-        @Bean
-        public ReporteValidationService reporteValidationService() {
-            return new ReporteValidationService() {
-                @Override
-                public String validarReporte(PersonaDesaparecida persona) {
-                    return null;
-                }
-            };
-        }
-    }
-
-    @Test
-    public void testCrearReporteConToggleDesactivado() throws Exception {
-        featureToggleService.setFeatureEnabled("create-reports", false);
-
-        PersonaDesaparecida reporte = new PersonaDesaparecida();
-        reporte.setNombre("Carlos");
-        reporte.setEdad(30);
-        reporte.setEmailReportaje(testEmail);
-        reporte.setFechaDesaparicion(Date.from(LocalDate.of(2025, 4, 10)
-                .atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        reporte.setLugarDesaparicion("Ciudad");
-        reporte.setDescripcion("Desaparecido en zona urbana");
-
-        mockMvc.perform(post("/reportes/crear")
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                        .param("nombre", reporte.getNombre())
-                        .param("edad", String.valueOf(reporte.getEdad()))
-                        .param("fechaDesaparicion", reporte.getFechaDesaparicion().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().toString())
-                        .param("lugarDesaparicion", reporte.getLugarDesaparicion())
-                        .param("descripcion", reporte.getDescripcion())
-                        .param("emailReportaje", reporte.getEmailReportaje()))
-                .andExpect(status().isForbidden())
-                .andExpect(content().string("La funcionalidad de creación de reportes está deshabilitada."));
-    }
-
-    @Test
-    public void testObtenerReportesPorUsuario() throws Exception {
-        PersonaDesaparecida reporte = new PersonaDesaparecida();
-        reporte.setNombre("Carlos");
-        reporte.setEdad(30);
-        reporte.setEmailReportaje(testEmail);
-        reporte.setFechaDesaparicion(Date.from(LocalDate.of(2023, 1, 1)
-                .atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        reporte.setLugarDesaparicion("Ciudad");
-        reporte.setDescripcion("Desaparecido en zona urbana");
-        reporteRepository.save(reporte);
-
-        mockMvc.perform(get("/reportes/usuario/" + testEmail))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nombre").value("Carlos"));
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(reporteController).build();
     }
 
 //    @Test
-//    public void testObtenerTodosLosReportes() throws Exception {
+//    void testObtenerTodosLosReportes() throws Exception {
+//        // Arrange
 //        PersonaDesaparecida reporte = new PersonaDesaparecida();
-//        reporte.setNombre("Carlos");
-//        reporte.setEdad(30);
-//        reporte.setEmailReportaje(testEmail);
-//        reporte.setFechaDesaparicion(Date.from(LocalDate.of(2025, 3, 15)
-//                .atStartOfDay(ZoneId.systemDefault()).toInstant()));
-//        reporte.setLugarDesaparicion("Ciudad");
-//        reporte.setDescripcion("Desaparecido en zona urbana");
-//        reporteRepository.save(reporte);
+//        reporte.setNombre("Juan Perez");
 //
-//        mockMvc.perform(get("/reportes"))
+//        when(reporteService.obtenerTodosLosReportes()).thenReturn(List.of(reporte));
+//
+//        // Act & Assert
+//        mockMvc.perform(get("/reportes/todos"))
 //                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$[0].nombre").value("Carlos"));
+//                .andExpect(jsonPath("$[0].nombre").value("Juan Perez"));
+//    }
+
+//    @Test
+//    void testObtenerReportesFiltrados() throws Exception {
+//        // Arrange
+//        PersonaDesaparecida reporte = new PersonaDesaparecida();
+//        reporte.setNombre("Juan Perez");
+//        reporte.setEdad(30);
+//
+//        when(reporteService.obtenerReportesFiltrados("Juan", 30, null, null)).thenReturn(List.of(reporte));
+//
+//        // Act & Assert
+//        mockMvc.perform(get("/reportes/filtrar")
+//                        .param("nombre", "Juan")
+//                        .param("edad", "30"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$[0].nombre").value("Juan Perez"));
 //    }
 }

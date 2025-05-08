@@ -1,14 +1,13 @@
 <div class="form-container">
-  <h2>📍 Registrar Avistamiento</h2>
-
+  <h2>Registrar Avistamiento</h2>
   <form (ngSubmit)="crearAvistamiento()" #avistamientoForm="ngForm">
     <div class="form-group">
-      <label for="fecha">📅 Fecha del avistamiento</label>
+      <label for="fecha">Fecha del avistamiento</label>
       <input type="date" id="fecha" name="fecha" [(ngModel)]="nuevoAvistamiento.fecha" required />
     </div>
 
     <div class="form-group">
-      <label for="lugar">🌍 Lugar del avistamiento</label>
+      <label for="lugar">Lugar del avistamiento</label>
       <!-- No hay un campo de texto, solo el mapa interactivo -->
     </div>
 
@@ -16,12 +15,12 @@
     <div #mapContainer id="mapaFormAvistamiento" style="height: 300px; margin-bottom: 1em;"></div>
         
     <div class="form-group">
-      <label for="descripcion">📝 Descripción</label>
+      <label for="descripcion">Descripción</label>
       <textarea id="descripcion" name="descripcion" [(ngModel)]="nuevoAvistamiento.descripcion" placeholder="Describe lo que viste..." rows="4"></textarea>
     </div>
 
     <div class="form-group">
-      <label for="personaDesaparecida">🆔 Seleccionar Reporte</label>
+      <label for="personaDesaparecida">Seleccionar Reporte</label>
       <select id="personaDesaparecida" name="personaDesaparecida" [(ngModel)]="nuevoAvistamiento.personaDesaparecida.idDesaparecido" required>
         <option *ngFor="let reporte of reportes" [value]="reporte.idDesaparecido">
           {{ reporte.nombre }} - {{ reporte.lugarDesaparicion }} - {{ reporte.fechaDesaparicion }}
@@ -30,7 +29,7 @@
     </div>
 
     <button type="submit" [disabled]="!avistamientoForm.form.valid">
-      🚀 Enviar Avistamiento
+      Enviar Avistamiento
     </button>
   </form>
 </div>

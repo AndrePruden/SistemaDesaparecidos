@@ -17,4 +17,21 @@ public class FeatureToggleController {
     public Map<String, Boolean> getFeatureToggles() {
         return featureToggleService.getAllToggles();
     }
+
+    @GetMapping("/feature-toggles/{featureName}")
+    public boolean getFeatureFlag(@PathVariable String featureName) {
+        return switch (featureName) {
+            case "create-reports" -> featureToggleService.isCreateReportsEnabled();
+            case "create-sightings" -> featureToggleService.isCreateSightingsEnabled();
+            default -> throw new IllegalArgumentException("Feature toggle no encontrado: " + featureName);
+        };
+    }
+
+    @GetMapping("/feature-toggles/can-create-reports")
+    public boolean canCreateReports(@RequestParam(value = "isLoggedIn", defaultValue = "false") boolean isLoggedIn) {
+        if (isLoggedIn) {
+            return true;
+        }
+        return featureToggleService.isCreateReportsEnabled();
+    }
 }

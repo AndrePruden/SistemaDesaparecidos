@@ -2,9 +2,9 @@ package com.trackme.controller;
 
 import com.trackme.model.Usuario;
 import com.trackme.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,29 +17,40 @@ public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
+
+    public UserController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
     @PostMapping("/registro")
-    public ResponseEntity<ResponseMessage> registrarUsuario(@RequestBody Usuario usuario) {
-        logger.info("Intento de registro para el correo: {}", usuario.getEmail());
+    public ResponseEntity<?> registrarUsuario(@Valid @RequestBody Usuario usuario) {
+        logger.info("Intento de registro: {}", usuario.getEmail());
+
         try {
             if (usuarioService.obtenerUsuarioPorEmail(usuario.getEmail()).isPresent()) {
-                logger.warn("Registro fallido: el correo {} ya está registrado", usuario.getEmail());
+                logger.warn("Registro fallido: email ya registrado");
                 return ResponseEntity.badRequest().body(new ResponseMessage("El correo ya está registrado."));
             }
-            usuarioService.crearUsuario(usuario);
-            logger.info("Usuario registrado exitosamente: {}", usuario.getEmail());
-            return ResponseEntity.ok(new ResponseMessage("Usuario registrado con éxito."));
+
+            Usuario nuevoUsuario = usuarioService.crearUsuario(usuario);
+            logger.info("Registro exitoso para: {}", nuevoUsuario.getEmail());
+
+            return ResponseEntity.status(201).body(nuevoUsuario);
+
+        } catch (IllegalArgumentException e) {
+            logger.warn("Error de validación: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(new ResponseMessage(e.getMessage()));
+
         } catch (Exception e) {
-            logger.error("Error al registrar usuario: {}", e.getMessage(), e);
-            return ResponseEntity.status(500).body(new ResponseMessage("Hubo un error al registrar el usuario: " + e.getMessage()));
+            logger.error("Error interno al registrar usuario", e);
+            return ResponseEntity.internalServerError().body(new ResponseMessage("Error interno al registrar usuario."));
         }
     }
 
     @PostMapping("/iniciar-sesion")
-    public ResponseEntity<ResponseMessage> iniciarSesion(@RequestBody Usuario usuario) {
-        logger.info("Intento de inicio de sesión para: {}", usuario.getEmail());
+    public ResponseEntity<?> iniciarSesion(@RequestBody Usuario usuario) {
+        logger.info("Inicio de sesión para: {}", usuario.getEmail());
         Optional<Usuario> existingUser = usuarioService.obtenerUsuarioPorEmail(usuario.getEmail());
         if (!existingUser.isPresent()) {
             logger.warn("Inicio de sesión fallido: el correo {} no está registrado", usuario.getEmail());
@@ -53,29 +64,46 @@ public class UserController {
         return ResponseEntity.status(401).body(new ResponseMessage("Contraseña incorrecta."));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
-        logger.info("Solicitud para eliminar usuario con ID: {}", id);
-        if (usuarioService.obtenerUsuarioPorId(id).isPresent()) {
-            usuarioService.eliminarUsuario(id);
-            logger.info("Usuario eliminado con éxito: ID {}", id);
-            return ResponseEntity.noContent().build();
+    @GetMapping("/email/{email}")
+    public ResponseEntity<?> obtenerUsuarioPorEmail(@PathVariable String email) {
+        logger.info("Consulta de usuario por email: {}", email);
+
+        Optional<Usuario> usuarioOpt = usuarioService.obtenerUsuarioPorEmail(email);
+        if (usuarioOpt.isPresent()) {
+            return ResponseEntity.ok(usuarioOpt.get());
+        } else {
+            logger.warn("Usuario no encontrado para el email: {}", email);
+            return ResponseEntity.status(404).body(new ResponseMessage("Usuario no encontrado."));
         }
-        logger.warn("Intento de eliminar usuario no existente: ID {}", id);
-        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
-        logger.info("Solicitud para actualizar usuario con ID: {}", id);
-        Optional<Usuario> existingUser = usuarioService.obtenerUsuarioPorId(id);
-        if (existingUser.isPresent()) {
-            usuario.setId(id);
-            Usuario usuarioActualizado = usuarioService.actualizarUsuario(usuario);
-            logger.info("Usuario actualizado con éxito: {}", usuarioActualizado.getEmail());
-            return ResponseEntity.ok(usuarioActualizado);
+    public ResponseEntity<?> actualizarUsuario(@PathVariable Long id, @Valid @RequestBody Usuario usuario) {
+        logger.info("Actualización de usuario con ID: {}", id);
+
+        if (usuarioService.obtenerUsuarioPorId(id).isEmpty()) {
+            logger.warn("Usuario no encontrado para actualizar: {}", id);
+            return ResponseEntity.status(404).body(new ResponseMessage("Usuario no encontrado."));
         }
-        logger.warn("No se encontró usuario para actualizar: ID {}", id);
-        return ResponseEntity.notFound().build();
+
+        usuario.setId(id);
+        Usuario actualizado = usuarioService.actualizarUsuario(usuario);
+        logger.info("Usuario actualizado: {}", actualizado.getEmail());
+
+        return ResponseEntity.ok(actualizado);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
+        logger.info("Eliminación de usuario con ID: {}", id);
+
+        if (usuarioService.obtenerUsuarioPorId(id).isEmpty()) {
+            logger.warn("Usuario no encontrado para eliminar: {}", id);
+            return ResponseEntity.status(404).body(new ResponseMessage("Usuario no encontrado."));
+        }
+
+        usuarioService.eliminarUsuario(id);
+        logger.info("Usuario eliminado: ID {}", id);
+        return ResponseEntity.noContent().build();
     }
 }

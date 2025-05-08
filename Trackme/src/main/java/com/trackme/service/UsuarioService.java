@@ -2,6 +2,7 @@ package com.trackme.service;
 
 import com.trackme.model.Usuario;
 import com.trackme.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +37,33 @@ public class UsuarioService {
 
     public Usuario crearUsuario(Usuario usuario) {
         logger.info("Creando nuevo usuario con email: {}", usuario.getEmail());
-        String contraseñaEncriptada = passwordEncoder.encode(usuario.getPassword());
-        usuario.setPassword(contraseñaEncriptada);
+        if (userRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Ya existe un usuario con este email.");
+        }
+        if (userRepository.findByCi(usuario.getCi()).isPresent()) {
+            throw new IllegalArgumentException("Ya existe un usuario con este CI.");
+        }
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return userRepository.save(usuario);
     }
 
     public Usuario actualizarUsuario(Usuario usuario) {
-        logger.info("Actualizando usuario con email: {}", usuario.getEmail());
-        if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {
-            String contraseñaEncriptada = passwordEncoder.encode(usuario.getPassword());
-            usuario.setPassword(contraseñaEncriptada);
+        logger.info("Actualizando usuario con ID: {}", usuario.getId());
+
+        Usuario existente = userRepository.findById(usuario.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + usuario.getId()));
+
+        if (usuario.getPassword() != null && !usuario.getPassword().isBlank()) {
+            existente.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
-        return userRepository.save(usuario);
+
+        existente.setNombre(usuario.getNombre());
+        existente.setFechaNacimiento(usuario.getFechaNacimiento());
+        existente.setCelular(usuario.getCelular());
+        existente.setDireccion(usuario.getDireccion());
+        existente.setNotificaciones(usuario.getNotificaciones());
+
+        return userRepository.save(existente);
     }
 
     public boolean verificarContraseña(String contraseñaIngresada, String contraseñaEncriptada) {
