@@ -109,6 +109,8 @@ TrackMe es un sistema diseñado para gestionar información sobre personas desap
 3. **Instala las dependencias del proyecto:**
    ```sh
    npm install
+   npm install leaflet
+   npm install --save-dev @types/leaflet
    ```
 
 4. **Ejecuta el servidor en modo desarrollo:**

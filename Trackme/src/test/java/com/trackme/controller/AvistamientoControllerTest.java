@@ -136,7 +136,7 @@ class AvistamientoControllerTest {
         assertEquals(fecha, response.getBody().getFecha());
     }
 
-    @Test
+   /* @Test
     void obtenerAvistamientosPorReporte_DeberiaRetornarListaCorrecta() {
         Long id = 42L;
         List<Avistamiento> lista = List.of(new Avistamiento());
@@ -147,7 +147,7 @@ class AvistamientoControllerTest {
         assertEquals(200, response.getStatusCodeValue());
         assertEquals(1, response.getBody().size());
     }
-
+*/ 
     @Test
     void obtenerTodosLosAvistamientos_DeberiaRetornarTodosLosRegistros() {
         List<Avistamiento> lista = new ArrayList<>();

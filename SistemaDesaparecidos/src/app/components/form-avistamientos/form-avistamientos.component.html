@@ -1,52 +1,35 @@
 <div class="form-container">
-    <form (ngSubmit)="crearAvistamiento()" #avistamientoForm="ngForm">
-      <div class="form-group">
-        <label for="fecha">Fecha del avistamiento</label>
-        <input
-          type="date"
-          id="fecha"
-          name="fecha"
-          [(ngModel)]="nuevoAvistamiento.fecha"
-          required
-        />
-      </div>
-  
-      <div class="form-group">
-        <label for="lugar">Lugar del avistamiento</label>
-        <!-- No hay un campo de texto, solo el mapa interactivo -->
-      </div>
-  
-      <!-- Mapa siempre visible y interactivo -->
-      <div id="mapaAvistamiento" style="height: 300px; margin-bottom: 1em;"></div>
-  
-      <div class="form-group">
-        <label for="descripcion">Descripción</label>
-        <textarea
-          id="descripcion"
-          name="descripcion"
-          [(ngModel)]="nuevoAvistamiento.descripcion"
-          placeholder="Describe lo que viste..."
-          rows="4"
-        ></textarea>
-      </div>
-  
-      <div class="form-group">
-        <label for="personaDesaparecida">Seleccionar Reporte</label>
-        <select
-          id="personaDesaparecida"
-          name="personaDesaparecida"
-          [(ngModel)]="nuevoAvistamiento.personaDesaparecida.idDesaparecido"
-          required
-        >
-          <option *ngFor="let reporte of reportes" [value]="reporte.idDesaparecido">
-            {{ reporte.nombre }} - {{ reporte.lugar }} - {{ reporte.fecha }}
-          </option>
-        </select>
-      </div>
-  
-      <button type="submit" [disabled]="!avistamientoForm.form.valid">
-        Enviar Avistamiento
-      </button>
-    </form>
-  </div>
-  
+  <h2>Registrar Avistamiento</h2>
+  <form (ngSubmit)="crearAvistamiento()" #avistamientoForm="ngForm">
+    <div class="form-group">
+      <label for="fecha">Fecha del avistamiento</label>
+      <input type="date" id="fecha" name="fecha" [(ngModel)]="nuevoAvistamiento.fecha" required />
+    </div>
+
+    <div class="form-group">
+      <label for="lugar">Lugar del avistamiento</label>
+      <!-- No hay un campo de texto, solo el mapa interactivo -->
+    </div>
+
+    <!-- Mapa siempre visible e interactivo -->
+    <div #mapContainer id="mapaFormAvistamiento" style="height: 300px; margin-bottom: 1em;"></div>
+        
+    <div class="form-group">
+      <label for="descripcion">Descripción</label>
+      <textarea id="descripcion" name="descripcion" [(ngModel)]="nuevoAvistamiento.descripcion" placeholder="Describe lo que viste..." rows="4"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="personaDesaparecida">Seleccionar Reporte</label>
+      <select id="personaDesaparecida" name="personaDesaparecida" [(ngModel)]="nuevoAvistamiento.personaDesaparecida.idDesaparecido" required>
+        <option *ngFor="let reporte of reportes" [value]="reporte.idDesaparecido">
+          {{ reporte.nombre }} - {{ reporte.lugarDesaparicion }} - {{ reporte.fechaDesaparicion }}
+        </option>
+      </select>
+    </div>
+
+    <button type="submit" [disabled]="!avistamientoForm.form.valid">
+      Enviar Avistamiento
+    </button>
+  </form>
+</div>

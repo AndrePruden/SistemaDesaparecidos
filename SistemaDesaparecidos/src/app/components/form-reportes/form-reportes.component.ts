@@ -23,7 +23,6 @@ export class FormReportesComponent {
   selectedFile: File | null = null;
   imagenPreview: string | ArrayBuffer | null = null;
 
-  // Nuevas propiedades para mapa
   leaflet: any;
   mapa: any;
   marcador: any;

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/avistamientos")
@@ -74,14 +75,6 @@ public class AvistamientoController {
         return ResponseEntity.ok(avistamientos);
     }
 
-    @GetMapping("/reporte/{idPersonaDesaparecida}")
-    public ResponseEntity<List<Avistamiento>> obtenerAvistamientosPorReporte(@PathVariable Long idPersonaDesaparecida) {
-        logger.info("Solicitando avistamientos para persona desaparecida con ID: {}", idPersonaDesaparecida);
-        List<Avistamiento> avistamientos = avistamientoService.obtenerAvistamientosPorReporte(idPersonaDesaparecida);
-        logger.debug("Se encontraron {} avistamientos para el reporte ID {}", avistamientos.size(), idPersonaDesaparecida);
-        return ResponseEntity.ok(avistamientos);
-    }
-
     @GetMapping("/todos")
     public ResponseEntity<List<Avistamiento>> obtenerTodosLosAvistamientos() {
         logger.info("Solicitando todos los avistamientos");
@@ -93,14 +86,12 @@ public class AvistamientoController {
     @GetMapping("/ultimo/{idPersonaDesaparecida}")
     public ResponseEntity<Avistamiento> obtenerUltimoAvistamiento(@PathVariable Long idPersonaDesaparecida) {
         logger.info("Solicitando último avistamiento para persona desaparecida con ID: {}", idPersonaDesaparecida);
-        return avistamientoService.obtenerUltimoAvistamiento(idPersonaDesaparecida)
-                .map(avistamiento -> {
-                    logger.debug("Último avistamiento encontrado: {}", avistamiento);
-                    return ResponseEntity.ok(avistamiento);
-                })
-                .orElseGet(() -> {
-                    logger.warn("No se encontró ningún avistamiento para ID: {}", idPersonaDesaparecida);
-                    return ResponseEntity.notFound().build();
-                });
+        Optional<Avistamiento> avistamiento = avistamientoService.obtenerUltimoAvistamiento(idPersonaDesaparecida);
+        if (avistamiento.isPresent()) {
+            return ResponseEntity.ok(avistamiento.get());
+        } else {
+            logger.warn("No se encontró ningún avistamiento para ID: {}", idPersonaDesaparecida);
+            return ResponseEntity.notFound().build();
+        }
     }
 }
