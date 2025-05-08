@@ -3,6 +3,8 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AvistamientoService } from '../../services/avistamiento.service';
 import { ReportesService } from '../../services/reportes.service';
+import { Subscription } from 'rxjs'; // Importa Subscription
+
 
 @Component({
   selector: 'app-form-avistamientos',
@@ -30,6 +32,8 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy {
   private mapa: any;
   private marcador: any;
   private iconoAvistamientoPersonalizado: any;
+  private avistamientoSubscription: Subscription | undefined;
+
   constructor(
     private avistamientosService: AvistamientoService,
     private reportesService: ReportesService,
@@ -39,6 +43,14 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.cargarReportes();
     
+
+    if (isPlatformBrowser(this.platformId)) { // Opcional: solo suscribir en el navegador
+      this.avistamientoSubscription = this.avistamientosService.avistamientoCreado$.subscribe(() => {
+          console.log('Se recibió señal de nuevo avistamiento. Recargando lista...');
+          this.cargarReportes(); // Llama al método para recargar la lista
+      });
+  }
+
     if (isPlatformBrowser(this.platformId)) {
       this.cargarMapa();
     }
@@ -46,6 +58,9 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.limpiarMapa();
+    if (this.avistamientoSubscription) {
+      this.avistamientoSubscription.unsubscribe();
+    }
   }
 
   private cargarMapa(): void {

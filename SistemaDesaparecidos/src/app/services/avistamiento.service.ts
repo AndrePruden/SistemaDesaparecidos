@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError , Subject} from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 @Injectable({
@@ -9,12 +9,22 @@ import { catchError, tap } from 'rxjs/operators';
 export class AvistamientoService {
   private baseUrl = 'http://localhost:8080/avistamientos';
 
+
+  private avistamientoCreadoSource = new Subject<void>(); 
+
+
+  avistamientoCreado$ = this.avistamientoCreadoSource.asObservable();
+
   constructor(private http: HttpClient) {}
 
   crearAvistamiento(avistamiento: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/crear`, avistamiento)
       .pipe(
-        catchError(this.handleError)
+        tap(response => { 
+          console.log('Avistamiento creado en backend:', response);
+          this.avistamientoCreadoSource.next(); 
+       }),
+       catchError(this.handleError)
       );
   }
 

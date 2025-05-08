@@ -16,6 +16,7 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
   coordenadasValidas: boolean = false;
   private leaflet: any;
   private mapa: any;
+  private iconoAvistamientoForo: any;
 
   constructor(
     private avistamientoService: AvistamientoService,
@@ -107,6 +108,16 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
       this.coordenadasValidas = true;
       
       try {
+
+        this.iconoAvistamientoForo = L.icon({ // Usa L (el argumento) para crear el icono
+          iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png', // URL del ícono del marcador
+          iconSize: [25, 41], // Tamaño del ícono
+          iconAnchor: [12, 41], // Donde el punto de anclaje del ícono estará (al pie del marcador)
+          popupAnchor: [1, -34], // Lugar donde el popup debería abrirse
+          shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png', // Sombra del marcador
+          shadowSize: [41, 41] // Tamaño de la sombra
+      });
+
         // Crear nuevo mapa
         this.mapa = L.map(divMapa).setView(coords, 15);
         
@@ -117,7 +128,7 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
         }).addTo(this.mapa);
         
         // Marcador
-        L.marker(coords)
+        L.marker(coords, { icon: this.iconoAvistamientoForo })
           .addTo(this.mapa)
           .bindPopup(`
             <b>${avistamiento.personaDesaparecida?.nombre || 'Desconocido'}</b><br>
