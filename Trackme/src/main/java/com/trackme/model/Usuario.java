@@ -31,7 +31,7 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
-    @NotBlank
+    @NotNull
     @Column(nullable = false, unique = true)
     private Integer ci;
 
@@ -40,7 +40,7 @@ public class Usuario {
     @Column(name = "fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
 
-    @NotBlank
+    @NotNull
     @Column(nullable = false)
     private Integer celular;
 

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/scss2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 * {
   margin: 0;
@@ -11,126 +11,155 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  margin: 0;
+  background-color: #f4f6f8;
+  color: #333;
 }
 
 app-header {
   flex-shrink: 0;
   background-color: #1a1a2e;
   color: #fff;
-  padding: 10px 20px;
+  padding: 15px 25px;
   z-index: 10;
   position: sticky;
   top: 0;
 }
 
-
-.container {
+/* Contenedor */
+.registro-container {
   flex-grow: 1;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 30px;
+  align-items: flex-start;
+  padding: 40px 20px;
 }
 
-.forms {
+/* Formulario */
+form {
   width: 100%;
-  max-width: 430px;
+  max-width: 800px;
   background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-  padding: 30px;
-  margin-top: 40px; 
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 30px 40px;
 }
 
-.title {
-  font-size: 27px;
+/* Título */
+h2 {
+  font-size: 26px;
   font-weight: 600;
   text-align: center;
+  margin-bottom: 25px;
+  color: #1a1a2e;
 }
 
-.input-field {
-  position: relative;
-  height: 50px;
-  width: 100%;
-  margin-top: 30px;
+/* Estilo de fila: label + input en línea */
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.input-field input {
-  width: 100%;
-  height: 100%;
-  padding: 0 35px;
-  border: none;
+.form-row label {
+  width: 180px;
+  font-weight: 500;
+  font-size: 15px;
+  color: #444;
+  margin-right: 10px;
+}
+
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row input[type="password"],
+.form-row input[type="tel"],
+.form-row input[type="date"],
+.form-row input[type="number"] {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border-color 0.3s ease;
+}
+
+.form-row input:focus {
   outline: none;
-  font-size: 16px;
-  border-bottom: 2px solid #ccc;
-  transition: all 0.2s ease;
+  border-color: #4070f4;
 }
 
-.input-field input:focus {
-  border-bottom-color: #4070f4;
+/* Contraseña toggle */
+.password-wrapper {
+  position: relative;
+  flex: 1;
 }
 
-.input-field i {
+.btn-toggle-password {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  color: #999;
-  font-size: 23px;
-  transition: all 0.2s ease;
-}
-
-.input-field i.icon {
-  left: 10px;
-}
-
-.input-field i.showHidePw {
   right: 10px;
-  cursor: pointer;
-  color: #999;
-  font-size: 20px;
-  transition: color 0.3s ease;
-}
-
-.input-field i.showHidePw:hover {
-  color: #4070f4;
-}
-
-.button {
-  margin-top: 35px;
-  text-align: center;
-}
-
-.button button {
+  transform: translateY(-50%);
+  background: none;
   border: none;
-  color: #fff;
-  font-size: 17px;
-  font-weight: 500;
-  padding: 10px 20px;
-  border-radius: 6px;
-  background-color: #4070f4;
+  font-size: 13px;
+  color: #4070f4;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
-.button button:hover {
+/* Checkbox (notificaciones) */
+.form-row-checkbox {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.form-row-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  accent-color: #4070f4;
+}
+
+.form-row-checkbox label {
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Botón */
+.btn-registrar {
+  width: 100%;
+  padding: 12px;
+  background-color: #4070f4;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 25px;
+}
+
+.btn-registrar:hover {
   background-color: #265df2;
 }
 
-.mensaje {
+/* Mensajes */
+.mensaje-exito {
   margin-top: 20px;
   text-align: center;
-  color: #4070f4;
+  color: #28a745;
   font-weight: 500;
 }
 
-.mensaje.error {
-  color: #ff0000;
+.mensaje-error {
+  margin-top: 20px;
+  text-align: center;
+  color: #dc3545;
+  font-weight: 500;
 }
 
-.text-muted {
-  font-size: 0.875em;
-  color: #6c757d;
-  margin-top: 10px;
-  display: block;
+/* Footer opcional */
+app-footer {
+  margin-top: auto;
 }

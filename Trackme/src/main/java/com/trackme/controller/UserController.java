@@ -51,20 +51,17 @@ public class UserController {
     @PostMapping("/iniciar-sesion")
     public ResponseEntity<?> iniciarSesion(@RequestBody Usuario usuario) {
         logger.info("Inicio de sesión para: {}", usuario.getEmail());
-
-        Optional<Usuario> existente = usuarioService.obtenerUsuarioPorEmail(usuario.getEmail());
-        if (existente.isEmpty()) {
-            logger.warn("Email no encontrado: {}", usuario.getEmail());
+        Optional<Usuario> existingUser = usuarioService.obtenerUsuarioPorEmail(usuario.getEmail());
+        if (!existingUser.isPresent()) {
+            logger.warn("Inicio de sesión fallido: el correo {} no está registrado", usuario.getEmail());
             return ResponseEntity.status(404).body(new ResponseMessage("El correo electrónico no está registrado."));
         }
-
-        if (!usuarioService.verificarContraseña(usuario.getPassword(), existente.get().getPassword())) {
-            logger.warn("Contraseña incorrecta para: {}", usuario.getEmail());
-            return ResponseEntity.status(401).body(new ResponseMessage("Contraseña incorrecta."));
+        if (usuarioService.verificarContraseña(usuario.getPassword(), existingUser.get().getPassword())) {
+            logger.info("Inicio de sesión exitoso para: {}", usuario.getEmail());
+            return ResponseEntity.ok(new ResponseMessage("Inicio de sesión exitoso."));
         }
-
-        logger.info("Inicio de sesión exitoso para: {}", usuario.getEmail());
-        return ResponseEntity.ok(existente.get());
+        logger.warn("Contraseña incorrecta para el correo: {}", usuario.getEmail());
+        return ResponseEntity.status(401).body(new ResponseMessage("Contraseña incorrecta."));
     }
 
     @PutMapping("/{id}")
