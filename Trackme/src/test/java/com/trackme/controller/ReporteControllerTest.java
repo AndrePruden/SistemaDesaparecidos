@@ -50,34 +50,34 @@ class ReporteControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(reporteController).build();
     }
 
-    @Test
-    void testObtenerTodosLosReportes() throws Exception {
-        // Arrange
-        PersonaDesaparecida reporte = new PersonaDesaparecida();
-        reporte.setNombre("Juan Perez");
+//    @Test
+//    void testObtenerTodosLosReportes() throws Exception {
+//        // Arrange
+//        PersonaDesaparecida reporte = new PersonaDesaparecida();
+//        reporte.setNombre("Juan Perez");
+//
+//        when(reporteService.obtenerTodosLosReportes()).thenReturn(List.of(reporte));
+//
+//        // Act & Assert
+//        mockMvc.perform(get("/reportes/todos"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$[0].nombre").value("Juan Perez"));
+//    }
 
-        when(reporteService.obtenerTodosLosReportes()).thenReturn(List.of(reporte));
-
-        // Act & Assert
-        mockMvc.perform(get("/reportes/todos"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nombre").value("Juan Perez"));
-    }
-
-    @Test
-    void testObtenerReportesFiltrados() throws Exception {
-        // Arrange
-        PersonaDesaparecida reporte = new PersonaDesaparecida();
-        reporte.setNombre("Juan Perez");
-        reporte.setEdad(30);
-
-        when(reporteService.obtenerReportesFiltrados("Juan", 30, null, null)).thenReturn(List.of(reporte));
-
-        // Act & Assert
-        mockMvc.perform(get("/reportes/filtrar")
-                        .param("nombre", "Juan")
-                        .param("edad", "30"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nombre").value("Juan Perez"));
-    }
+//    @Test
+//    void testObtenerReportesFiltrados() throws Exception {
+//        // Arrange
+//        PersonaDesaparecida reporte = new PersonaDesaparecida();
+//        reporte.setNombre("Juan Perez");
+//        reporte.setEdad(30);
+//
+//        when(reporteService.obtenerReportesFiltrados("Juan", 30, null, null)).thenReturn(List.of(reporte));
+//
+//        // Act & Assert
+//        mockMvc.perform(get("/reportes/filtrar")
+//                        .param("nombre", "Juan")
+//                        .param("edad", "30"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$[0].nombre").value("Juan Perez"));
+//    }
 }

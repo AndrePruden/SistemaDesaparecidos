@@ -1,6 +1,8 @@
 package com.trackme.service;
 
+import com.trackme.model.DesaparecidoOficial;
 import com.trackme.model.PersonaDesaparecida;
+import com.trackme.repository.DesaparecidoOficialRepository;
 import com.trackme.repository.ReporteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +28,7 @@ public class ReporteService {
     private ReporteRepository reporteRepository;
 
     @Autowired
-    private ScrapingService scrapingService;
+    private DesaparecidoOficialRepository desaparecidoOficialRepository;
 
     public PersonaDesaparecida crearReporte(String nombre, Integer edad, LocalDate fechaDesaparicion,
                                             String lugarDesaparicion, String descripcion, String emailReportaje,
@@ -56,11 +58,14 @@ public class ReporteService {
     }
 
     private boolean esPersonaValida(String nombre) {
-        boolean personaRegistrada = scrapingService.verificarPersonaDesaparecida(nombre);
-        if (!personaRegistrada) {
-            logger.warn("La persona {} no está registrada oficialmente en la página de la Policía Boliviana", nombre);
+        List<DesaparecidoOficial> coincidencias = desaparecidoOficialRepository.findByNombreContainingIgnoreCase(nombre);
+        boolean encontrada = !coincidencias.isEmpty();
+        if (!encontrada) {
+            logger.warn("La persona '{}' no está registrada oficialmente en la base local de desaparecidos", nombre);
+        } else {
+            logger.info("Persona '{}' validada contra desaparecidos oficiales", nombre);
         }
-        return personaRegistrada;
+        return encontrada;
     }
 
     private String guardarImagen(MultipartFile file) {
