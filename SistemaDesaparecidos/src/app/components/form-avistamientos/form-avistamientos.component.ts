@@ -29,7 +29,7 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy {
   private leaflet: any;
   private mapa: any;
   private marcador: any;
-
+  private iconoAvistamientoPersonalizado: any;
   constructor(
     private avistamientosService: AvistamientoService,
     private reportesService: ReportesService,
@@ -66,11 +66,7 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy {
     this.limpiarMapa();
 
     // Configurar iconos por defecto (para evitar problemas con los marcadores)
-    this.leaflet.Icon.Default.mergeOptions({
-      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png'
-    });
+    
 
     // Crear mapa
     this.mapa = this.leaflet.map(this.mapContainer.nativeElement).setView([-17.3935, -66.1570], 13);
@@ -79,6 +75,15 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy {
     this.leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.mapa);
+
+    this.iconoAvistamientoPersonalizado = this.leaflet.icon({
+      iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png', // URL del ícono del marcador
+      iconSize: [25, 41], // Tamaño del ícono
+      iconAnchor: [12, 41], // Donde el punto de anclaje del ícono estará (al pie del marcador)
+      popupAnchor: [1, -34], // Lugar donde el popup debería abrirse
+      shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png', // Sombra del marcador
+      shadowSize: [41, 41] // Tamaño de la sombra
+  });
 
     // Configurar evento de clic
     this.mapa.on('click', (e: any) => {
@@ -96,8 +101,7 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy {
     }
 
     // Añadir nuevo marcador
-    this.marcador = this.leaflet.marker(latlng).addTo(this.mapa);
-    console.log('Coordenadas seleccionadas:', this.nuevoAvistamiento.lugar);
+    this.marcador = this.leaflet.marker(latlng, { icon: this.iconoAvistamientoPersonalizado }).addTo(this.mapa);    console.log('Coordenadas seleccionadas:', this.nuevoAvistamiento.lugar);
   }
 
   private limpiarMapa(): void {
