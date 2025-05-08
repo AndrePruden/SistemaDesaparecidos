@@ -15,5 +15,4 @@ public interface AvistamientoRepository extends JpaRepository<Avistamiento, Long
 
     @Query("SELECT a FROM Avistamiento a WHERE a.personaDesaparecida.idDesaparecido = :idReporte ORDER BY a.fecha DESC")
     List<Avistamiento> findUltimoAvistamientoPorReporte(@Param("idReporte") Long idReporte);
-
 }

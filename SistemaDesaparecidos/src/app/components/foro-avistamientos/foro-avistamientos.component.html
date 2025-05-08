@@ -9,10 +9,10 @@
 
   <div *ngFor="let avistamiento of avistamientos" class="avistamiento-card">
     <h3>{{ avistamiento.personaDesaparecida?.nombre || 'Desconocido' }}</h3>
-    <p><strong>Lugar:</strong> {{ avistamiento.ubicacion }}</p>
+    <p><strong>Lugar:</strong> {{ avistamiento.ubicacion || avistamiento.lugar || 'Coordenadas no disponibles' }}</p>
     <p><strong>Fecha:</strong> {{ avistamiento.fecha | date:'mediumDate' }}</p>
     <p><strong>Descripción:</strong> {{ avistamiento.descripcion || 'No hay descripción disponible' }}</p>
-    
+
     <button class="btn-mapa" (click)="mostrarMapa(avistamiento)">📍 Ver Mapa</button>
   </div>
 
@@ -22,12 +22,12 @@
       <div class="popup-left">
         <h3>{{ avistamientoSeleccionado.personaDesaparecida?.nombre || 'Desconocido' }}</h3>
         <p><strong>Fecha:</strong> {{ avistamientoSeleccionado.fecha | date:'medium' }}</p>
-        <p><strong>Lugar:</strong> {{ avistamientoSeleccionado.ubicacion }}</p>
+        <p><strong>Lugar:</strong> {{ avistamientoSeleccionado.ubicacion || avistamientoSeleccionado.lugar || 'Coordenadas no disponibles' }}</p>
         <p><strong>Descripción:</strong> {{ avistamientoSeleccionado.descripcion || 'No hay descripción disponible' }}</p>
       </div>
-      
+
       <div class="popup-right">
-        <div class="mapa-popup" id="mapaAvistamiento"></div>
+        <div class="mapa-popup" id="mapaAvistamiento" [class.no-coords]="!coordenadasValidas"></div>
       </div>
     </div>
     <button class="cerrar-btn" (click)="cerrarMapa()">✕ Cerrar</button>

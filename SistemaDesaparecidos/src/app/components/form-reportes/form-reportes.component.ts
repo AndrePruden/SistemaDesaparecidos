@@ -25,7 +25,6 @@ export class FormReportesComponent {
   imagenPreview: string | ArrayBuffer | null = null;
   mensaje: string = '';
 
-  // Nuevas propiedades para mapa
   leaflet: any;
   mapa: any;
   marcador: any;
