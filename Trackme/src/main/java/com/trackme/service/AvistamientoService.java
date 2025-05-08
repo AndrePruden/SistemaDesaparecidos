@@ -54,7 +54,8 @@ public class AvistamientoService {
             logger.warn("No se encontraron avistamientos para el ID: {}", idReporte);
             return Optional.empty();
         } else {
-            logger.info("Último avistamiento encontrado con ID: {}", lista.get(0).getIdAvistamiento());
+            Avistamiento ultimoAvistamiento = lista.get(lista.size() - 1);
+            logger.info("Último avistamiento encontrado con ID: {}", ultimoAvistamiento.getIdAvistamiento());
             return Optional.of(lista.get(0));
         }
     }
