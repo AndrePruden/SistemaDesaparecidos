@@ -1,121 +1,39 @@
 .perfil-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: 'Arial', sans-serif;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-  }
-  
-  .perfil-header {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  h2 {
     text-align: center;
     margin-bottom: 20px;
+    color: #2c3e50;
   }
-  
-  .perfil-header h2 {
-    color: #333;
+
+  ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+      padding: 12px;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 16px;
+      display: flex;
+      justify-content: space-between;
+
+      strong {
+        color: #34495e;
+        min-width: 180px;
+      }
+    }
   }
-  
-  .descripcion {
-    font-size: 14px;
-    color: #777;
-  }
-  
-  .usuario-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background-color: #fff;
-    border-radius: 8px;
-    margin-bottom: 20px;
-  }
-  
-  .usuario-datos label {
-    display: block;
-    font-size: 16px;
-    color: #333;
-  }
-  
-  .editar-btn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  .editar-btn:hover {
-    background-color: #45a049;
-  }
-  
-  .form-editar {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .form-editar input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-  }
-  
-  .form-editar button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .form-editar button[type="button"] {
-    background-color: #f44336;
-  }
-  
-  .form-editar button:hover {
-    background-color: #45a049;
-  }
-  
-  .reportes-container {
-    margin-top: 40px;
-  }
-  
-  .reporte-card {
-    background-color: #fff;
-    padding: 20px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .reporte-card h4 {
-    color: #333;
-    margin-bottom: 10px;
-  }
-  
-  .reporte-card button {
-    background-color: #2196F3;
-    color: white;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .reporte-card button:hover {
-    background-color: #1976D2;
-  }
-  
-  .noReportes {
-    color: #888;
+
+  p {
+    color: red;
     text-align: center;
+    font-weight: bold;
   }
-  
+}

@@ -64,6 +64,19 @@ public class UserController {
         return ResponseEntity.status(401).body(new ResponseMessage("Contraseña incorrecta."));
     }
 
+    @GetMapping("/email/{email}")
+    public ResponseEntity<?> obtenerUsuarioPorEmail(@PathVariable String email) {
+        logger.info("Consulta de usuario por email: {}", email);
+
+        Optional<Usuario> usuarioOpt = usuarioService.obtenerUsuarioPorEmail(email);
+        if (usuarioOpt.isPresent()) {
+            return ResponseEntity.ok(usuarioOpt.get());
+        } else {
+            logger.warn("Usuario no encontrado para el email: {}", email);
+            return ResponseEntity.status(404).body(new ResponseMessage("Usuario no encontrado."));
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarUsuario(@PathVariable Long id, @Valid @RequestBody Usuario usuario) {
         logger.info("Actualización de usuario con ID: {}", id);

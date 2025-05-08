@@ -20,6 +20,10 @@ export class IniciarSesionComponent {
   constructor(private usuarioService: UsuarioService, private router: Router) {}
 
   onSubmit(): void {
+    if (!this.credenciales.email || !this.credenciales.password) {
+      this.mensaje = 'Por favor, completa todos los campos.';
+      return;
+    }
     console.log('🔐 Intentando iniciar sesión con:', this.credenciales);  
     this.usuarioService.iniciarSesion(this.credenciales).subscribe(
       (response) => { 

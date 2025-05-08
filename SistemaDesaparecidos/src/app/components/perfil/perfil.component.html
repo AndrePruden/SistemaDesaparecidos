@@ -1,3 +1,20 @@
 <app-header></app-header>
 
+<div class="perfil-container" *ngIf="usuario; else errorTemplate">
+  <h2>Perfil de Usuario</h2>
+  <ul>
+    <li><strong>Nombre:</strong> {{ usuario.nombre }}</li>
+    <li><strong>Email:</strong> {{ usuario.email }}</li>
+    <li><strong>CI:</strong> {{ usuario.ci }}</li>
+    <li><strong>Fecha de nacimiento:</strong> {{ usuario.fechaNacimiento }}</li>
+    <li><strong>Celular:</strong> {{ usuario.celular }}</li>
+    <li><strong>Dirección:</strong> {{ usuario.direccion }}</li>
+    <li><strong>Recibe notificaciones:</strong> {{ usuario.notificaciones ? 'Sí' : 'No' }}</li>
+  </ul>
+</div>
+
+<ng-template #errorTemplate>
+  <p>{{ mensajeError }}</p>
+</ng-template>
+
 <app-footer></app-footer>
