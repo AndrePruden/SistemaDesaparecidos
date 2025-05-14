@@ -12,9 +12,11 @@
       <div *ngFor="let reporte of reportesFiltrados" class="card-reporte">
         <img
           class="imagen-reporte"
-          [src]="reporte.imagen || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTML0gExaohZHdZW3609F12nUmVc14WXYNx_w&s'"
+          [src]="reporte.imagen"
+          (error)="onImageError($event)"
           alt="Foto del reportado"
         />
+
         <div class="info-reporte">
           <h3>{{ reporte.nombre }}</h3>
           <p><strong>Edad:</strong> {{ reporte.edad }}</p>
@@ -24,9 +26,6 @@
         </div>
 
         <div class="card-actions">
-          <button [routerLink]="['/foro-avistamientos']" class="btn-foro">
-            <i class="fas fa-comments"></i> Ver Foro
-          </button>
           <button class="btn-popup" (click)="mostrarPopup(reporte)">
             <i class="fas fa-map-marked-alt"></i> 
           </button>
