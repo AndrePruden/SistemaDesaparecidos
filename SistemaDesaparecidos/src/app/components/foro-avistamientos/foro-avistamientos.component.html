@@ -1,7 +1,8 @@
 <div class="contenedor-filtro">
   <input type="text" [(ngModel)]="nombreBusqueda" placeholder="Nombre..." (input)="filtrarAvistamientos()">
   <input type="text" [(ngModel)]="lugarBusqueda" placeholder="Lugar..." (input)="filtrarAvistamientos()">
-  <input type="date" [(ngModel)]="fechaBusqueda" (input)="filtrarAvistamientos()">
+  <input type="date" [(ngModel)]="fechaBusquedaInicio" (input)="filtrarAvistamientos()" placeholder="Desde...">
+  <input type="date" [(ngModel)]="fechaBusquedaFin" (input)="filtrarAvistamientos()" placeholder="Hasta...">
   <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar filtros</button>
 </div>
 

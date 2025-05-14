@@ -16,6 +16,11 @@ import { Router } from '@angular/router';
 export class IniciarSesionComponent {
   credenciales = { email: '', password: '' };
   mensaje: string = '';
+  mostrarPassword: boolean = false; 
+
+  togglePasswordVisibility(): void {
+    this.mostrarPassword = !this.mostrarPassword;
+  }
 
   constructor(private usuarioService: UsuarioService, private router: Router) {}
 

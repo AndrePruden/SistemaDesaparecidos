@@ -14,7 +14,7 @@ interface Reporte {
   edad: number;
   lugarDesaparicion: string;
   fechaDesaparicion: string;
-  lugarDesaparicionLegible?: string;
+  lugarDesaparicionLegible: string;
   ultimoAvistamiento?: Avistamiento | null;
   descripcion: string;
 }
@@ -94,7 +94,7 @@ export class CardsReportesComponent implements OnInit {
     this.reportesFiltrados = this.reportes.filter(reporte => {
       return (!this.nombreBusqueda || reporte.nombre.toLowerCase().includes(this.nombreBusqueda.toLowerCase())) &&
              (!this.edadBusqueda || reporte.edad === this.edadBusqueda) &&
-             (!this.lugarBusqueda || reporte.lugarDesaparicion.toLowerCase().includes(this.lugarBusqueda.toLowerCase())) &&
+             (!this.lugarBusqueda || reporte.lugarDesaparicionLegible.toLowerCase().includes(this.lugarBusqueda.toLowerCase())) &&
              (!this.fechaBusqueda || reporte.fechaDesaparicion === this.fechaBusqueda);
     });
     this.setDireccionesReportes();

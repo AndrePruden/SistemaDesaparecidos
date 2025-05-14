@@ -40,9 +40,8 @@ export class RegistroComponent {
   onSubmit(): void {
     console.log('🔑 Datos ingresados:', this.usuario);
 
-    // Validaciones básicas
-    if (!this.usuario.nombre || this.usuario.nombre.length < 3) {
-      this.mensajeError = 'El nombre debe tener al menos 3 caracteres.';
+    if (!this.usuario.nombre || this.usuario.nombre.length < 3 || !/^[a-zA-Z\s]+$/.test(this.usuario.nombre)) {
+      this.mensajeError = 'El nombre debe tener al menos 3 caracteres y solo contener letras.';
       return;
     }
 

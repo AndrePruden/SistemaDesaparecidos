@@ -15,32 +15,3 @@ h2 {
   padding-bottom: 0.5rem;
   display: inline-block;
 }
-
-.formulario{
-  margin-top: 70px;
-}
-
-.formulario,
-.cards-reportes,
-.formulario-avistamientos,
-.foro-avistamientos {
-  background-color: #f8f9fa;
-  padding: 2rem;
-  border-radius: 12px;
-  margin-bottom: 3rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
-  border: 1px solid #d6e9f0;
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 1rem;
-  }
-
-  .formulario,
-  .cards-reportes,
-  .formulario-avistamientos,
-  .foro-avistamientos {
-    padding: 1.5rem;
-  }
-}

@@ -8,7 +8,7 @@ import { MapService } from '../../services/map.service';
 
 interface Avistamiento {
   idAvistamiento: number;
-  lugarDesaparicionLegible?: string;
+  lugarDesaparicionLegible: string;
   ubicacion: string;
   fecha: string;
   descripcion: string;
@@ -32,7 +32,8 @@ export class ForoAvistamientosComponent implements OnInit {
 
   nombreBusqueda = '';
   lugarBusqueda = '';
-  fechaBusqueda = '';
+  fechaBusquedaInicio = '';
+  fechaBusquedaFin = '';
   mapas: { [key: string]: any } = {};
 
   constructor(
@@ -73,10 +74,18 @@ export class ForoAvistamientosComponent implements OnInit {
   }
 
   filtrarAvistamientos(): void {
-    this.avistamientosFiltrados = this.avistamientos.filter( avistamiento => {
-      return (!this.nombreBusqueda || avistamiento.personaDesaparecida.nombre.toLowerCase().includes(this.nombreBusqueda.toLowerCase())) &&
-             (!this.lugarBusqueda || avistamiento.ubicacion.toLowerCase().includes(this.lugarBusqueda.toLowerCase())) &&
-             (!this.fechaBusqueda || avistamiento.fecha === this.fechaBusqueda);
+    this.avistamientosFiltrados = this.avistamientos.filter(avistamiento => {
+      const nombreMatch = !this.nombreBusqueda || avistamiento.personaDesaparecida.nombre.toLowerCase().includes(this.nombreBusqueda.toLowerCase());
+      const lugarMatch = !this.lugarBusqueda || avistamiento.lugarDesaparicionLegible.toLowerCase().includes(this.lugarBusqueda.toLowerCase());
+
+      const fechaAvistamiento = new Date(avistamiento.fecha);
+      const fechaInicio = this.fechaBusquedaInicio ? new Date(this.fechaBusquedaInicio) : null;
+      const fechaFin = this.fechaBusquedaFin ? new Date(this.fechaBusquedaFin) : null;
+
+      const fechaMatch =
+        (!fechaInicio || fechaAvistamiento >= fechaInicio) &&
+        (!fechaFin || fechaAvistamiento <= fechaFin);
+      return nombreMatch && lugarMatch && fechaMatch;
     });
     this.setDireccionesAvistamientos();
     console.log('[FILTRO] Resultados filtrados:', this.avistamientosFiltrados);
@@ -85,7 +94,8 @@ export class ForoAvistamientosComponent implements OnInit {
   limpiarFiltros(): void {
     this.nombreBusqueda = '';
     this.lugarBusqueda = '';
-    this.fechaBusqueda = '';
+    this.fechaBusquedaInicio = '';
+    this.fechaBusquedaFin = '';
     this.filtrarAvistamientos();
   }
 

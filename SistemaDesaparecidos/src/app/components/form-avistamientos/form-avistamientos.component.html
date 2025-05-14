@@ -1,5 +1,4 @@
 <div class="form-container">
-  <h2>Registrar Avistamiento</h2>
   <form (ngSubmit)="crearAvistamiento()" #avistamientoForm="ngForm">
     <div class="form-group">
       <label for="fecha">Fecha del avistamiento</label>
@@ -11,7 +10,6 @@
       <!-- No hay un campo de texto, solo el mapa interactivo -->
     </div>
 
-    <!-- Mapa siempre visible e interactivo -->
     <div #mapContainer id="mapaFormAvistamiento" style="height: 300px; margin-bottom: 1em;"></div>
         
     <div class="form-group">
@@ -23,7 +21,7 @@
       <label for="personaDesaparecida">Seleccionar Reporte</label>
       <select id="personaDesaparecida" name="personaDesaparecida" [(ngModel)]="nuevoAvistamiento.personaDesaparecida.idDesaparecido" required>
         <option *ngFor="let reporte of reportes" [value]="reporte.idDesaparecido">
-          {{ reporte.nombre }} - {{ reporte.lugarDesaparicion }} - {{ reporte.fechaDesaparicion }}
+          {{ reporte.nombre }}
         </option>
       </select>
     </div>
