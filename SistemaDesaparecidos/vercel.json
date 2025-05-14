@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "dist/sistema-desaparecidos/server/server.mjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "dist/sistema-desaparecidos/browser/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/.*",
+      "dest": "/dist/sistema-desaparecidos/server/server.mjs"
+    }
+  ]
+}
