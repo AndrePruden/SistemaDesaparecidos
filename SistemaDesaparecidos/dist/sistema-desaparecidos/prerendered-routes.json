@@ -1,0 +1,9 @@
+{
+  "routes": {
+    "/SistemaDesaparecidos": {},
+    "/SistemaDesaparecidos/iniciar-sesion": {},
+    "/SistemaDesaparecidos/perfil": {},
+    "/SistemaDesaparecidos/registro": {},
+    "/SistemaDesaparecidos/reportes": {}
+  }
+}
