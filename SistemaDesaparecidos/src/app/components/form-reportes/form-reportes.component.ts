@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReportesService } from '../../services/reportes.service';
 import { FeatureFlagsService } from '../../services/feature-flags.service';
-import * as L from 'leaflet';
+
 
 @Component({
   selector: 'app-form-reportes',
@@ -24,9 +24,9 @@ export class FormReportesComponent {
   selectedFile: File | null = null;
   imagenPreview: string | ArrayBuffer | null = null;
 
-  //leaflet: any;
-  mapa: L.Map | null = null;
-  marcador: L.Marker | null = null;
+  leaflet: any;
+  mapa: any;
+  marcador: any;
   mapaVisible = false;
 
   constructor(
@@ -36,57 +36,60 @@ export class FormReportesComponent {
     console.log('📄 FormReportesComponent inicializado');
   }
 
-  ngOnInit() {
-    this.inicializarMapa();
+    ngAfterViewInit() {
+    // Carga Leaflet solo en el navegador
+    if (typeof window !== 'undefined') {
+      this.cargarLeaflet();
+    }
+  }
+
+  private async cargarLeaflet() {
+    try {
+      const leafletModule = await import('leaflet');
+      this.leaflet = leafletModule;
+      this.inicializarMapa();
+    } catch (error) {
+      console.error('Error al cargar Leaflet:', error);
+    }
   }
 
   inicializarMapa(): void {
-    // 1. Verifica si el contenedor existe
-    const container = document.getElementById('mapa');
-    if (!container) {
-      console.error('No se encontró el elemento con id "mapa"');
-      return;
-    }
-
-    // 2. Configura íconos para producción (¡importante!)
-    this.fixLeafletIcons();
-
-    // 3. Inicializa el mapa
-    this.mapa = L.map('mapa').setView([-17.3935, -66.1570], 13);
-
-    // 4. Añade capa de tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Comprobar si el mapa ya está inicializado
+    if (this.mapa) return;  // Si ya existe el mapa, no lo inicializamos de nuevo
+  
+    // Inicializar el mapa
+    this.mapa = this.leaflet.map('mapa').setView([-17.3935, -66.1570], 13);
+    
+    // Cargar las capas del mapa
+    this.leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(this.mapa);
-
-    // 5. Configura el evento de clic
-    this.configurarEventos();
-  }
-
-  private fixLeafletIcons() {
-    // Solución para íconos en producción
-    delete (L.Icon.Default.prototype as any)._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: 'assets/leaflet-images/marker-icon-2x.png',
-      iconUrl: 'assets/leaflet-images/marker-icon.png',
-      shadowUrl: 'assets/leaflet-images/marker-shadow.png'
+  
+    // Crear un ícono predeterminado para el marcador
+    const iconoMarcador = this.leaflet.icon({
+      iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png', // URL del ícono del marcador
+      iconSize: [25, 41], // Tamaño del ícono
+      iconAnchor: [12, 41], // Donde el punto de anclaje del ícono estará (al pie del marcador)
+      popupAnchor: [1, -34], // Lugar donde el popup debería abrirse
+      shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png', // Sombra del marcador
+      shadowSize: [41, 41] // Tamaño de la sombra
     });
-  }
-
-  private configurarEventos() {
-    if (!this.mapa) return;
-
-    this.mapa.on('click', (e: L.LeafletMouseEvent) => {
-      const latlng = e.latlng;
+  
+    // Evento de clic en el mapa
+    this.mapa.on('click', (e: any) => {
+      const latlng = e.latlng;  // Capturar las coordenadas del clic en el mapa
+  
+      // Asignar las coordenadas al campo lugarDesaparicion
       this.nuevoReporte.lugarDesaparicion = `${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
-      
-      // Elimina marcador existente
+      console.log('📍 Coordenadas seleccionadas:', this.nuevoReporte.lugarDesaparicion);
+  
+      // Si ya hay un marcador, lo eliminamos
       if (this.marcador) {
-        this.mapa?.removeLayer(this.marcador);
+        this.mapa.removeLayer(this.marcador);
       }
-
-      // Añade nuevo marcador
-      this.marcador = L.marker(latlng).addTo(this.mapa!);
+  
+      // Añadir un nuevo marcador con el ícono personalizado
+      this.marcador = this.leaflet.marker(latlng, { icon: iconoMarcador }).addTo(this.mapa);
     });
   }
   
