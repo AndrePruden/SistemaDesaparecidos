@@ -1,9 +1,0 @@
-{
-  "routes": {
-    "/": {},
-    "/iniciar-sesion": {},
-    "/perfil": {},
-    "/registro": {},
-    "/reportes": {}
-  }
-}

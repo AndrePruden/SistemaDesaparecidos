@@ -4,10 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration production",
+    "postbuild": "mkdir -p dist/SistemaDesaparecidos/assets/images && cp -r node_modules/leaflet/dist/images/* dist/SistemaDesaparecidos/assets/images/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:SistemaDesaparecidos": "node dist/sistema-desaparecidos/server/server.mjs"
+    "serve:dist": "http-server dist/SistemaDesaparecidos -p 8080 --cors -o"
   },
   "private": true,
   "dependencies": {
@@ -35,6 +36,7 @@
     "@types/jasmine": "~5.1.0",
     "@types/leaflet": "^1.9.17",
     "@types/node": "^18.18.0",
+    "http-server": "^14.1.1",
     "jasmine-core": "~5.4.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",

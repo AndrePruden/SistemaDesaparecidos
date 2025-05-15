@@ -13,35 +13,34 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/SistemaDesaparecidos/browser",
+            "outputPath": "dist/SistemaDesaparecidos",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
+              "src/favicon.ico",
+              "src/assets",
               {
                 "glob": "**/*",
                 "input": "node_modules/leaflet/dist/images",
-                "output": "./assets/leaflet-images/"  
+                "output": "./assets/images/"
               },
               {
                 "glob": "**/*",
                 "input": "public",
-                "output": "/"
-              },
-              "src/assets"  
+                "output": "./"
+              }
             ],
             "styles": [
-              "node_modules/leaflet/dist/leaflet.css",  
+              "node_modules/leaflet/dist/leaflet.css",
               "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/leaflet/dist/leaflet.js" 
+              "node_modules/leaflet/dist/leaflet.js"
             ],
-            "server": "src/main.server.ts",
-            "outputMode": "static",
-            "ssr": { "entry": "src/server.ts" }
+            "baseHref": "./"
           },
           "configurations": {
             "production": {
@@ -76,7 +75,11 @@
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
-            "assets": [{ "glob": "**/*", "input": "public" }],
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              { "glob": "**/*", "input": "public", "output": "./" }
+            ],
             "styles": ["src/styles.scss"],
             "scripts": ["node_modules/leaflet/dist/leaflet.js"]
           }
