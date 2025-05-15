@@ -3,8 +3,8 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AvistamientoService } from '../../services/avistamiento.service';
 import { ReportesService } from '../../services/reportes.service';
-import { Subscription } from 'rxjs'; // Importa Subscription
-
+import { Subscription } from 'rxjs'; 
+import { FeatureFlagsService } from '../../services/feature-flags.service';
 
 @Component({
   selector: 'app-form-avistamientos',
@@ -37,19 +37,19 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy {
   constructor(
     private avistamientosService: AvistamientoService,
     private reportesService: ReportesService,
+    private featureFlagsService: FeatureFlagsService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
     this.cargarReportes();
     
-
-    if (isPlatformBrowser(this.platformId)) { // Opcional: solo suscribir en el navegador
+    if (isPlatformBrowser(this.platformId)) { 
       this.avistamientoSubscription = this.avistamientosService.avistamientoCreado$.subscribe(() => {
           console.log('Se recibió señal de nuevo avistamiento. Recargando lista...');
-          this.cargarReportes(); // Llama al método para recargar la lista
+          this.cargarReportes();
       });
-  }
+    }
 
     if (isPlatformBrowser(this.platformId)) {
       this.cargarMapa();
@@ -76,31 +76,21 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy {
 
   private inicializarMapa(): void {
     if (!this.mapContainer?.nativeElement) return;
-
-    // Limpiar mapa existente
     this.limpiarMapa();
-
-    // Configurar iconos por defecto (para evitar problemas con los marcadores)
-    
-
-    // Crear mapa
     this.mapa = this.leaflet.map(this.mapContainer.nativeElement).setView([-17.3935, -66.1570], 13);
-
-    // Añadir capa base
     this.leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.mapa);
 
     this.iconoAvistamientoPersonalizado = this.leaflet.icon({
-      iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png', // URL del ícono del marcador
-      iconSize: [25, 41], // Tamaño del ícono
-      iconAnchor: [12, 41], // Donde el punto de anclaje del ícono estará (al pie del marcador)
-      popupAnchor: [1, -34], // Lugar donde el popup debería abrirse
+      iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png', 
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34], 
       shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png', // Sombra del marcador
-      shadowSize: [41, 41] // Tamaño de la sombra
+      shadowSize: [41, 41]
   });
 
-    // Configurar evento de clic
     this.mapa.on('click', (e: any) => {
       this.manejarClickMapa(e);
     });
@@ -109,13 +99,9 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy {
   private manejarClickMapa(evento: any): void {
     const latlng = evento.latlng;
     this.nuevoAvistamiento.lugar = `${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
-
-    // Eliminar marcador existente
     if (this.marcador) {
       this.mapa.removeLayer(this.marcador);
     }
-
-    // Añadir nuevo marcador
     this.marcador = this.leaflet.marker(latlng, { icon: this.iconoAvistamientoPersonalizado }).addTo(this.mapa);    console.log('Coordenadas seleccionadas:', this.nuevoAvistamiento.lugar);
   }
 
@@ -148,48 +134,64 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy {
   }
 
   crearAvistamiento(): void {
-    if (!this.validarFormulario()) return;
+    console.log('Intentando crear un nuevo avistamiento...');
+    const emailUsuario = localStorage.getItem('email');
+    console.log('📧 Email del usuario:', emailUsuario);
 
-    const avistamientoData = {
-      emailUsuario: localStorage.getItem('email'),
-      personaDesaparecida: {
-        idDesaparecido: this.nuevoAvistamiento.personaDesaparecida.idDesaparecido
-      },
-      fecha: this.nuevoAvistamiento.fecha,
-      ubicacion: this.nuevoAvistamiento.lugar,
-      descripcion: this.nuevoAvistamiento.descripcion
-    };
+    if (!this.nuevoAvistamiento.personaDesaparecida?.idDesaparecido || !this.nuevoAvistamiento.lugar) {
+      console.warn('⚠️ Faltan campos obligatorios');
+      this.mensaje = 'Completa todos los campos requeridos';
+      return;
+    }
 
-    this.avistamientosService.crearAvistamiento(avistamientoData).subscribe({
-      next: (response) => {
-        console.log('Avistamiento creado:', response);
-        this.mensaje = 'Avistamiento registrado con éxito';
-        this.resetForm();
+    this.featureFlagsService.getFeatureFlag('create-sightings').subscribe({
+      next: (flagActivo: boolean) => {
+        const puedeCrear = flagActivo || !!emailUsuario;
+        console.log('🚦 ¿Autorizado para crear avistamiento?', puedeCrear);
+
+        if (puedeCrear) {
+          const fechaFinal = this.nuevoAvistamiento.fecha || new Date(); 
+          const emailFinal = emailUsuario || (flagActivo ? 'anonimo@gmail.com' : null);
+
+          if (!emailFinal) {
+            console.warn('No se proporcionó un correo válido');
+            this.mensaje = 'No tienes permisos para crear avistamientos';
+            return;
+          }
+
+          const avistamientoData = {
+            emailUsuario: emailFinal,
+            personaDesaparecida: {
+              idDesaparecido: this.nuevoAvistamiento.personaDesaparecida.idDesaparecido
+            },
+            fecha: fechaFinal,
+            ubicacion: this.nuevoAvistamiento.lugar,
+            descripcion: this.nuevoAvistamiento.descripcion
+          };
+
+          console.log('Datos del avistamiento:', avistamientoData);
+
+          this.avistamientosService.crearAvistamiento(avistamientoData).subscribe({
+            next: (response) => {
+              console.log('Avistamiento creado con éxito:', response);
+              this.mensaje = 'Avistamiento registrado con éxito';
+              this.resetForm();
+            },
+            error: (error) => {
+              console.error('Error al crear avistamiento:', error);
+              this.mensaje = 'Ocurrió un error al registrar el avistamiento';
+            }
+          });
+        } else {
+          console.warn('No tienes permisos para crear avistamientos');
+          this.mensaje = 'La funcionalidad de crear avistamientos está deshabilitada';
+        }
       },
       error: (error) => {
-        console.error('Error al crear avistamiento:', error);
-        this.mensaje = 'Error al registrar el avistamiento';
+        console.error('Error al consultar el feature flag:', error);
+        this.mensaje = 'Error al verificar permisos para crear avistamiento';
       }
     });
-  }
-
-  private validarFormulario(): boolean {
-    if (!localStorage.getItem('email')) {
-      this.mensaje = 'Debes iniciar sesión para reportar un avistamiento';
-      return false;
-    }
-
-    if (!this.nuevoAvistamiento.personaDesaparecida.idDesaparecido) {
-      this.mensaje = 'Debes seleccionar un reporte válido';
-      return false;
-    }
-
-    if (!this.nuevoAvistamiento.lugar) {
-      this.mensaje = 'Debes seleccionar una ubicación en el mapa';
-      return false;
-    }
-
-    return true;
   }
 
   resetForm(): void {

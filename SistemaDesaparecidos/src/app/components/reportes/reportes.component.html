@@ -1,5 +1,6 @@
 <app-header></app-header>
-<div class="container" style="padding-top: 100px;">
+<body>
+<div class="container" *ngIf="puedeCrearReportes">
   <div class="formulario">
     <h2>Crear Nuevo Reporte</h2>
     <app-form-reportes></app-form-reportes>
@@ -14,7 +15,7 @@
 </div>
 
 <div class="container">
-  <div class="formulario-avistamientos" *ngIf="estaLogueado">
+  <div class="formulario-avistamientos" *ngIf="puedeCrearAvistamientos">
     <h2>Reportar Avistamiento</h2>
     <app-form-avistamientos></app-form-avistamientos>
   </div>
@@ -26,4 +27,5 @@
     <app-foro-avistamientos></app-foro-avistamientos>
   </div>
 </div>
+</body> 
 <app-footer></app-footer>

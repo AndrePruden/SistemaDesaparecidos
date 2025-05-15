@@ -15,6 +15,7 @@ import { Router } from '@angular/router';
 export class HeaderComponent implements OnInit{
   estaLogueado: boolean = false;
   puedeCrearReportes: boolean = false;
+  puedeCrearAvistamientos: boolean = false;
   emailUsuario: string | null = null;
 
   constructor(
@@ -28,6 +29,7 @@ export class HeaderComponent implements OnInit{
   ngOnInit(): void {
     this.verificarSesion();
     this.verificarPermisosParaCrearReportes();
+    this.verificarPermisosParaCrearAvistamientos();
   }
 
   verificarSesion(): void {
@@ -49,6 +51,18 @@ export class HeaderComponent implements OnInit{
     });
   }
 
+  verificarPermisosParaCrearAvistamientos(): void {
+    this.featureFlagsService.getFeatureFlag('create-sightings').subscribe({
+      next: (flagActivo: boolean) => {
+        this.puedeCrearAvistamientos = flagActivo;
+        console.log('🚦 Feature create-sightings activo:', this.puedeCrearAvistamientos);
+      },
+      error: (error) => {
+        console.error('❌ Error al consultar feature create-reports:', error);
+      }
+    });
+  }
+
   cerrarSesion(): void {
     if (isPlatformBrowser(this.platformId)) {
       console.log('🚪 Cerrando sesión del usuario...');
@@ -62,8 +76,9 @@ export class HeaderComponent implements OnInit{
   verificarAccesoReportes(event: Event): void {
     console.log('Esta logueado? ', this.estaLogueado);
     console.log('Puede crear reportes? ', this.puedeCrearReportes);
+    console.log('Puede crear avistamientos? ', this.puedeCrearAvistamientos);
     event.preventDefault(); 
-    if (this.estaLogueado || this.puedeCrearReportes) {
+    if (this.estaLogueado || this.puedeCrearReportes || this.puedeCrearAvistamientos) {
       this.router.navigate(['/reportes']);
     }
     else {

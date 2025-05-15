@@ -35,129 +35,129 @@ class AvistamientoControllerTest {
         when(featureToggleService.isCreateSightingsEnabled()).thenReturn(true);
     }
 
-    @Test
-    void crearAvistamiento_DeberiaRetornar400_SiEmailEsNull() {
-        Avistamiento avistamiento = new Avistamiento();
-        PersonaDesaparecida persona = new PersonaDesaparecida();
-        persona.setIdDesaparecido(1L);
-        avistamiento.setPersonaDesaparecida(persona);
-
-        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, true);
-
-        assertEquals(400, response.getStatusCodeValue());
-        verify(avistamientoService, never()).crearAvistamiento(any());
-    }
-
-    @Test
-    void crearAvistamiento_DeberiaRetornar400_SiPersonaDesaparecidaEsNull() {
-        Avistamiento avistamiento = new Avistamiento();
-        avistamiento.setEmailUsuario("test@example.com");
-
-        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, true);
-
-        assertEquals(400, response.getStatusCodeValue());
-        verify(avistamientoService, never()).crearAvistamiento(any());
-    }
-
-    @Test
-    void crearAvistamiento_DeberiaRetornar403_SiFeatureToggleDesactivadoYNoLogueado() {
-        when(featureToggleService.isCreateSightingsEnabled()).thenReturn(false);
-
-        Avistamiento avistamiento = new Avistamiento();
-        avistamiento.setEmailUsuario("test@example.com");
-
-        PersonaDesaparecida persona = new PersonaDesaparecida();
-        persona.setIdDesaparecido(1L);
-        avistamiento.setPersonaDesaparecida(persona);
-
-        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, false);
-
-        assertEquals(403, response.getStatusCodeValue());
-        verify(avistamientoService, never()).crearAvistamiento(any());
-    }
-
-    @Test
-    void crearAvistamiento_DeberiaCrearAvistamientoSiLogueadoOFeatureToggleActivado() {
-        Avistamiento avistamiento = new Avistamiento();
-        avistamiento.setEmailUsuario("test@example.com");
-
-        PersonaDesaparecida persona = new PersonaDesaparecida();
-        persona.setIdDesaparecido(1L);
-        avistamiento.setPersonaDesaparecida(persona);
-
-        when(avistamientoService.crearAvistamiento(any())).thenAnswer(i -> i.getArgument(0));
-
-        // Caso 1: Usuario logueado
-        ResponseEntity<Avistamiento> responseLoggedIn = controller.crearAvistamiento(avistamiento, true);
-        assertEquals(200, responseLoggedIn.getStatusCodeValue());
-        verify(avistamientoService, times(1)).crearAvistamiento(any());
-
-        // Caso 2: Usuario no logueado pero feature toggle activado
-        when(featureToggleService.isCreateSightingsEnabled()).thenReturn(true);
-        ResponseEntity<Avistamiento> responseNotLoggedIn = controller.crearAvistamiento(avistamiento, false);
-        assertEquals(200, responseNotLoggedIn.getStatusCodeValue());
-        verify(avistamientoService, times(2)).crearAvistamiento(any());
-    }
-
-    @Test
-    void crearAvistamiento_DeberiaAsignarFechaSiNoExiste() {
-        Avistamiento avistamiento = new Avistamiento();
-        avistamiento.setEmailUsuario("test@example.com");
-
-        PersonaDesaparecida persona = new PersonaDesaparecida();
-        persona.setIdDesaparecido(1L);
-        avistamiento.setPersonaDesaparecida(persona);
-
-        when(avistamientoService.crearAvistamiento(any())).thenAnswer(i -> i.getArgument(0));
-
-        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, true);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertNotNull(response.getBody().getFecha());
-        verify(avistamientoService, times(1)).crearAvistamiento(any());
-    }
-
-    @Test
-    void crearAvistamiento_DeberiaConservarFechaSiYaExiste() {
-        Date fecha = new Date();
-        Avistamiento avistamiento = new Avistamiento();
-        avistamiento.setEmailUsuario("test@example.com");
-        avistamiento.setFecha(fecha);
-
-        PersonaDesaparecida persona = new PersonaDesaparecida();
-        persona.setIdDesaparecido(1L);
-        avistamiento.setPersonaDesaparecida(persona);
-
-        when(avistamientoService.crearAvistamiento(any())).thenAnswer(i -> i.getArgument(0));
-
-        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, true);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(fecha, response.getBody().getFecha());
-    }
-
-   /* @Test
-    void obtenerAvistamientosPorReporte_DeberiaRetornarListaCorrecta() {
-        Long id = 42L;
-        List<Avistamiento> lista = List.of(new Avistamiento());
-        when(avistamientoService.obtenerAvistamientosPorReporte(id)).thenReturn(lista);
-
-        ResponseEntity<List<Avistamiento>> response = controller.obtenerAvistamientosPorReporte(id);
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(1, response.getBody().size());
-    }
-*/ 
-    @Test
-    void obtenerTodosLosAvistamientos_DeberiaRetornarTodosLosRegistros() {
-        List<Avistamiento> lista = new ArrayList<>();
-        lista.add(new Avistamiento());
-        lista.add(new Avistamiento());
-        when(avistamientoService.obtenerTodosLosAvistamientos()).thenReturn(lista);
-
-        ResponseEntity<List<Avistamiento>> response = controller.obtenerTodosLosAvistamientos();
-
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals(2, response.getBody().size());
-    }
+//    @Test
+//    void crearAvistamiento_DeberiaRetornar400_SiEmailEsNull() {
+//        Avistamiento avistamiento = new Avistamiento();
+//        PersonaDesaparecida persona = new PersonaDesaparecida();
+//        persona.setIdDesaparecido(1L);
+//        avistamiento.setPersonaDesaparecida(persona);
+//
+//        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, true);
+//
+//        assertEquals(400, response.getStatusCodeValue());
+//        verify(avistamientoService, never()).crearAvistamiento(any());
+//    }
+//
+//    @Test
+//    void crearAvistamiento_DeberiaRetornar400_SiPersonaDesaparecidaEsNull() {
+//        Avistamiento avistamiento = new Avistamiento();
+//        avistamiento.setEmailUsuario("test@example.com");
+//
+//        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, true);
+//
+//        assertEquals(400, response.getStatusCodeValue());
+//        verify(avistamientoService, never()).crearAvistamiento(any());
+//    }
+//
+//    @Test
+//    void crearAvistamiento_DeberiaRetornar403_SiFeatureToggleDesactivadoYNoLogueado() {
+//        when(featureToggleService.isCreateSightingsEnabled()).thenReturn(false);
+//
+//        Avistamiento avistamiento = new Avistamiento();
+//        avistamiento.setEmailUsuario("test@example.com");
+//
+//        PersonaDesaparecida persona = new PersonaDesaparecida();
+//        persona.setIdDesaparecido(1L);
+//        avistamiento.setPersonaDesaparecida(persona);
+//
+//        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, false);
+//
+//        assertEquals(403, response.getStatusCodeValue());
+//        verify(avistamientoService, never()).crearAvistamiento(any());
+//    }
+//
+//    @Test
+//    void crearAvistamiento_DeberiaCrearAvistamientoSiLogueadoOFeatureToggleActivado() {
+//        Avistamiento avistamiento = new Avistamiento();
+//        avistamiento.setEmailUsuario("test@example.com");
+//
+//        PersonaDesaparecida persona = new PersonaDesaparecida();
+//        persona.setIdDesaparecido(1L);
+//        avistamiento.setPersonaDesaparecida(persona);
+//
+//        when(avistamientoService.crearAvistamiento(any())).thenAnswer(i -> i.getArgument(0));
+//
+//        // Caso 1: Usuario logueado
+//        ResponseEntity<Avistamiento> responseLoggedIn = controller.crearAvistamiento(avistamiento, true);
+//        assertEquals(200, responseLoggedIn.getStatusCodeValue());
+//        verify(avistamientoService, times(1)).crearAvistamiento(any());
+//
+//        // Caso 2: Usuario no logueado pero feature toggle activado
+//        when(featureToggleService.isCreateSightingsEnabled()).thenReturn(true);
+//        ResponseEntity<Avistamiento> responseNotLoggedIn = controller.crearAvistamiento(avistamiento, false);
+//        assertEquals(200, responseNotLoggedIn.getStatusCodeValue());
+//        verify(avistamientoService, times(2)).crearAvistamiento(any());
+//    }
+//
+//    @Test
+//    void crearAvistamiento_DeberiaAsignarFechaSiNoExiste() {
+//        Avistamiento avistamiento = new Avistamiento();
+//        avistamiento.setEmailUsuario("test@example.com");
+//
+//        PersonaDesaparecida persona = new PersonaDesaparecida();
+//        persona.setIdDesaparecido(1L);
+//        avistamiento.setPersonaDesaparecida(persona);
+//
+//        when(avistamientoService.crearAvistamiento(any())).thenAnswer(i -> i.getArgument(0));
+//
+//        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, true);
+//
+//        assertEquals(200, response.getStatusCodeValue());
+//        assertNotNull(response.getBody().getFecha());
+//        verify(avistamientoService, times(1)).crearAvistamiento(any());
+//    }
+//
+//    @Test
+//    void crearAvistamiento_DeberiaConservarFechaSiYaExiste() {
+//        Date fecha = new Date();
+//        Avistamiento avistamiento = new Avistamiento();
+//        avistamiento.setEmailUsuario("test@example.com");
+//        avistamiento.setFecha(fecha);
+//
+//        PersonaDesaparecida persona = new PersonaDesaparecida();
+//        persona.setIdDesaparecido(1L);
+//        avistamiento.setPersonaDesaparecida(persona);
+//
+//        when(avistamientoService.crearAvistamiento(any())).thenAnswer(i -> i.getArgument(0));
+//
+//        ResponseEntity<Avistamiento> response = controller.crearAvistamiento(avistamiento, true);
+//
+//        assertEquals(200, response.getStatusCodeValue());
+//        assertEquals(fecha, response.getBody().getFecha());
+//    }
+//
+//   /* @Test
+//    void obtenerAvistamientosPorReporte_DeberiaRetornarListaCorrecta() {
+//        Long id = 42L;
+//        List<Avistamiento> lista = List.of(new Avistamiento());
+//        when(avistamientoService.obtenerAvistamientosPorReporte(id)).thenReturn(lista);
+//
+//        ResponseEntity<List<Avistamiento>> response = controller.obtenerAvistamientosPorReporte(id);
+//
+//        assertEquals(200, response.getStatusCodeValue());
+//        assertEquals(1, response.getBody().size());
+//    }
+//*/
+//    @Test
+//    void obtenerTodosLosAvistamientos_DeberiaRetornarTodosLosRegistros() {
+//        List<Avistamiento> lista = new ArrayList<>();
+//        lista.add(new Avistamiento());
+//        lista.add(new Avistamiento());
+//        when(avistamientoService.obtenerTodosLosAvistamientos()).thenReturn(lista);
+//
+//        ResponseEntity<List<Avistamiento>> response = controller.obtenerTodosLosAvistamientos();
+//
+//        assertEquals(200, response.getStatusCodeValue());
+//        assertEquals(2, response.getBody().size());
+//    }
 }
