@@ -95,7 +95,7 @@ public class ScrapingService {
         }
     }
 
-    @Scheduled(cron = "0 58 9 * * THU") // Ejecutar cada lunes a las 8 AM
+    @Scheduled(cron = "0 29 14 * * WED") // Ejecutar cada lunes a las 8 AM
     public void actualizarDesaparecidos() {
         try {
             RestTemplate restTemplate = new RestTemplate();

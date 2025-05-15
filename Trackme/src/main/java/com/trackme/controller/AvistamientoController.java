@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/avistamientos")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class AvistamientoController {
 
     private static final Logger logger = LoggerFactory.getLogger(AvistamientoController.class);

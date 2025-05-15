@@ -8,7 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/config")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class FeatureToggleController {
     @Autowired
     private FeatureToggleService featureToggleService;
