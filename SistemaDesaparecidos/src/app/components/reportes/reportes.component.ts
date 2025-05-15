@@ -31,6 +31,7 @@ export class ReportesComponent implements OnInit {
   emailUsuario: string | null = null;
   estaLogueado: boolean = false;
   puedeCrearReportes: boolean = false;
+  puedeCrearAvistamientos: boolean = false;
 
   constructor(
     private http: HttpClient,
@@ -45,6 +46,7 @@ export class ReportesComponent implements OnInit {
       console.log('🌐 Plataforma del navegador detectada');
       this.verificarSesion();
       this.verificarPermisosParaCrearReportes();
+      this.verificarPermisosParaCrearAvistamientos();
     }
   }
 
@@ -72,6 +74,24 @@ export class ReportesComponent implements OnInit {
         error: (error) => {
           console.error('❌ Error al consultar el feature flag:', error);
           this.puedeCrearReportes = false;
+        }
+      });
+    }
+  }
+
+  verificarPermisosParaCrearAvistamientos(): void {
+    if (this.estaLogueado) {
+      this.puedeCrearAvistamientos = true;
+      console.log('🚦 Usuario logueado, puede crear avistamientos');
+    } else {
+      this.featureFlagsService.getFeatureFlag('create-sightings').subscribe({
+        next: (flagActivo: boolean) => {
+          this.puedeCrearAvistamientos = flagActivo;
+          console.log(`🚦 Feature 'create-sightings' consultado. ¿Puede crear avistamientos? ${this.puedeCrearAvistamientos}`);
+        },
+        error: (error) => {
+          console.error('❌ Error al consultar el feature flag:', error);
+          this.puedeCrearAvistamientos = false;
         }
       });
     }

@@ -10,31 +10,19 @@
 body {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   background-color: #f4f6f8;
   color: #333;
 }
 
-app-header {
-  flex-shrink: 0;
-  background-color: #1a1a2e;
-  color: #fff;
-  padding: 15px 25px;
-  z-index: 10;
-  position: sticky;
-  top: 0;
-}
-
-/* Contenedor */
 .registro-container {
   flex-grow: 1;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 40px 20px;
+  padding: 90px 20px 40px 20px;
 }
 
-/* Formulario */
 form {
   width: 100%;
   max-width: 800px;
@@ -44,7 +32,6 @@ form {
   padding: 30px 40px;
 }
 
-/* Título */
 h2 {
   font-size: 26px;
   font-weight: 600;
@@ -53,7 +40,6 @@ h2 {
   color: #1a1a2e;
 }
 
-/* Estilo de fila: label + input en línea */
 .form-row {
   display: flex;
   align-items: center;
@@ -87,7 +73,6 @@ h2 {
   border-color: #4070f4;
 }
 
-/* Contraseña toggle */
 .password-wrapper {
   position: relative;
   flex: 1;
@@ -105,7 +90,6 @@ h2 {
   cursor: pointer;
 }
 
-/* Checkbox (notificaciones) */
 .form-row-checkbox {
   display: flex;
   align-items: center;

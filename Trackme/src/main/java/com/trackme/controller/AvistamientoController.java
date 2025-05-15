@@ -1,8 +1,8 @@
 package com.trackme.controller;
 
 import com.trackme.model.Avistamiento;
-import com.trackme.model.PersonaDesaparecida;
 import com.trackme.service.AvistamientoService;
+import com.trackme.service.AvistamientoValidationService;
 import com.trackme.service.FeatureToggleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,45 +29,36 @@ public class AvistamientoController {
     @Autowired
     private FeatureToggleService featureToggleService;
 
+    @Autowired
+    private AvistamientoValidationService avistamientoValidationService;
+
     @PostMapping("/crear")
-    public ResponseEntity<Avistamiento> crearAvistamiento(
-            @RequestBody Avistamiento avistamiento,
-            @RequestParam(value = "isLoggedIn", defaultValue = "false") boolean isLoggedIn
-    ) {
-        logger.info("Solicitud para crear avistamiento: {}", avistamiento);
+    public ResponseEntity<?> crearAvistamiento(@RequestBody Avistamiento avistamiento) {
 
-        if (!isLoggedIn && !featureToggleService.isCreateSightingsEnabled()) {
-            logger.warn("Avistamiento inválido recibido por usuario no logueado mientras el feature toggle está desactivado.");
-            return ResponseEntity.status(403).body(null);
+        if (!featureToggleService.isCreateSightingsEnabled() && avistamiento.getEmailUsuario() == null) {
+            logger.warn("Intento de crear avistamiento por usuario no logueado mientras el feature toggle está desactivado.");
+            return ResponseEntity.status(403).body("La creación de avistamientos está deshabilitada para usuarios no logueados.");
         }
 
-        if (!esAvistamientoValido(avistamiento)) {
-            logger.warn("Avistamiento inválido recibido: {}", avistamiento);
-            return ResponseEntity.badRequest().build();
-        }
-
-        if (avistamiento.getFecha() == null) {
-            asignarFechaActual(avistamiento);
-            logger.debug("Fecha asignada automáticamente al avistamiento: {}", avistamiento.getFecha());
-        }
         try {
+            if (avistamiento.getFecha() == null) {
+                avistamiento.setFecha(new Date());
+            }
+
+            String validacion = avistamientoValidationService.validarAvistamiento(avistamiento);
+            if (validacion != null) {
+                logger.warn("Avistamiento inválido recibido: {}", validacion);
+                return ResponseEntity.badRequest().body(validacion);
+            }
+
             Avistamiento nuevo = avistamientoService.crearAvistamiento(avistamiento);
             logger.info("Avistamiento creado exitosamente con ID: {}", nuevo.getIdAvistamiento());
             return ResponseEntity.ok(nuevo);
+
         } catch (Exception e) {
             logger.error("Error al crear el avistamiento", e);
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.status(500).body("Error interno al crear el avistamiento.");
         }
-    }
-
-    private boolean esAvistamientoValido(Avistamiento avistamiento) {
-        return avistamiento.getEmailUsuario() != null && !avistamiento.getEmailUsuario().isEmpty()
-                && avistamiento.getPersonaDesaparecida() != null
-                && avistamiento.getPersonaDesaparecida().getIdDesaparecido() != null;
-    }
-
-    private void asignarFechaActual(Avistamiento avistamiento) {
-        avistamiento.setFecha(new Date());
     }
 
     @GetMapping("/usuario/{email}")

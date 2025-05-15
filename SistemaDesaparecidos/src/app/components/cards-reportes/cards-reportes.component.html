@@ -12,21 +12,20 @@
       <div *ngFor="let reporte of reportesFiltrados" class="card-reporte">
         <img
           class="imagen-reporte"
-          [src]="reporte.imagen || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTML0gExaohZHdZW3609F12nUmVc14WXYNx_w&s'"
+          [src]="reporte.imagen"
+          (error)="onImageError($event)"
           alt="Foto del reportado"
         />
+
         <div class="info-reporte">
           <h3>{{ reporte.nombre }}</h3>
           <p><strong>Edad:</strong> {{ reporte.edad }}</p>
           <p><strong>Fecha desaparición:</strong> {{ reporte.fechaDesaparicion | date:'mediumDate' }}</p>
-          <p><strong>Lugar:</strong> {{ reporte.lugarDesaparicion }}</p>
+          <p><strong>Lugar:</strong> {{ reporte.lugarDesaparicionLegible }}</p>
           <p class="descripcion-recortada"><strong>Descripción:</strong> {{ reporte.descripcion || 'No hay descripción disponible' }}</p>
         </div>
 
         <div class="card-actions">
-          <button [routerLink]="['/foro-avistamientos']" class="btn-foro">
-            <i class="fas fa-comments"></i> Ver Foro
-          </button>
           <button class="btn-popup" (click)="mostrarPopup(reporte)">
             <i class="fas fa-map-marked-alt"></i> 
           </button>
@@ -46,14 +45,13 @@
   </ng-template>
 </div>
 
-<!-- Popup fuera del contenedor de cards -->
 <div *ngIf="reporteSeleccionado" class="popup">
   <div class="popup-content">
     <div class="popup-left">
       <h3>{{ reporteSeleccionado.nombre }}</h3>
       <p><strong>Edad:</strong> {{ reporteSeleccionado.edad }}</p>
       <p><strong>Desaparecido desde:</strong> {{ reporteSeleccionado.fechaDesaparicion | date:'mediumDate' }}</p>
-      <p><strong>Lugar de desaparición:</strong> {{ reporteSeleccionado.lugarDesaparicion }}</p>
+      <p><strong>Lugar de desaparición:</strong> {{ reporteSeleccionado.lugarDesaparicionLegible }}</p>
       <p><strong>Descripción:</strong> {{ reporteSeleccionado.descripcion || 'No hay descripción disponible' }}</p>
       
       <div *ngIf="reporteSeleccionado.ultimoAvistamiento" class="ultimo-avistamiento">

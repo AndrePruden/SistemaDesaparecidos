@@ -266,25 +266,6 @@
   gap: 0.5rem;
 }
 
-.btn-foro {
-  flex: 1;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.btn-foro:hover {
-  background-color: #218838;
-}
-
 .btn-refrescar {
   margin-top: 1rem;
   background-color: #007EA7;

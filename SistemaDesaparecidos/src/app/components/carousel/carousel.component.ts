@@ -7,35 +7,38 @@ import { Component } from '@angular/core';
 })
 export class CarouselComponent {
   images: string[] = [
-    'https://previews.123rf.com/images/ayo88/ayo881503/ayo88150300042/37278205-tel%C3%A9fono-m%C3%B3vil-con-gps-imposici%C3%B3n-mapa-de-fondo.jpg',
-    'https://media.licdn.com/dms/image/D5612AQHWpE1kA7kg1Q/article-cover_image-shrink_720_1280/0/1711516990539?e=2147483647&v=beta&t=WoACxvfXHIRz53PoNUEgIaJKCBNJxSUO2QnitUFNNqA',
-    'https://www.opinion.com.bo/media/opinion/images/2022/12/09/2022120922534446978.jpg',
+    'images/familia-preocupada.jpg',
+    'images/notificacion-celular.jpg',
+    'images/mapa-avistamientos.jpg',
   ];
-  
+
+  titles: string[] = [
+    '¿Tu ser querido ha desaparecido?',
+    'Recibe alertas en tiempo real',
+    'Visualiza y comparte avistamientos cercanos',
+  ];
+
+  descriptions: string[] = [
+    'Creamos una red entre familias, comunidad y autoridades para responder rápidamente.',
+    'Nuestro sistema envía notificaciones inmediatas a quienes puedan ayudar.',
+    'Consulta reportes en el mapa y ayuda difundiendo información confiable.',
+  ];
+
   currentImage: number = 0;
 
-  constructor() {
-    console.log('CarouselComponent inicializado');
-    console.log(`Imagen actual al iniciar: ${this.currentImage}`);
-  }
-
   nextImage() {
-    const anterior = this.currentImage;
-    if (this.currentImage < this.images.length - 1) {
-      this.currentImage++;
-    } else {
-      this.currentImage = 0;
-    }
-    console.log(`nextImage() llamado - de ${anterior} a ${this.currentImage}`);
+    this.currentImage = (this.currentImage + 1) % this.images.length;
   }
 
   prevImage() {
-    const anterior = this.currentImage;
-    if (this.currentImage > 0) {
-      this.currentImage--;
-    } else {
-      this.currentImage = this.images.length - 1;
+    this.currentImage =
+      (this.currentImage - 1 + this.images.length) % this.images.length;
+  }
+
+  irASeccion() {
+    const seccion = document.getElementById('Reportes_Relevantes');
+    if (seccion) {
+      seccion.scrollIntoView({ behavior: 'smooth' });
     }
-    console.log(`prevImage() llamado - de ${anterior} a ${this.currentImage}`);
   }
 }

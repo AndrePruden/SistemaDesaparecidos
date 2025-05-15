@@ -1,9 +1,15 @@
 <div class="carousel">
   <div class="carousel-inner">
     <img [src]="images[currentImage]" alt="Imagen del carrusel" />
+    <div class="overlay">
+      <h1>{{ titles[currentImage] }}</h1>
+      <p>{{ descriptions[currentImage] }}</p>
+      <button class="btn-principal" (click)="irASeccion()">Ver reportes activos</button>
+    </div>
   </div>
   <div class="controls">
     <button class="prev" (click)="prevImage()">❮</button>
     <button class="next" (click)="nextImage()">❯</button>
   </div>
 </div>
+
