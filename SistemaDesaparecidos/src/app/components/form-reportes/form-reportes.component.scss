@@ -87,3 +87,8 @@ button[type="submit"]:hover {
 button[type="submit"]:active {
   transform: scale(0.98);
 }
+
+#mapContainer {
+  height: 400px;
+  width: 100%;
+}

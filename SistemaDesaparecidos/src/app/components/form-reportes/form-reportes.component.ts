@@ -54,16 +54,16 @@ export class FormReportesComponent {
         return;
       }
 
-      // Configurar las rutas de los iconos de Leaflet
-      const iconDefault = L.Icon.Default.prototype;
-      iconDefault.options.iconUrl = 'assets/images/marker-icon.png';
-      iconDefault.options.iconRetinaUrl = 'assets/images/marker-icon-2x.png';
-      iconDefault.options.shadowUrl = 'assets/images/marker-shadow.png';
-      iconDefault.options.iconSize = [25, 41];
-      iconDefault.options.iconAnchor = [12, 41];
-      iconDefault.options.popupAnchor = [1, -34];
-      iconDefault.options.shadowSize = [41, 41];
-  
+      // Crear un icono personalizado usando imágenes locales
+      const marcadorIcono = L.icon({
+        iconUrl: 'assets/images/marker-icon.png',  // Ruta local para el ícono
+        iconSize: [25, 41], // Tamaño del ícono
+        iconAnchor: [12, 41], // Donde el punto de anclaje del ícono estará (en la base)
+        popupAnchor: [1, -34], // Lugar donde el popup debe abrirse
+        shadowUrl: 'assets/images/marker-shadow.png',  // Sombra del ícono
+        shadowSize: [41, 41] // Tamaño de la sombra
+      });
+
       // Inicializar el mapa
       this.mapa = L.map('mapa').setView([-17.3935, -66.1570], 13);
       
@@ -87,8 +87,8 @@ export class FormReportesComponent {
           this.mapa.removeLayer(this.marcador);
         }
     
-        // Añadir un nuevo marcador
-        this.marcador = L.marker(latlng).addTo(this.mapa!);
+        // Añadir un nuevo marcador con el ícono personalizado
+        this.marcador = L.marker(latlng, { icon: marcadorIcono }).addTo(this.mapa!);
       });
     } catch (error) {
       console.error('Error al inicializar el mapa:', error);

@@ -25,7 +25,7 @@
               {
                 "glob": "**/*",
                 "input": "node_modules/leaflet/dist/images",
-                "output": "./assets/images/"
+                "output": "assets/images/"
               },
               {
                 "glob": "**/*",
@@ -40,7 +40,7 @@
             "scripts": [
               "node_modules/leaflet/dist/leaflet.js"
             ],
-            "baseHref": "./"
+            "baseHref": "/"
           },
           "configurations": {
             "production": {
