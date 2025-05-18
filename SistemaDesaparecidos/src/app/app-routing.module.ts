@@ -1,16 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { RegistroComponent } from './components/registro/registro.component';
-import { ForoAvistamientosComponent } from './components/foro-avistamientos/foro-avistamientos.component';
 
-const routes: Routes = [
-  { path: 'registro', component: RegistroComponent },
-  { path: 'foro-avistamientos/:id', component: ForoAvistamientosComponent }, // Parametro id
-  { path: '', redirectTo: '/registro', pathMatch: 'full' }, // Ruta por defecto
-];
+// Puedes dejarlo con un array de rutas vacío o con solo el RouterModule
+const routes: Routes = [];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)], // Asegúrate de que el RouterModule esté configurado
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

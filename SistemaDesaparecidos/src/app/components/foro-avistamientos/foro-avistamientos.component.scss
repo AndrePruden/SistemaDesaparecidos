@@ -9,7 +9,9 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.contenedor-filtro input {
+.contenedor-filtro input[type="text"],
+.contenedor-filtro input[type="date"],
+.contenedor-filtro select { // Añadir select aquí para aplicar estilos uniformes
   flex: 1 1 200px;
   padding: 0.75rem 1rem;
   font-size: 1rem;
@@ -17,40 +19,73 @@
   border-radius: 10px;
   transition: border 0.2s ease, box-shadow 0.2s ease;
   background-color: #fff;
+  box-sizing: border-box; // Asegura que padding no agrande el elemento
 }
 
-.contenedor-filtro input:focus {
+
+.contenedor-filtro input:focus,
+.contenedor-filtro select:focus { // Añadir focus para select
   outline: none;
   border-color: #007EA7;
   box-shadow: 0 0 0 3px rgba(0,126,167,0.15);
 }
 
+.btn-limpiar {
+  background-color: #007EA7; // Usando tu color azul
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-self: center; // Alinea el botón limpiar verticalmente en el flex
+}
+
+.btn-limpiar:hover {
+  background-color: #005f7f; // Tono más oscuro al pasar el mouse
+}
+
+
 .foro-container {
   display: grid;
   width: 100%;
-  padding: 2rem 0 2rem 0;
-  margin: 2rem auto;
+  // padding: 2rem 0; // Padding top/bottom
+  // margin: 2rem auto; // Margin top/bottom y centrado horizontal
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  // Ajustando padding/margin para que el contenido esté dentro del div principal con sombra
+  padding: 2rem; // Padding general dentro del contenedor
+  box-sizing: border-box; // Asegura que el padding no aumente el tamaño del contenedor
 }
 
-.foro-container:has(:only-child) {
-  place-items: center;
+// Regla para centrar el mensaje de no avistamientos cuando es el único contenido
+.foro-container:has(.mensaje-vacio:only-child) {
+   display: flex; // Cambiar a flex para centrar
+   justify-content: center;
+   align-items: center;
+   min-height: 200px; // Altura mínima si está vacío
 }
 
-.foro-container:not(:has(:only-child)) {
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+// Regla para el layout grid cuando hay avistamientos
+.foro-container:not(:has(.mensaje-vacio:only-child)) {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); // Diseño responsivo
+  gap: 1.5rem; // Espacio entre tarjetas
 }
+
 
 .avistamiento-card {
   background-color: #f8f9fa;
   border-left: 4px solid #007EA7;
   border-radius: 8px;
   padding: 1.25rem;
-  margin: 1.5rem;
+  // margin: 1.5rem; // Eliminar margin si ya usas gap en el grid container
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column; // Contenido apilado verticalmente
+  justify-content: space-between; // Empuja el contenido hacia arriba y las acciones hacia abajo
+  min-height: 200px; // Establecer una altura mínima para consistencia
 }
 
 .avistamiento-card h3 {
@@ -59,68 +94,68 @@
   margin-bottom: 0.75rem;
 }
 
-.btn-mapa {
-  background-color: #007EA7;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 0.75rem;
+.avistamiento-card p {
+    margin-bottom: 0.5rem; // Espacio entre párrafos
+    line-height: 1.4;
+    color: #555;
+    flex-grow: 1; // Permite que los párrafos (especialmente la descripción) ocupen el espacio sobrante
 }
 
-.btn-mapa:hover {
-  background-color: #005f7f;
+.card-actions {
+    display: flex; // Habilita Flexbox para alinear los botones horizontalmente
+    gap: 10px; // Espacio entre los botones
+    margin-top: 1rem; // Espacio entre la última línea de texto y los botones
+    align-items: center; // Centra los botones verticalmente en el contenedor de acciones
+    justify-content: flex-start; // Alinea los botones al inicio (izquierda)
+
+    // --- Estilos comunes para los botones de acción (si los hubiera muchos) ---
+    button {
+       padding: 0.5rem 1rem;
+       border: none;
+       border-radius: 6px;
+       cursor: pointer;
+       transition: background-color 0.3s ease, opacity 0.3s ease;
+       font-size: 1rem; // Asegurar tamaño de fuente consistente
+    }
+
+    // --- Estilo específico del botón Ver Mapa ---
+    .btn-mapa {
+        background-color: #007EA7; // Tu color azul
+        color: white;
+
+        &:hover {
+            background-color: #005f7f; // Tono más oscuro
+        }
+        &:disabled { // Estilo para estado deshabilitado
+             background-color: #ccc;
+             cursor: not-allowed;
+        }
+    }
+
+    // --- Estilo específico del botón Editar (copia estilos de btn-mapa) ---
+    .btn-editar {
+        background-color: #007EA7; // Mismo color que Ver Mapa
+        color: white;
+
+        &:hover {
+            background-color: #005f7f; // Mismo hover que Ver Mapa
+        }
+         &:disabled { // Estilo para estado deshabilitado
+             background-color: #ccc;
+             cursor: not-allowed;
+        }
+    }
 }
 
-.mensaje-vacio {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 3rem 1rem;
-  text-align: center;
-  color: #555;
-  font-size: 1.1rem;
-  opacity: 0.8;
-}
 
-.icono-vacio {
-  width: 100px;
-  margin-bottom: 1rem;
-  opacity: 0.6;
-}
-
-.btn-popup {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #007EA7;
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-}
-
-.btn-popup:hover {
-  background-color: #005f7f;
-}
-
+// --- Estilos del Popup ---
 .popup {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.9); // Fondo más oscuro
   display: flex;
   justify-content: center;
   align-items: center;
@@ -130,14 +165,15 @@
 
 .popup-content {
   background-color: white;
-  width: 80%;
-  max-width: 1000px;
-  max-height: 80vh;
+  width: 90%; // Ajustar ancho para ocupar más espacio
+  max-width: 1200px; // Aumentar ancho máximo
+  max-height: 90vh; // Ajustar altura máxima
   border-radius: 12px;
   overflow: hidden;
   display: flex;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s ease-out;
+  flex-direction: row; // Layout por defecto en fila para pantallas grandes
 }
 
 .popup-left {
@@ -162,16 +198,17 @@
 }
 
 .popup-right {
-  flex: 1.5;
+  flex: 1.5; // El mapa ocupa más espacio que la información
   display: flex;
   flex-direction: column;
   background-color: #f8f9fa;
   padding: 2rem;
+  min-width: 300px; // Ancho mínimo para el panel del mapa
 }
 
 .mapa-popup {
-  height: 300px;
-  //min-height: 400px;
+  height: 100%; // El mapa ocupa toda la altura del panel derecho
+  min-height: 300px; // Altura mínima para el mapa
   width: 100%;
   border-radius: 8px;
   border: 1px solid #ddd;
@@ -179,31 +216,13 @@
 }
 
 .leaflet-container {
-  height: 100%;
-  width: 100%;
-  min-height: 300px;
+  height: 100% !important; // Usar !important si es necesario para anular estilos por defecto
+  width: 100% !important;
 }
+
 
 .btn-limpiar {
-  background-color: #007EA7;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  align-self: flex-end;
-  margin-left: auto;
-}
-
-.btn-limpiar:hover {
-  background-color: #005f7f;
-}
-
-.cerrar-btn:hover {
-  transform: scale(1.2);
-  color: #007EA7;
+  // Ya definido antes en .contenedor-filtro
 }
 
 .cerrar-btn {
@@ -212,20 +231,39 @@
   right: 1.5rem;
   background: none;
   border: none;
-  color: white;
+  color: white; // Color blanco para que se vea sobre el fondo oscuro del popup
   font-size: 1.5rem;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, color 0.2s ease; // Añadir transición de color
+  z-index: 1010; // Asegura que esté por encima del contenido del popup
 }
 
 .cerrar-btn:hover {
   transform: scale(1.2);
-  color: #007EA7;
+  color: #007EA7; // Cambiar a azul al pasar el mouse
+}
+
+.mensaje-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #555;
+  font-size: 1.1rem;
+  opacity: 0.8;
+  // Ya centrado por la regla .foro-container:has(...)
+}
+
+.icono-vacio {
+  width: 100px;
+  margin-bottom: 1rem;
+  opacity: 0.6;
 }
 
 .btn-refrescar {
   margin-top: 1rem;
-  background-color: #007EA7;
+  background-color: #007EA7; // Tu color azul
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -235,7 +273,7 @@
 }
 
 .btn-refrescar:hover {
-  background-color: #005f7f;
+  background-color: #005f7f; // Tono más oscuro
 }
 
 @keyframes fadeIn {
@@ -250,16 +288,29 @@
 
 @media (max-width: 768px) {
   .popup-content {
-    flex-direction: column;
+    flex-direction: column; // Apilar en pantallas pequeñas
     width: 95%;
     max-height: 90vh;
+    overflow-y: auto; // Añadir scroll si es necesario
   }
-  
+
+  .popup-left, .popup-right {
+      padding: 1rem; // Reducir padding en móvil
+  }
+
   .popup-right {
-    min-height: 300px;
+    min-height: 300px; // Altura mínima para el mapa en móvil
+    flex: none; // No ocupar espacio flexible, solo lo necesario
+    width: 100%; // Ancho completo
+    box-sizing: border-box; // Asegurar padding no desborda
   }
-  
+
   .mapa-popup {
-    min-height: 300px;
+    min-height: 250px; // Altura mínima ajustada para móvil
   }
+
+   .cerrar-btn {
+       top: 1rem; // Ajustar posición en móvil
+       right: 1rem;
+   }
 }

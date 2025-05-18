@@ -10,10 +10,20 @@
   <ng-container *ngIf="avistamientosFiltrados.length > 0; else noAvistamientos">
     <div *ngFor="let avistamiento of avistamientosFiltrados" class="avistamiento-card">
       <h3>{{ avistamiento.personaDesaparecida.nombre}}</h3>
-      <p><strong>Lugar:</strong> {{ avistamiento.lugarDesaparicionLegible }}</p>
+      <p><strong>Lugar:</strong> {{ avistamiento.lugarDesaparicionLegible || avistamiento.ubicacion }}</p>
       <p><strong>Fecha:</strong> {{ avistamiento.fecha }}</p>
-      <p><strong>Descripción:</strong> {{ avistamiento.descripcion }}</p>
-      <button class="btn-mapa" (click)="mostrarPopup(avistamiento)">Ver Mapa</button>
+      <p><strong>Descripción:</strong> {{ avistamiento.descripcion || 'No hay descripción disponible' }}</p>
+
+      <div class="card-actions">
+        <button class="btn-mapa" (click)="mostrarPopup(avistamiento)">Ver Mapa</button>
+        <button
+          *ngIf="currentUserEmail && avistamiento.emailUsuario === currentUserEmail"
+          class="btn-editar"
+          (click)="irAEditarAvistamiento(avistamiento.idAvistamiento)"
+        >
+          Editar
+        </button>
+      </div>
     </div>
   </ng-container>
 
@@ -33,7 +43,7 @@
     <div class="popup-left">
       <h3>{{ avistamientoSeleccionado.personaDesaparecida.nombre }}</h3>
       <p><strong>Fecha:</strong> {{ avistamientoSeleccionado.fecha }}</p>
-      <p><strong>Lugar:</strong> {{ avistamientoSeleccionado.lugarDesaparicionLegible }}</p>
+      <p><strong>Lugar:</strong> {{ avistamientoSeleccionado.lugarDesaparicionLegible || avistamientoSeleccionado.ubicacion }}</p>
       <p><strong>Descripción:</strong> {{ avistamientoSeleccionado.descripcion || 'No hay descripción disponible' }}</p>
     </div>
     <div class="popup-right">
