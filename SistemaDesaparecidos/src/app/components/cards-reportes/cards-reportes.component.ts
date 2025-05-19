@@ -31,7 +31,6 @@ interface Avistamiento {
   imports: [CommonModule, FormsModule, RouterModule],
   styleUrls: ['./cards-reportes.component.scss']
 })
-
 export class CardsReportesComponent implements OnInit {
   reportes: Reporte[] = [];
   reportesFiltrados: Reporte[] = [];
@@ -39,7 +38,7 @@ export class CardsReportesComponent implements OnInit {
   edadBusqueda: number | null = null;
   lugarBusqueda = '';
   fechaBusqueda = '';
-  mapas: { [key: string]: any } = {};
+  mapas: { [key: string]: L.Map } = {}; // Cambiado a tipo L.Map
   reporteSeleccionado: Reporte | null = null;
 
   constructor(
@@ -51,8 +50,10 @@ export class CardsReportesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('[INIT] Componente cargado');
-    this.obtenerReportes();
+    if (isPlatformBrowser(this.platformId)) {
+      console.log('[INIT] Componente cargado');
+      this.obtenerReportes();
+    }
   }
 
   obtenerReportes(): void {
@@ -90,6 +91,94 @@ export class CardsReportesComponent implements OnInit {
     });
   }
 
+  async mostrarPopup(reporte: Reporte): Promise<void> {
+    try {
+      this.reporteSeleccionado = { ...reporte };
+      const coords = this.mapService.parsearCoords(reporte.lugarDesaparicion);
+
+      if (coords) {
+        await this.renderizarMapa(reporte, coords);
+      }
+    } catch (error) {
+      console.error('[ERROR] mostrando popup:', error);
+    }
+  }
+
+  private async renderizarMapa(reporte: Reporte, coords: [number, number]): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    // Espera a que Angular renderice el popup
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const mapaId = 'mapaPopup-' + reporte.idDesaparecido;
+    const divMapa = document.getElementById(mapaId);
+    
+    if (!divMapa) {
+      console.error('❌ Div del mapa no encontrado:', mapaId);
+      return;
+    }
+
+    // Asegura dimensiones
+    divMapa.style.height = '400px';
+    divMapa.style.width = '100%';
+
+    // Limpia mapa existente
+    if (this.mapas[mapaId]) {
+      this.mapService.eliminarMapa(this.mapas[mapaId]);
+      delete this.mapas[mapaId];
+    }
+
+    // Crea el mapa usando el servicio actualizado
+    const mapa = this.mapService.crearMapa(mapaId, coords);
+    if (!mapa) {
+      console.error('No se pudo crear el mapa');
+      return;
+    }
+
+    this.mapas[mapaId] = mapa;
+
+    // Añade marcador principal
+    this.mapService.agregarMarcador(
+      mapa,
+      coords,
+      'red',
+      'Lugar de desaparición',
+      this.reporteSeleccionado?.lugarDesaparicionLegible || ''
+    );
+
+    // Manejo de avistamientos
+    if (this.reporteSeleccionado?.ultimoAvistamiento?.ubicacion) {
+      const coordsAvistamiento = this.mapService.parsearCoords(
+        this.reporteSeleccionado.ultimoAvistamiento.ubicacion
+      );
+      if (coordsAvistamiento) {
+        this.mapService.agregarMarcador(
+          mapa,
+          coordsAvistamiento,
+          'blue',
+          'Último avistamiento',
+          `Fecha: ${this.reporteSeleccionado.ultimoAvistamiento.fecha}`
+        );
+        this.mapService.ajustarVista(mapa, coords, coordsAvistamiento);
+      }
+    }
+
+    // Fuerza redibujado
+    setTimeout(() => {
+      mapa.invalidateSize();
+      console.log('✅ Mapa creado correctamente');
+    }, 100);
+  }
+
+  cerrarPopup(): void {
+    this.reporteSeleccionado = null;
+  }
+
+  onImageError(event: Event) {
+    const target = event.target as HTMLImageElement;
+    target.src = 'https://media.istockphoto.com/id/470100848/es/vector/macho-icono-de-perfil-blanco-en-fondo-azul.jpg?s=612x612&w=0&k=20&c=HVwuxvS7hDgG6qOZXRXvsHbLVRKP5zrIllm09LWMgjc=';
+  }
+
   filtrarReportes(): void {
     this.reportesFiltrados = this.reportes.filter(reporte => {
       return (!this.nombreBusqueda || reporte.nombre.toLowerCase().includes(this.nombreBusqueda.toLowerCase())) &&
@@ -97,9 +186,6 @@ export class CardsReportesComponent implements OnInit {
              (!this.lugarBusqueda || reporte.lugarDesaparicionLegible.toLowerCase().includes(this.lugarBusqueda.toLowerCase())) &&
              (!this.fechaBusqueda || reporte.fechaDesaparicion === this.fechaBusqueda);
     });
-    this.setDireccionesReportes();
-    this.cargarUltimosAvistamientos();
-    console.log('[FILTRO] Resultados filtrados:', this.reportesFiltrados);
   }
 
   limpiarFiltros(): void {
@@ -108,84 +194,5 @@ export class CardsReportesComponent implements OnInit {
     this.lugarBusqueda = '';
     this.fechaBusqueda = '';
     this.filtrarReportes();
-  }
-
-  async mostrarPopup(reporte: Reporte): Promise<void> {
-    try {
-      if (!reporte.ultimoAvistamiento) {
-        reporte.ultimoAvistamiento = await this.avistamientoService.obtenerUltimoAvistamiento(reporte.idDesaparecido).toPromise();
-      }
-
-      this.reporteSeleccionado = { ...reporte };
-      const coords = this.mapService.parsearCoords(reporte.lugarDesaparicion);
-
-      if (coords) {
-        this.geocodificacionService.obtenerDireccionDesdeCoordenadas(coords[0], coords[1]).subscribe({
-          next: direccion => this.reporteSeleccionado!.lugarDesaparicionLegible = direccion,
-          error: () => this.reporteSeleccionado!.lugarDesaparicionLegible = 'Ubicación desconocida'
-        });
-      }
-
-      await this.renderizarMapa(this.reporteSeleccionado, coords);
-    } catch (error) {
-      console.error('[ERROR] mostrando popup:', error);
-    }
-  }
-
-  private async renderizarMapa(reporte: Reporte, coords: [number, number] | null): Promise<void> {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    await this.mapService.loadLeaflet();
-    const L = this.mapService.getLeaflet();
-    if (!L) {
-      console.error('Leaflet no disponible');
-      return;
-    }
-
-    setTimeout(() => {
-      const mapaId = 'mapaPopup-' + reporte.idDesaparecido;
-      const divMapa = document.getElementById(mapaId);
-      if (!divMapa) return;
-
-      if (this.mapas[mapaId]) {
-        this.mapas[mapaId].remove();
-        delete this.mapas[mapaId];
-      }
-
-      const mapa = L.map(mapaId, { center: coords || [0, 0], zoom: 13 });
-      this.mapas[mapaId] = mapa;
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-      }).addTo(mapa);
-
-      if (coords) {
-        this.mapService.addMarker(mapa, coords, 'red', 'Lugar de desaparición', this.reporteSeleccionado?.lugarDesaparicionLegible || '');
-      }
-
-      const avistamiento = reporte.ultimoAvistamiento;
-      if (avistamiento?.ubicacion) {
-        const coordsAvistamiento = this.mapService.parsearCoords(avistamiento.ubicacion);
-        if (coordsAvistamiento) {
-          this.mapService.addMarker(mapa, coordsAvistamiento, 'blue', 'Último avistamiento', `${new Date(avistamiento.fecha).toLocaleDateString()}<br>${avistamiento.descripcion}`)
-          if (coords) {
-            mapa.fitBounds(L.latLngBounds([coords, coordsAvistamiento]), { padding: [50, 50] });
-          } else {
-            mapa.setView(coordsAvistamiento, 15);
-          }
-        }
-      } else if (coords) {
-        mapa.setView(coords, 15);
-      }
-    },0);
-  }
-  
-  cerrarPopup(): void {
-    this.reporteSeleccionado = null;
-  }
-
-  onImageError(event: Event) {
-    const target = event.target as HTMLImageElement;
-    target.src = 'https://media.istockphoto.com/id/470100848/es/vector/macho-icono-de-perfil-blanco-en-fondo-azul.jpg?s=612x612&w=0&k=20&c=HVwuxvS7hDgG6qOZXRXvsHbLVRKP5zrIllm09LWMgjc=';
   }
 }

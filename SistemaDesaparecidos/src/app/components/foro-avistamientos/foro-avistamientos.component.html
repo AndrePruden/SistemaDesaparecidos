@@ -29,6 +29,12 @@
 </div>
 
 <div *ngIf="avistamientoSeleccionado" class="popup">
+  <!-- DEBUG: Mensaje de apertura de popup -->
+  <div style="background: #e8f5e9; padding: 5px; text-align: center;">
+    🛠️ DEBUG: Popup abierto para ID {{ avistamientoSeleccionado.idAvistamiento }} | 
+    Coordenadas: {{ avistamientoSeleccionado.ubicacion || 'N/A' }}
+  </div>
+
   <div class="popup-content">
     <div class="popup-left">
       <h3>{{ avistamientoSeleccionado.personaDesaparecida.nombre }}</h3>
@@ -37,7 +43,21 @@
       <p><strong>Descripción:</strong> {{ avistamientoSeleccionado.descripcion || 'No hay descripción disponible' }}</p>
     </div>
     <div class="popup-right">
-      <div class="mapa-popup" [id]="'mapaPopupA-' + avistamientoSeleccionado.idAvistamiento"></div>
+      <!-- DEBUG: Contenedor del mapa con mensajes -->
+      <div class="mapa-popup" 
+           [id]="'mapaPopupA-' + avistamientoSeleccionado.idAvistamiento"
+           style="border: 2px solid #4caf50; min-height: 300px;">
+           
+        <div *ngIf="!mapas['mapaPopupA-' + avistamientoSeleccionado.idAvistamiento]" 
+             style="padding: 20px; background: #e8f5e9;">
+          🔍 DEBUG: El mapa no se ha renderizado. Posibles causas:
+          <ul>
+            <li>Leaflet no se cargó correctamente</li>
+            <li>Coordenadas inválidas: {{ avistamientoSeleccionado.ubicacion }}</li>
+            <li>Error en la inicialización (ver consola F12)</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
   <button class="cerrar-btn" (click)="cerrarPopup()">✕ Cerrar</button>

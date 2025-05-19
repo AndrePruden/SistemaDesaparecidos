@@ -21,6 +21,7 @@ interface Avistamiento {
 
 @Component({
   selector: 'app-foro-avistamientos',
+  standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './foro-avistamientos.component.html',
   styleUrls: ['./foro-avistamientos.component.scss']
@@ -44,8 +45,9 @@ export class ForoAvistamientosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('[INIT] Componente cargado');
-    this.obtenerAvistamientos();
+    if (isPlatformBrowser(this.platformId)) {
+      this.obtenerAvistamientos();
+    }
   }
 
   obtenerAvistamientos(): void {
@@ -55,7 +57,7 @@ export class ForoAvistamientosComponent implements OnInit {
         this.avistamientosFiltrados = [...data];
         this.setDireccionesAvistamientos();
       },
-      error: (err) => console.error('[ERROR] al obtener reportes:', err)
+      error: (err) => console.error('Error al obtener avistamientos:', err)
     });
   }
 
@@ -75,8 +77,11 @@ export class ForoAvistamientosComponent implements OnInit {
 
   filtrarAvistamientos(): void {
     this.avistamientosFiltrados = this.avistamientos.filter(avistamiento => {
-      const nombreMatch = !this.nombreBusqueda || avistamiento.personaDesaparecida.nombre.toLowerCase().includes(this.nombreBusqueda.toLowerCase());
-      const lugarMatch = !this.lugarBusqueda || avistamiento.lugarDesaparicionLegible.toLowerCase().includes(this.lugarBusqueda.toLowerCase());
+      const nombreMatch = !this.nombreBusqueda || 
+        avistamiento.personaDesaparecida.nombre.toLowerCase().includes(this.nombreBusqueda.toLowerCase());
+      
+      const lugarMatch = !this.lugarBusqueda || 
+        avistamiento.lugarDesaparicionLegible.toLowerCase().includes(this.lugarBusqueda.toLowerCase());
 
       const fechaAvistamiento = new Date(avistamiento.fecha);
       const fechaInicio = this.fechaBusquedaInicio ? new Date(this.fechaBusquedaInicio) : null;
@@ -85,10 +90,9 @@ export class ForoAvistamientosComponent implements OnInit {
       const fechaMatch =
         (!fechaInicio || fechaAvistamiento >= fechaInicio) &&
         (!fechaFin || fechaAvistamiento <= fechaFin);
+      
       return nombreMatch && lugarMatch && fechaMatch;
     });
-    this.setDireccionesAvistamientos();
-    console.log('[FILTRO] Resultados filtrados:', this.avistamientosFiltrados);
   }
 
   limpiarFiltros(): void {
@@ -100,52 +104,63 @@ export class ForoAvistamientosComponent implements OnInit {
   }
 
   async mostrarPopup(avistamiento: Avistamiento): Promise<void> {
-    try{
+    try {
       this.avistamientoSeleccionado = { ...avistamiento };
-      const coords = this.mapService.parsearCoords(avistamiento.personaDesaparecida.lugarDesaparicion);
+      const coords = this.mapService.parsearCoords(avistamiento.ubicacion);
+      
       if (coords) {
-        this.geocodificacionService.obtenerDireccionDesdeCoordenadas(coords[0], coords[1]).subscribe({
-          next: direccion => this.avistamientoSeleccionado!.lugarDesaparicionLegible = direccion,
-          error: () => this.avistamientoSeleccionado!.lugarDesaparicionLegible = 'Dirección no disponible'
-        });
+        this.actualizarDireccionLegible(coords);
       }
-      await this.renderizarMapa(this.avistamientoSeleccionado, coords);
+
+      await this.renderizarMapa(avistamiento, coords);
     } catch (error) {
-      console.error('[ERROR] mostrando popup:', error);
+      console.error('Error al mostrar popup:', error);
     }
   }
 
-  private async renderizarMapa(avistamiento: Avistamiento, coords: [number, number] | null): Promise<void> {
-    if (!isPlatformBrowser(this.platformId)) return;
+  private actualizarDireccionLegible(coords: [number, number]): void {
+    this.geocodificacionService.obtenerDireccionDesdeCoordenadas(coords[0], coords[1]).subscribe({
+      next: direccion => {
+        if (this.avistamientoSeleccionado) {
+          this.avistamientoSeleccionado.lugarDesaparicionLegible = direccion;
+        }
+      },
+      error: () => {
+        if (this.avistamientoSeleccionado) {
+          this.avistamientoSeleccionado.lugarDesaparicionLegible = 'Ubicación desconocida';
+        }
+      }
+    });
+  }
 
-    await this.mapService.loadLeaflet();
-    const L = this.mapService.getLeaflet();
-    if (!L) {
-      console.error('Leaflet no disponible');
-      return;
+  private async renderizarMapa(avistamiento: Avistamiento, coords: [number, number] | null): Promise<void> {
+    if (!isPlatformBrowser(this.platformId) || !coords) return;
+
+    const mapaId = 'mapaPopupA-' + avistamiento.idAvistamiento;
+    const divMapa = document.getElementById(mapaId);
+    if (!divMapa) return;
+
+    // Limpiar mapa existente si existe
+    if (this.mapas[mapaId]) {
+      this.mapService.eliminarMapa(this.mapas[mapaId]);
+      delete this.mapas[mapaId];
     }
 
-    setTimeout(() => {
-      const mapaId = 'mapaPopupA-' + avistamiento.idAvistamiento;
-      const divMapa = document.getElementById(mapaId);
-      if (!divMapa) return;
+    // Crear nuevo mapa
+    const mapa = this.mapService.crearMapa(mapaId, coords);
+    if (!mapa) return;
 
-      if (this.mapas[mapaId]) {
-        this.mapas[mapaId].remove();
-        delete this.mapas[mapaId];
-      }
+    this.mapas[mapaId] = mapa;
 
-      const mapa = L.map(mapaId, { center: coords || [0, 0], zoom: 13 });
-      this.mapas[mapaId] = mapa;
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(mapa);
-
-      if (coords) {
-        this.mapService.addMarker(mapa, coords, 'red', 'Lugar donde fue visto', this.avistamientoSeleccionado?.lugarDesaparicionLegible || '');
-      }
-    }, 0);
+    // Agregar marcador principal
+    this.mapService.agregarMarcador(
+      mapa,
+      coords,
+      'red',
+      'Lugar donde fue visto',
+      this.avistamientoSeleccionado?.lugarDesaparicionLegible || ''
+    );
+    console.log('✅ Mapa creado EXITOSAMENTE para avistamiento ID:', avistamiento.idAvistamiento);
   }
 
   cerrarPopup(): void {

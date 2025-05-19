@@ -46,6 +46,12 @@
 </div>
 
 <div *ngIf="reporteSeleccionado" class="popup">
+  <!-- DEBUG: Mensaje de apertura de popup -->
+  <div style="background: #fff3e0; padding: 5px; text-align: center;">
+    🛠️ DEBUG: Popup abierto para ID {{ reporteSeleccionado.idDesaparecido }} | 
+    Coordenadas: {{ reporteSeleccionado.lugarDesaparicion || 'N/A' }}
+  </div>
+
   <div class="popup-content">
     <div class="popup-left">
       <h3>{{ reporteSeleccionado.nombre }}</h3>
@@ -65,7 +71,22 @@
     </div>
     
     <div class="popup-right">
-      <div class="mapa-popup" [id]="'mapaPopup-' + reporteSeleccionado.idDesaparecido"></div>
+      <!-- DEBUG: Contenedor del mapa con mensajes -->
+      <div class="mapa-popup" 
+           [id]="'mapaPopup-' + reporteSeleccionado.idDesaparecido"
+           style="border: 2px solid #ff5722; min-height: 300px;">
+           
+        <div *ngIf="!mapas['mapaPopup-' + reporteSeleccionado.idDesaparecido]" 
+             style="padding: 20px; background: #ffebee;">
+          🔍 DEBUG: El mapa no se ha renderizado. Posibles causas:
+          <ul>
+            <li>Leaflet no se cargó correctamente</li>
+            <li>Coordenadas inválidas: {{ reporteSeleccionado.lugarDesaparicion }}</li>
+            <li>Error en la inicialización (ver consola F12)</li>
+          </ul>
+        </div>
+      </div>
+
       <div class="mapa-leyenda">
         <div class="leyenda-item">
           <span class="leyenda-color rojo"></span>
