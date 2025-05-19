@@ -30,12 +30,13 @@ export class ForoAvistamientosComponent implements OnInit {
   avistamientos: Avistamiento[] = [];
   avistamientosFiltrados: Avistamiento[] = [];
   avistamientoSeleccionado: Avistamiento | null = null;
+  mapas: { [key: string]: L.Map } = {}; // Tipo corregido a L.Map
 
+  // Filtros
   nombreBusqueda = '';
   lugarBusqueda = '';
   fechaBusquedaInicio = '';
   fechaBusquedaFin = '';
-  mapas: { [key: string]: any } = {};
 
   constructor(
     private avistamientoService: AvistamientoService,
@@ -109,58 +110,71 @@ export class ForoAvistamientosComponent implements OnInit {
       const coords = this.mapService.parsearCoords(avistamiento.ubicacion);
       
       if (coords) {
-        this.actualizarDireccionLegible(coords);
+        await this.renderizarMapa(avistamiento, coords);
       }
-
-      await this.renderizarMapa(avistamiento, coords);
     } catch (error) {
       console.error('Error al mostrar popup:', error);
     }
   }
 
-  private actualizarDireccionLegible(coords: [number, number]): void {
-    this.geocodificacionService.obtenerDireccionDesdeCoordenadas(coords[0], coords[1]).subscribe({
-      next: direccion => {
-        if (this.avistamientoSeleccionado) {
-          this.avistamientoSeleccionado.lugarDesaparicionLegible = direccion;
-        }
-      },
-      error: () => {
-        if (this.avistamientoSeleccionado) {
-          this.avistamientoSeleccionado.lugarDesaparicionLegible = 'Ubicación desconocida';
-        }
-      }
-    });
-  }
-
-  private async renderizarMapa(avistamiento: Avistamiento, coords: [number, number] | null): Promise<void> {
-    if (!isPlatformBrowser(this.platformId) || !coords) return;
+  private async renderizarMapa(avistamiento: Avistamiento, coords: [number, number]): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) return;
 
     const mapaId = 'mapaPopupA-' + avistamiento.idAvistamiento;
-    const divMapa = document.getElementById(mapaId);
-    if (!divMapa) return;
+    
+    // Espera a que Angular renderice el popup
+    await new Promise(resolve => setTimeout(resolve, 50));
 
-    // Limpiar mapa existente si existe
+    const divMapa = document.getElementById(mapaId);
+    if (!divMapa) {
+      console.error('❌ Div del mapa no encontrado:', mapaId);
+      console.log('Contenido del popup:', document.querySelector('.popup')?.innerHTML);
+      return;
+    }
+
+    // Asegura dimensiones
+    divMapa.style.height = '400px';
+    divMapa.style.width = '100%';
+    divMapa.style.backgroundColor = '#f0f0f0'; // Temporal para debug
+
+    // Limpia mapa existente
     if (this.mapas[mapaId]) {
       this.mapService.eliminarMapa(this.mapas[mapaId]);
       delete this.mapas[mapaId];
     }
 
-    // Crear nuevo mapa
-    const mapa = this.mapService.crearMapa(mapaId, coords);
-    if (!mapa) return;
+    try {
+      // Crea el mapa
+      const mapa = this.mapService.crearMapa(mapaId, coords);
+      if (!mapa) throw new Error('El servicio devolvió un mapa nulo');
 
-    this.mapas[mapaId] = mapa;
+      this.mapas[mapaId] = mapa;
 
-    // Agregar marcador principal
-    this.mapService.agregarMarcador(
-      mapa,
-      coords,
-      'red',
-      'Lugar donde fue visto',
-      this.avistamientoSeleccionado?.lugarDesaparicionLegible || ''
-    );
-    console.log('✅ Mapa creado EXITOSAMENTE para avistamiento ID:', avistamiento.idAvistamiento);
+      // Añade marcador principal
+      this.mapService.agregarMarcador(
+        mapa,
+        coords,
+        'red',
+        'Lugar de avistamiento',
+        this.avistamientoSeleccionado?.lugarDesaparicionLegible || ''
+      );
+
+      // Redibujado final
+      setTimeout(() => {
+        mapa.invalidateSize();
+        console.log('✅ Mapa creado correctamente para avistamiento ID:', avistamiento.idAvistamiento);
+        divMapa.style.border = '2px solid green'; // Confirmación visual
+      }, 100);
+
+    } catch (error) {
+      console.error('Error al renderizar mapa:', error);
+      divMapa.innerHTML = `
+        <div style="color:red; padding:10px;">
+          <h4>Error al cargar el mapa</h4>
+          <p>${error instanceof Error ? error.message : 'Error desconocido'}</p>
+        </div>
+      `;
+    }
   }
 
   cerrarPopup(): void {
