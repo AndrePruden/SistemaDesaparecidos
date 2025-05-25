@@ -18,7 +18,7 @@ export interface ResponseMessage {
 })
 
 export class UsuarioService {
-  private apiUrl = 'http://localhost:8080/usuarios'; // URL de nuestro backend
+  private apiUrl = 'https://sistemadesaparecidos-production.up.railway.app/usuarios'; // URL de nuestro backend
 
   constructor(private http: HttpClient) {}
 
