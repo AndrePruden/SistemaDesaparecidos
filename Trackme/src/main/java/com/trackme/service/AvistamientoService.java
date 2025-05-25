@@ -31,7 +31,7 @@ public class AvistamientoService {
 
     @Autowired
     private GeoLocationService geoLocationService;
-    
+
 
     public Avistamiento crearAvistamiento(Avistamiento avistamiento) {
         logger.info("Creando nuevo avistamiento para el usuario: {}", avistamiento.getEmailUsuario());
