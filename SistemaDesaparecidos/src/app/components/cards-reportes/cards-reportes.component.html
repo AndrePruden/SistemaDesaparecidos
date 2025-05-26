@@ -73,7 +73,19 @@
     </div>
     
     <div class="popup-right">
-      <div class="mapa-popup" [id]="'mapaPopup-' + reporteSeleccionado.idDesaparecido"></div>
+      <div class="mapa-popup" 
+           [id]="'mapaPopup-' + reporteSeleccionado.idDesaparecido"
+           style="border: 2px solid #ff5722; min-height: 300px;">
+        <div *ngIf="!mapas['mapaPopup-' + reporteSeleccionado.idDesaparecido]" 
+             style="padding: 20px; background: #ffebee;">
+          <ul>
+            <li>Leaflet no se cargó correctamente</li>
+            <li>Coordenadas inválidas: {{ reporteSeleccionado.lugarDesaparicion }}</li>
+            <li>Error en la inicialización (ver consola F12)</li>
+          </ul>
+        </div>
+      </div>
+
       <div class="mapa-leyenda">
         <div class="leyenda-item">
           <span class="leyenda-color rojo"></span>

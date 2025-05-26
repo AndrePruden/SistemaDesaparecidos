@@ -3,6 +3,7 @@ package com.trackme.service;
 import com.trackme.model.Avistamiento;
 import com.trackme.model.PersonaDesaparecida;
 import com.trackme.repository.AvistamientoRepository;
+import com.trackme.repository.ReporteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +23,57 @@ public class AvistamientoService {
     @Autowired
     private AvistamientoRepository avistamientoRepository;
 
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private ReporteRepository reporteRepository;
+
+    @Autowired
+    private GeoLocationService geoLocationService;
+
+
     public Avistamiento crearAvistamiento(Avistamiento avistamiento) {
         logger.info("Creando nuevo avistamiento para el usuario: {}", avistamiento.getEmailUsuario());
         Avistamiento creado = avistamientoRepository.save(avistamiento);
+
+        enviarNotificacionAvistamiento(creado);
+
         logger.info("Avistamiento creado con ID: {}", creado.getIdAvistamiento());
         return creado;
+    }
+
+    private void enviarNotificacionAvistamiento(Avistamiento avistamiento) {
+        try {
+            // 1. Verificar que el avistamiento tenga asociado un reporte válido
+            if (avistamiento.getPersonaDesaparecida() == null ||
+                    avistamiento.getPersonaDesaparecida().getIdDesaparecido() == null) {
+                logger.warn("Avistamiento {} no tiene persona desaparecida asociada",
+                        avistamiento.getIdAvistamiento());
+                return;
+            }
+
+            Long idReporte = avistamiento.getPersonaDesaparecida().getIdDesaparecido();
+
+            // 2. Recuperar el reporte completo desde la base de datos
+            Optional<PersonaDesaparecida> reporteOpt = reporteRepository.findById(idReporte);
+
+            if (!reporteOpt.isPresent()) {
+                logger.error("No se encontró el reporte con ID: {}", idReporte);
+                return;
+            }
+
+            PersonaDesaparecida reporte = reporteOpt.get();
+
+            // 3. Enviar notificación con todos los detalles
+            logger.info("Enviando notificación a {} sobre nuevo avistamiento",
+                    reporte.getEmailReportaje());
+            emailService.sendSightingNotification(reporte, avistamiento);
+
+        } catch (Exception e) {
+            logger.error("Error al enviar notificación para avistamiento {}: {}",
+                    avistamiento.getIdAvistamiento(), e.getMessage());
+        }
     }
 
     public List<Avistamiento> obtenerAvistamientosPorUsuario(String emailUsuario) {

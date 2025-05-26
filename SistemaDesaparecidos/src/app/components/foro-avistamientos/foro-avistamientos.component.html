@@ -37,7 +37,18 @@
       <p><strong>Descripción:</strong> {{ avistamientoSeleccionado.descripcion || 'No hay descripción disponible' }}</p>
     </div>
     <div class="popup-right">
-      <div class="mapa-popup" [id]="'mapaPopupA-' + avistamientoSeleccionado.idAvistamiento"></div>
+      <div class="mapa-popup" 
+           [id]="'mapaPopupA-' + avistamientoSeleccionado.idAvistamiento"
+           style="border: 2px solid #4caf50; min-height: 300px;">
+        <div *ngIf="!mapas['mapaPopupA-' + avistamientoSeleccionado.idAvistamiento]" 
+             style="padding: 20px; background: #e8f5e9;">
+          <ul>
+            <li>Leaflet no se cargó correctamente</li>
+            <li>Coordenadas inválidas: {{ avistamientoSeleccionado.ubicacion }}</li>
+            <li>Error en la inicialización (ver consola F12)</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
   <button class="cerrar-btn" (click)="cerrarPopup()">✕ Cerrar</button>
