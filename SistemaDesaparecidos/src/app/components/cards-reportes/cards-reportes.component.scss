@@ -51,6 +51,7 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   scroll-snap-align: start;
   margin-right: 0.5rem;
+  height: 80vh;
 }
 
 .card-reporte:hover {
@@ -65,7 +66,7 @@
 }
 
 .info-reporte {
-  padding: 1rem;
+  padding: 0 1rem;
   font-size: 0.95rem;
   line-height: 1.5;
 }
@@ -80,6 +81,7 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  height: 10vh;
 }
 
 .mensaje-vacio {
@@ -279,6 +281,35 @@
 
 .btn-refrescar:hover {
   background-color: #005f7f;
+}
+
+.btn-archivar {
+  width: 100%;
+  padding: 8px;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background-color 0.3s ease;
+
+  &.btn-activo {
+    background-color: #568ccd;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #102948;
+    }
+  }
+
+  &.btn-desactivado {
+    background-color: #e0e0e0;
+    color: #888;
+    cursor: not-allowed;
+  }
 }
 
 @keyframes fadeIn {

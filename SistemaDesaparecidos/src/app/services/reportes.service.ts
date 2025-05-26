@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class ReportesService {
   private baseUrl = 'https://sistemadesaparecidos-production.up.railway.app/reportes';
+  //private baseUrl = 'http://localhost:8080/reportes';
 
   constructor(private http: HttpClient) {}
 
@@ -32,8 +33,13 @@ export class ReportesService {
     return this.http.get<any[]>(`${this.baseUrl}/reporte/${id}`);
   }
 
-  // 🆕 NUEVO método para guardar avistamientos
-  crearAvistamiento(avistamiento: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/avistamientos/crear`, avistamiento);
+  // crearAvistamiento(avistamiento: any): Observable<any> {
+  //   return this.http.post(`${this.baseUrl}/avistamientos/crear`, avistamiento);
+  // }
+
+  archivarReporte(id: number) {
+    return this.http.put(`${this.baseUrl}/${id}/archivar`, null,{
+      responseType: 'text' as 'json'
+    });
   }
 }

@@ -21,13 +21,21 @@
           <h3>{{ reporte.nombre }}</h3>
           <p><strong>Edad:</strong> {{ reporte.edad }}</p>
           <p><strong>Fecha desaparición:</strong> {{ reporte.fechaDesaparicion | date:'mediumDate' }}</p>
-          <p><strong>Lugar:</strong> {{ reporte.lugarDesaparicionLegible }}</p>
+          <p class="descripcion-recortada"><strong>Lugar:</strong> {{ reporte.lugarDesaparicionLegible }}</p>
           <p class="descripcion-recortada"><strong>Descripción:</strong> {{ reporte.descripcion || 'No hay descripción disponible' }}</p>
         </div>
 
         <div class="card-actions">
           <button class="btn-popup" (click)="mostrarPopup(reporte)">
             <i class="fas fa-map-marked-alt"></i> 
+          </button>
+
+          <button 
+            (click)="archivarReporte(reporte.idDesaparecido)"
+            [disabled]="!puedeArchivar(reporte)"
+            [ngClass]="{ 'btn-desactivado': !puedeArchivar(reporte), 'btn-activo': puedeArchivar(reporte) }"
+            class="btn-archivar"
+          >Archivar
           </button>
         </div>
       </div>

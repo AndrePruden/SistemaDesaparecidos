@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -115,7 +116,17 @@ public class ReporteService {
                     .filter(r -> r.getFechaDesaparicion().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().equals(fecha))
                     .collect(Collectors.toList());
         }
-
         return reportes;
+    }
+
+    public void archivarReporte(Long id) {
+        Optional<PersonaDesaparecida> optionalReporte = reporteRepository.findById(id);
+        if (optionalReporte.isPresent()) {
+            PersonaDesaparecida reporte = optionalReporte.get();
+            reporte.setEstado(false);
+            reporteRepository.save(reporte);
+        } else {
+            throw new RuntimeException("Reporte no encontrado con ID: " + id);
+        }
     }
 }

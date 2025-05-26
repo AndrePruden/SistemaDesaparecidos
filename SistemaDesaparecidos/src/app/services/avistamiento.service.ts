@@ -8,10 +8,9 @@ import { catchError, tap } from 'rxjs/operators';
 })
 export class AvistamientoService {
   private baseUrl = 'https://sistemadesaparecidos-production.up.railway.app/avistamientos';
-
+  //private baseUrl = 'http://localhost:8080/avistamientos';
 
   private avistamientoCreadoSource = new Subject<void>(); 
-
 
   avistamientoCreado$ = this.avistamientoCreadoSource.asObservable();
 
