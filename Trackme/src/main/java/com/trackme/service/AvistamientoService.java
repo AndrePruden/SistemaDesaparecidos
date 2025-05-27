@@ -37,7 +37,9 @@ public class AvistamientoService {
         logger.info("Creando nuevo avistamiento para el usuario: {}", avistamiento.getEmailUsuario());
         Avistamiento creado = avistamientoRepository.save(avistamiento);
 
-        enviarNotificacionAvistamiento(creado);
+        if (!creado.getDescripcion().startsWith("Reporte inicial")) {
+            enviarNotificacionAvistamiento(creado);
+        }
 
         logger.info("Avistamiento creado con ID: {}", creado.getIdAvistamiento());
         return creado;

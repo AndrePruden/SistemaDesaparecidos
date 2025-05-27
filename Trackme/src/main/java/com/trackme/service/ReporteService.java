@@ -1,7 +1,9 @@
 package com.trackme.service;
 
+import com.trackme.model.Avistamiento;
 import com.trackme.model.DesaparecidoOficial;
 import com.trackme.model.PersonaDesaparecida;
+import com.trackme.repository.AvistamientoRepository;
 import com.trackme.repository.DesaparecidoOficialRepository;
 import com.trackme.repository.ReporteRepository;
 import org.slf4j.Logger;
@@ -31,6 +33,9 @@ public class ReporteService {
     @Autowired
     private DesaparecidoOficialRepository desaparecidoOficialRepository;
 
+    @Autowired
+    private AvistamientoRepository avistamientoRepository;
+
     public PersonaDesaparecida crearReporte(String nombre, Integer edad, LocalDate fechaDesaparicion,
                                             String lugarDesaparicion, String descripcion, String emailReportaje,
                                             MultipartFile file) {
@@ -55,7 +60,32 @@ public class ReporteService {
             }
         }
 
-        return reporteRepository.save(reporte);
+        // Guardar el reporte
+        PersonaDesaparecida reporteGuardado = reporteRepository.save(reporte);
+
+        // Crear avistamiento inicial (sin notificación)
+        this.crearAvistamientoInicial(reporteGuardado, emailReportaje);
+
+        return reporteGuardado;
+    }
+
+    private void crearAvistamientoInicial(PersonaDesaparecida reporte, String emailUsuario) {
+        try {
+            Avistamiento avistamientoInicial = new Avistamiento();
+            avistamientoInicial.setPersonaDesaparecida(reporte);
+            avistamientoInicial.setEmailUsuario(emailUsuario);
+            avistamientoInicial.setFecha(reporte.getFechaDesaparicion());
+            avistamientoInicial.setUbicacion(reporte.getLugarDesaparicion());
+            avistamientoInicial.setDescripcion("Reporte inicial - " + reporte.getDescripcion());
+
+            avistamientoRepository.save(avistamientoInicial);
+
+            logger.info("Avistamiento inicial creado para reporte ID: {}", reporte.getIdDesaparecido());
+        } catch (Exception e) {
+            logger.error("Error al crear avistamiento inicial para reporte ID: {} - {}",
+                    reporte.getIdDesaparecido(), e.getMessage());
+            // No lanzamos excepción para no afectar la creación del reporte
+        }
     }
 
     private boolean esPersonaValida(String nombre) {
