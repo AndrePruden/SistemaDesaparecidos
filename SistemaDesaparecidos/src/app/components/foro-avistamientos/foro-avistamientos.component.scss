@@ -27,21 +27,14 @@
 
 .foro-container {
   display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
   width: 100%;
-  padding: 2rem 0 2rem 0;
+  padding: 2rem 0;
   margin: 2rem auto;
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.foro-container:has(:only-child) {
-  place-items: center;
-}
-
-.foro-container:not(:has(:only-child)) {
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
 }
 
 .avistamiento-card {
