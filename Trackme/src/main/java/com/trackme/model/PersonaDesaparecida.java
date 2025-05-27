@@ -32,7 +32,9 @@ public class PersonaDesaparecida {
     @Column(columnDefinition = "TEXT")
     private String imagen;
 
-    // Getters y Setters
+    @Column(columnDefinition = "TINYINT(1)")
+    private boolean estaActivo = true;
+
     public Long getIdDesaparecido() { return idDesaparecido; }
     public void setIdDesaparecido(Long idDesaparecido) { this.idDesaparecido = idDesaparecido; }
     public String getEmailReportaje() { return emailReportaje; }
@@ -49,4 +51,6 @@ public class PersonaDesaparecida {
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     public String getImagen() { return imagen; }
     public void setImagen(String imagen) { this.imagen = imagen; }
+    public boolean getEstado() { return estaActivo; }
+    public void setEstado(boolean estadoActivo){ this.estaActivo = estadoActivo; }
 }

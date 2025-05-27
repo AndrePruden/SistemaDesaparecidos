@@ -18,16 +18,15 @@ export interface ResponseMessage {
 })
 
 export class UsuarioService {
-  private apiUrl = 'https://sistemadesaparecidos-production.up.railway.app/usuarios'; // URL de nuestro backend
+  private apiUrl = 'https://sistemadesaparecidos-production.up.railway.app/usuarios'; 
+  //private apiUrl = 'http://localhost:8080/usuarios';
 
   constructor(private http: HttpClient) {}
 
-  // Método para registrar un usuario
   registrarUsuario(usuario: Usuario): Observable<ResponseMessage> {
     return this.http.post<ResponseMessage>(`${this.apiUrl}/registro`, usuario);
   }
 
-  // Método para iniciar sesión
   iniciarSesion(credenciales: { email: string, password: string }): Observable<ResponseMessage> {
     return this.http.post<ResponseMessage>(`${this.apiUrl}/iniciar-sesion`, credenciales);
   }
@@ -37,7 +36,7 @@ export class UsuarioService {
   }  
 
   actualizarUsuario(usuario: any): Observable<any> {
-    const id = usuario.id; // Asegúrate de que 'usuario' tenga el campo 'id'
+    const id = usuario.id; 
     return this.http.put<any>(`${this.apiUrl}/${id}`, usuario);
   }
 
