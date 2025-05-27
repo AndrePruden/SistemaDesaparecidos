@@ -6,6 +6,9 @@ import { AvistamientoService } from '../../services/avistamiento.service';
 import { RouterModule } from '@angular/router';
 import { GeocodificacionService } from '../../services/geocodificacion.service';
 import { MapService } from '../../services/map.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 interface Reporte {
   imagen: string;
@@ -17,6 +20,8 @@ interface Reporte {
   lugarDesaparicionLegible: string;
   ultimoAvistamiento?: Avistamiento | null;
   descripcion: string;
+  estado: boolean;
+  emailReportaje: string;
 }
 
 interface Avistamiento {
@@ -40,16 +45,22 @@ export class CardsReportesComponent implements OnInit {
   fechaBusqueda = '';
   mapas: { [key: string]: L.Map } = {}; // Cambiado a tipo L.Map
   reporteSeleccionado: Reporte | null = null;
+  emailUsuarioActual: string | null = null;
 
   constructor(
     private reportesService: ReportesService,
     private avistamientoService: AvistamientoService,
     private geocodificacionService: GeocodificacionService,
     private mapService: MapService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
+    this.emailUsuarioActual = localStorage.getItem('email');
+    console.log('[INIT] Componente cargado');
+    this.obtenerReportes();
     if (isPlatformBrowser(this.platformId)) {
       console.log('[INIT] Componente cargado');
       this.obtenerReportes();
@@ -59,10 +70,16 @@ export class CardsReportesComponent implements OnInit {
   obtenerReportes(): void {
     this.reportesService.obtenerReportes().subscribe({
       next: (data: Reporte[]) => {
-        this.reportes = [...data];
-        this.reportesFiltrados = [...data];
+        const emailUsuario = this.emailUsuarioActual;
+        this.reportes = data.filter(reporte =>
+          reporte.estado == true || reporte.emailReportaje === emailUsuario
+        );
+
+        this.reportesFiltrados = [...this.reportes];
         this.setDireccionesReportes();
         this.cargarUltimosAvistamientos();
+
+        console.log('[DATOS FILTRADOS]', this.reportes);
       },
       error: (err) => console.error('[ERROR] al obtener reportes:', err)
     });
@@ -179,6 +196,31 @@ export class CardsReportesComponent implements OnInit {
     target.src = 'https://media.istockphoto.com/id/470100848/es/vector/macho-icono-de-perfil-blanco-en-fondo-azul.jpg?s=612x612&w=0&k=20&c=HVwuxvS7hDgG6qOZXRXvsHbLVRKP5zrIllm09LWMgjc=';
   }
 
+  puedeArchivar(reporte: Reporte): boolean {
+    return this.emailUsuarioActual === reporte.emailReportaje && reporte.estado;
+  }
+
+  archivarReporte(id: number): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: { mensaje: '¿Estás seguro de archivar este reporte?' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        this.reportesService.archivarReporte(id).subscribe({
+          next: (response) => {
+            console.log('Respuesta del backend:', response);
+            this.snackBar.open('Reporte archivado con éxito', 'Cerrar', { duration: 3000 });
+            this.obtenerReportes();
+          },
+          error: (err) => {
+            console.log('Respuesta del backend:', err);
+            this.snackBar.open('Error al archivar el reporte', 'Cerrar', { duration: 3000 });
+          }
+        });
+      }
+    });
   filtrarReportes(): void {
     this.reportesFiltrados = this.reportes.filter(reporte => {
       return (!this.nombreBusqueda || reporte.nombre.toLowerCase().includes(this.nombreBusqueda.toLowerCase())) &&
