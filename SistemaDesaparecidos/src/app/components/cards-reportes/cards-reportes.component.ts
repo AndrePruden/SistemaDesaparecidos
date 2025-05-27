@@ -102,8 +102,18 @@ export class CardsReportesComponent implements OnInit {
   cargarUltimosAvistamientos(): void {
     this.reportesFiltrados.forEach(reporte => {
       this.avistamientoService.obtenerUltimoAvistamiento(reporte.idDesaparecido).subscribe({
-        next: avistamiento => reporte.ultimoAvistamiento = avistamiento,
-        error: () => reporte.ultimoAvistamiento = null
+        next: avistamiento => {
+          if (avistamiento) {
+            reporte.ultimoAvistamiento = avistamiento;
+          } else {
+            console.log(`No hay avistamiento para el reporte ID ${reporte.idDesaparecido}`);
+            reporte.ultimoAvistamiento = null;
+          }
+        },
+        error: err => {
+          console.error(`Error real al obtener avistamiento para el reporte ID ${reporte.idDesaparecido}:`, err);
+          reporte.ultimoAvistamiento = null;
+        }
       });
     });
   }
@@ -221,6 +231,8 @@ export class CardsReportesComponent implements OnInit {
         });
       }
     });
+  }
+  
   filtrarReportes(): void {
     this.reportesFiltrados = this.reportes.filter(reporte => {
       return (!this.nombreBusqueda || reporte.nombre.toLowerCase().includes(this.nombreBusqueda.toLowerCase())) &&
