@@ -256,3 +256,29 @@
     min-height: 300px;
   }
 }
+
+@media (max-width: 600px) {
+  .foro-container {
+    grid-template-columns: 1fr;
+    padding: 1rem 0;
+    margin: 1rem auto;
+  }
+  .avistamiento-card {
+    margin: 0.5rem;
+    padding: 0.75rem;
+  }
+  .popup-content {
+    flex-direction: column;
+    width: 98vw;
+    max-width: 100vw;
+    min-width: 0;
+    padding: 0;
+  }
+  .popup-left, .popup-right {
+    padding: 1rem;
+  }
+  .mapa-popup {
+    min-height: 200px;
+    height: 200px;
+  }
+}

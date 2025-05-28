@@ -61,3 +61,24 @@ h2 {
   color: #555;
   margin: 0;
 }
+
+@media (max-width: 600px) {
+  .contenedor {
+    padding: 1rem 0.5rem;
+    max-width: 100%;
+  }
+  .info-sistema {
+    flex-direction: column;
+    gap: 16px;
+    padding: 1rem 0.5rem;
+  }
+  .card-info {
+    width: 100%;
+    padding: 1rem;
+    font-size: 0.95rem;
+  }
+  h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+}
