@@ -7,7 +7,15 @@
   font-family: 'Poppins', sans-serif;
 }
 
+/* Asegura que el body y el app ocupen toda la altura */
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .container {
+  flex: 1 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -117,6 +125,12 @@
   font-size: 13px;
   color: #4070f4;
   cursor: pointer;
+}
+
+/* El footer debe estar después del contenido principal y no tener margin-top grande */
+app-footer {
+  margin-top: auto;
+  width: 100%;
 }
 
 @media (max-width: 600px) {
