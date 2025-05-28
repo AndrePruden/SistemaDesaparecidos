@@ -109,3 +109,26 @@
     margin-top: 15px;
   }
 }
+
+@media (max-width: 600px) {
+  .perfil-container {
+    max-width: 98vw;
+    margin: 70px 2vw 20px 2vw;
+    padding: 1rem;
+  }
+  ul li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+  }
+  .acciones {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  button {
+    width: 100%;
+    font-size: 1rem;
+    padding: 10px 0;
+  }
+}

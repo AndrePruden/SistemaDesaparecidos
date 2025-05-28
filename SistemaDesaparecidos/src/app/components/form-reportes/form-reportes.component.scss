@@ -92,3 +92,26 @@ button[type="submit"]:active {
   height: 400px;
   width: 100%;
 }
+
+@media (max-width: 600px) {
+  form {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  .input-field label {
+    font-size: 1rem;
+  }
+  .input-field input,
+  .input-field textarea {
+    font-size: 0.95rem;
+    padding: 0.5rem 0.7rem;
+  }
+  #mapa {
+    height: 180px !important;
+    min-height: 120px !important;
+  }
+  .button-wrapper {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

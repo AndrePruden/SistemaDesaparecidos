@@ -77,3 +77,31 @@ button {
     background: rgba(0, 0, 0, 0.8);
   }
 }
+
+@media (max-width: 600px) {
+  .carousel {
+    height: 45vh;
+    min-height: 260px;
+  }
+  .carousel-inner img {
+    height: 45vh;
+    min-height: 260px;
+  }
+  .overlay {
+    padding: 8px;
+  }
+  h1 {
+    font-size: 1.1em;
+  }
+  p {
+    font-size: 0.95em;
+  }
+  .btn-principal {
+    font-size: 0.95em;
+    padding: 0.5rem 1rem;
+  }
+  .controls button {
+    padding: 0.5rem 1rem;
+    font-size: 1.2rem;
+  }
+}
