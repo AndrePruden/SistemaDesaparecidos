@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ReportesService {
-  //private baseUrl = 'https://sistemadesaparecidos-production.up.railway.app/reportes';
-  private baseUrl = 'http://localhost:8080/reportes';
+  private baseUrl = 'https://sistemadesaparecidos-production.up.railway.app/reportes';
+  //private baseUrl = 'http://localhost:8080/reportes';
 
   constructor(private http: HttpClient) {}
 
