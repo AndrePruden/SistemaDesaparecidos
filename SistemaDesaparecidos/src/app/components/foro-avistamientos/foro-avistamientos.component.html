@@ -9,11 +9,23 @@
 <div class="foro-container">
   <ng-container *ngIf="avistamientosFiltrados.length > 0; else noAvistamientos">
     <div *ngFor="let avistamiento of avistamientosFiltrados" class="avistamiento-card">
-      <h3>{{ avistamiento.personaDesaparecida.nombre}}</h3>
+      <h3>{{ avistamiento.personaDesaparecida?.nombre }}</h3> <!-- Usar el safe navigation operator (?) -->
       <p><strong>Lugar:</strong> {{ avistamiento.lugarDesaparicionLegible }}</p>
-      <p><strong>Fecha:</strong> {{ avistamiento.fecha }}</p>
-      <p><strong>Descripción:</strong> {{ avistamiento.descripcion }}</p>
-      <button class="btn-mapa" (click)="mostrarPopup(avistamiento)">Ver Mapa</button>
+      <!-- Formatear la fecha si es necesario -->
+      <p><strong>Fecha:</strong> {{ avistamiento.fecha | date:'mediumDate' }}</p>
+      <p><strong>Descripción:</strong> {{ avistamiento.descripcion || 'No hay descripción disponible' }}</p>
+      
+      <div class="card-actions">
+        <button class="btn-mapa" (click)="mostrarPopup(avistamiento)">Ver Mapa</button>
+        <!-- --- AÑADIR ESTE BOTÓN: Botón de Editar --- -->
+        <!-- Mostrarlo solo si el usuario actual es el creador del avistamiento -->
+        <button class="btn-editar"
+                *ngIf="currentUserEmail && avistamiento.emailUsuario === currentUserEmail"
+                (click)="irAEditarAvistamiento(avistamiento.idAvistamiento)">
+                Editar
+        </button>
+        <!-- ---------------------------------------- -->
+      </div>
     </div>
   </ng-container>
 
@@ -31,23 +43,31 @@
 <div *ngIf="avistamientoSeleccionado" class="popup">
   <div class="popup-content">
     <div class="popup-left">
-      <h3>{{ avistamientoSeleccionado.personaDesaparecida.nombre }}</h3>
-      <p><strong>Fecha:</strong> {{ avistamientoSeleccionado.fecha }}</p>
+      <h3>{{ avistamientoSeleccionado.personaDesaparecida?.nombre }}</h3> <!-- Usar safe navigation operator -->
+      <!-- Formatear la fecha si es necesario -->
+      <p><strong>Fecha:</strong> {{ avistamientoSeleccionado.fecha | date:'mediumDate' }}</p>
       <p><strong>Lugar:</strong> {{ avistamientoSeleccionado.lugarDesaparicionLegible }}</p>
       <p><strong>Descripción:</strong> {{ avistamientoSeleccionado.descripcion || 'No hay descripción disponible' }}</p>
     </div>
     <div class="popup-right">
-      <div class="mapa-popup" 
+      <div class="mapa-popup"
            [id]="'mapaPopupA-' + avistamientoSeleccionado.idAvistamiento"
            style="border: 2px solid #4caf50; min-height: 300px;">
-        <div *ngIf="!mapas['mapaPopupA-' + avistamientoSeleccionado.idAvistamiento]" 
-             style="padding: 20px; background: #e8f5e9;">
-          <ul>
-            <li>Leaflet no se cargó correctamente</li>
-            <li>Coordenadas inválidas: {{ avistamientoSeleccionado.ubicacion }}</li>
-            <li>Error en la inicialización (ver consola F12)</li>
-          </ul>
-        </div>
+        <!-- Mejorar mensaje de error/carga -->
+         <div *ngIf="isLoadingMap" style="padding: 20px; background: #e3f2fd; text-align: center;">
+             Cargando mapa...
+         </div>
+         <div *ngIf="!mapas['mapaPopupA-' + avistamientoSeleccionado.idAvistamiento] && !isLoadingMap && mapError"
+              style="padding: 20px; background: #ffcdd2; color: #c62828; text-align:center;">
+           <h4>Error al cargar el mapa</h4>
+           <p>{{ mapError }}</p>
+           <p>Coordenadas: {{ avistamientoSeleccionado.ubicacion || 'No disponibles' }}</p>
+         </div>
+         <div *ngIf="!mapas['mapaPopupA-' + avistamientoSeleccionado.idAvistamiento] && !isLoadingMap && !mapError && avistamientoSeleccionado.ubicacion && ! mapService.parsearCoords(avistamientoSeleccionado.ubicacion)"
+              style="padding: 20px; background: #ffebee; text-align:center;">
+              <i class="fas fa-exclamation-triangle"></i> Las coordenadas no son válidas para mostrar el mapa.
+              <p>Coordenadas recibidas: {{ avistamientoSeleccionado.ubicacion }}</p>
+         </div>
       </div>
     </div>
   </div>

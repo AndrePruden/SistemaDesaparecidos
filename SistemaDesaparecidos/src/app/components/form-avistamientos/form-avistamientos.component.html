@@ -1,38 +1,94 @@
 <div class="form-container">
-  <form (ngSubmit)="crearAvistamiento()" #avistamientoForm="ngForm">
+  <!-- Título dinámico -->
+  <h2>{{ isEditing ? 'Editar Avistamiento' : 'Reportar Nuevo Avistamiento' }}</h2>
+
+  <!-- Usar ngSubmit con onSubmit, ya que manejará tanto crear como editar -->
+  <form (ngSubmit)="onSubmit()" #avistamientoForm="ngForm" novalidate>
     <div class="form-group">
-      <label for="fecha">Fecha del avistamiento</label>
-      <input type="date" id="fecha" name="fecha" [(ngModel)]="nuevoAvistamiento.fecha" required />
+      <label for="fecha">Fecha del avistamiento *</label>
+      <!-- Bindear al campo correcto en avistamientoFormData -->
+      <input type="date" id="fecha" name="fecha" [(ngModel)]="avistamientoFormData.fecha" required #fechaInput="ngModel" />
+      <!-- Mostrar mensajes de error si es necesario -->
+      <div *ngIf="fechaInput.invalid && (fechaInput.dirty || fechaInput.touched)" class="error-message">
+        <small *ngIf="fechaInput.errors?.['required']">La fecha es requerida.</small>
+      </div>
     </div>
 
     <div class="form-group">
-      <label for="lugar">Lugar del avistamiento</label>
-      <!-- No hay un campo de texto, solo el mapa interactivo -->
+      <label for="lugar">Lugar del avistamiento *</label>
+      <p>Selecciona la ubicación en el mapa haciendo click.</p>
+      <!-- Input para mostrar coordenadas, vinculado a avistamientoFormData.coordenadas -->
+      <!-- Este campo se actualiza con el clic en el mapa -->
+      <input type="text" id="lugarDisplay" name="lugarDisplay" [(ngModel)]="avistamientoFormData.coordenadas"
+             placeholder="Coordenadas (Lat, Lng)" readonly class="form-control-readonly" #lugarInput="ngModel" required />
+      <!-- La validación 'required' en el input readonly no es ideal. La validación en TS (onSubmit) es mejor.
+           Usamos #lugarInput="ngModel" para que Angular rastree si el campo ha sido tocado. -->
+      <!-- Mostrar error basado en avistamientoFormData.ubicacion (se llena desde el mapa) -->
+      <div *ngIf="!avistamientoFormData.ubicacion && (avistamientoForm.submitted || lugarInput.touched)" class="error-message">
+        <small>La ubicación en el mapa es requerida.</small>
+      </div>
     </div>
-    <div #mapContainer id="mapaFormAvistamiento" 
-     style="height: 400px; width: 100%; margin: 1rem 0; border-radius: 8px; border: 1px solid #ddd;">
-</div>
-    <!-- <div #mapContainer id="mapaFormAvistamiento" style="height: 300px; margin-bottom: 1em;"></div> -->
-    <!-- <div #mapContainer id="mapContainer"></div> -->
-    <!-- Mapa siempre visible e interactivo -->
-    <!-- <div id="mapa" style="height: 300px; margin-bottom: 1em;"></div> -->
-        
+
+    <!-- Contenedor del mapa -->
+    <div #mapContainer id="mapaFormAvistamiento"
+         style="height: 400px; width: 100%; margin: 1rem 0; border-radius: 8px; border: 1px solid #ddd;">
+         <!-- Contenido dentro del div del mapa para debug/carga -->
+          <div *ngIf="!mapa && isLoadingMap" style="padding: 20px; background: #e3f2fd; text-align: center;">
+              Cargando mapa...
+          </div>
+             <div *ngIf="!mapa && !isLoadingMap && mapInitError" style="padding: 20px; background: #ffcdd2; color: #c62828;">
+               <h4>Error al cargar el mapa</h4>
+               <p>{{ mapInitError }}</p>
+              <p>Ver consola (F12) para más detalles.</p>
+            </div>
+    </div>
+
     <div class="form-group">
       <label for="descripcion">Descripción</label>
-      <textarea id="descripcion" name="descripcion" [(ngModel)]="nuevoAvistamiento.descripcion" placeholder="Describe lo que viste..." rows="4"></textarea>
+       <!-- Bindear al campo correcto en avistamientoFormData -->
+      <textarea id="descripcion" name="descripcion" [(ngModel)]="avistamientoFormData.descripcion"
+                placeholder="Describe lo que viste..." rows="4"></textarea>
     </div>
 
     <div class="form-group">
-      <label for="personaDesaparecida">Seleccionar Reporte</label>
-      <select id="personaDesaparecida" name="personaDesaparecida" [(ngModel)]="nuevoAvistamiento.personaDesaparecida.idDesaparecido" required>
-        <option *ngFor="let reporte of reportes" [value]="reporte.idDesaparecido">
+      <label for="personaDesaparecidaSelect">Seleccionar Reporte (Persona Desaparecida Oficial) *</label>
+      <!-- Usamos selectedIdDesaparecido para el ngModel del select -->
+      <!-- Deshabilitar en modo edición si no permites cambiar el reporte asociado -->
+      <select id="personaDesaparecidaSelect" name="personaDesaparecidaSelect"
+              [(ngModel)]="selectedIdDesaparecido" (ngModelChange)="onPersonaDesaparecidaChange($event)"
+              required #personaSelect="ngModel" [disabled]="isEditing"> <!-- Deshabilitado en edición -->
+        <option [ngValue]="null" disabled>-- Selecciona un reporte --</option>
+        <!-- reportes debe ser una lista de objetos con `id` y `nombre` -->
+        <option *ngFor="let reporte of reportes" [value]="reporte.id">
           {{ reporte.nombre }}
         </option>
       </select>
+      <!-- Mostrar mensajes de error si es necesario -->
+      <div *ngIf="personaSelect.invalid && (personaSelect.dirty || personaSelect.touched)" class="error-message">
+        <small *ngIf="personaSelect.errors?.['required']">Debes seleccionar un reporte.</small>
+      </div>
+      <!-- Mensaje informativo si está deshabilitado en edición -->
+      <small *ngIf="isEditing && !personaSelect.disabled" class="form-text text-muted">
+          El reporte asociado no se puede cambiar al editar.
+      </small>
     </div>
 
-    <button type="submit" [disabled]="!avistamientoForm.form.valid">
-      Enviar Avistamiento
+    <!-- Texto del botón dinámico y disabled state -->
+    <button type="submit" [disabled]="!avistamientoForm.form.valid || isLoading || !avistamientoFormData.ubicacion || selectedIdDesaparecido === null">
+      {{ isEditing ? 'Actualizar Avistamiento' : 'Enviar Avistamiento' }}
     </button>
+
+    <!-- Botón de Cancelar visible solo en modo edición -->
+    <button type="button" *ngIf="isEditing" class="btn-cancelar" (click)="cancelarEdicion()">
+      Cancelar
+    </button>
+
+    <!-- Área para mostrar mensajes de éxito/error -->
+    <div *ngIf="mensaje" class="mensaje-info {{ mensaje.startsWith('Error') ? 'mensaje-error' : 'mensaje-exito' }}">
+        {{ mensaje }}
+    </div>
+
+    <!-- Indicador de carga -->
+    <div *ngIf="isLoading" class="loading-indicator">Cargando...</div>
   </form>
 </div>
