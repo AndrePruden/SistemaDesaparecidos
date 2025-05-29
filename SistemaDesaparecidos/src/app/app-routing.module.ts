@@ -5,12 +5,12 @@ import { ForoAvistamientosComponent } from './components/foro-avistamientos/foro
 
 const routes: Routes = [
   { path: 'registro', component: RegistroComponent },
-  { path: 'foro-avistamientos/:id', component: ForoAvistamientosComponent }, // Parametro id
-  { path: '', redirectTo: '/registro', pathMatch: 'full' }, // Ruta por defecto
+  { path: 'foro-avistamientos/:id', component: ForoAvistamientosComponent }, 
+  { path: '', redirectTo: '/registro', pathMatch: 'full' }, 
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)], // Asegúrate de que el RouterModule esté configurado
+  imports: [RouterModule.forRoot(routes)], 
   exports: [RouterModule],
 })
 export class AppRoutingModule {}
