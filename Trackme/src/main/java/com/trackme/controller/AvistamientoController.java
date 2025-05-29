@@ -117,45 +117,34 @@ public class AvistamientoController {
         return ResponseEntity.ok(avistamientos);
     }
 
-    // --- AÑADIR ESTE MÉTODO: Endpoint para actualizar un avistamiento por su ID ---
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarAvistamiento(@PathVariable Long id, @RequestBody Avistamiento avistamientoActualizado) {
         logger.info("Recibida solicitud PUT /avistamientos/{} (actualizar)", id);
         try {
-             // Opcional: Validar si el ID en el path coincide con el ID en el cuerpo si viene (y si tu lógica lo requiere)
-             // Forzamos el ID del path en el objeto recibido para asegurar que se actualiza el correcto
+             
              if (avistamientoActualizado.getIdAvistamiento() != null && !avistamientoActualizado.getIdAvistamiento().equals(id)) {
                   logger.warn("ID en path ({}) no coincide con ID en cuerpo ({}) para actualizar. Usando ID del path.", id, avistamientoActualizado.getIdAvistamiento());
              }
              avistamientoActualizado.setIdAvistamiento(id);
 
 
-             // Validar campos necesarios antes de actualizar (opcional, depende de tu lógica)
-             // Puedes usar AvistamientoValidationService si tiene un método para validar parciales o actualizaciones
-             // String validacion = avistamientoValidationService.validarAvistamientoParaActualizacion(avistamientoActualizado);
-             // if (validacion != null) {
-             //     logger.warn("Avistamiento de actualización inválido: {}", validacion);
-             //     return ResponseEntity.badRequest().body(validacion);
-             // }
+            
 
 
              Avistamiento actualizado = avistamientoService.actualizarAvistamiento(id, avistamientoActualizado);
 
              logger.info("Avistamiento con ID {} actualizado exitosamente.", id);
-             return ResponseEntity.ok(actualizado); // Devolver el objeto actualizado
+             return ResponseEntity.ok(actualizado); 
 
-          } catch (RuntimeException e) { // Capturar excepciones específicas del servicio (ej: no encontrado)
+          } catch (RuntimeException e) { 
               logger.error("Error al actualizar avistamiento {} (RuntimeException): {}", id, e.getMessage());
                if (e.getMessage() != null && e.getMessage().contains("no encontrado")) {
                    return ResponseEntity.status(404).body(e.getMessage());
                }
-              // Capturar otros errores de negocio del servicio
               return ResponseEntity.status(500).body("Error del servidor al actualizar el avistamiento: " + e.getMessage());
-         } catch (Exception e) { // Capturar cualquier otra excepción inesperada
+         } catch (Exception e) { 
              logger.error("Error inesperado al actualizar el avistamiento con ID " + id, e);
-             // No exponer detalles internos de la excepción al cliente en producción
              return ResponseEntity.status(500).body("Error interno del servidor al actualizar el avistamiento.");
          }
     }
-   // ------------------------------------------------------------------------------
 }

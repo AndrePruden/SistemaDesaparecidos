@@ -122,14 +122,12 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
     this.avistamientoService.obtenerTodosLosAvistamientos().subscribe({
       next: (data: Avistamiento[]) => {
         console.log('[FORO] [DATA] Avistamientos cargados:', data.length, 'elementos.');
-        // Asegurarse de que cada avistamiento tenga una propiedad personaDesaparecida y nombre antes de usarlo
         this.avistamientos = data.filter(a => a.personaDesaparecida?.nombre); 
         this.avistamientosFiltrados = [...this.avistamientos];
         console.log('[FORO] [DATA] Avistamientos después de filtro inicial (si aplica):', this.avistamientos.length); // LOG AQUÍ
         // LOG los avistamientos filtrados para inspeccionar emailUsuario
         console.log('[FORO] [DATA] AvistamientosFiltrados (para debug emailUsuario):', this.avistamientosFiltrados); // LOG AQUÍ (puede ser grande)
-        // Si la lista es muy grande, puedes loguear solo una muestra o mapear los emails:
-        // console.log('[FORO] [DATA] Emails de avistamientos:', this.avistamientosFiltrados.map(a => a.emailUsuario)); // LOG AQUÍ
+        
 
         this.setDireccionesAvistamientos(); 
          this.cdr.detectChanges(); 
@@ -145,15 +143,13 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
 
   setDireccionesAvistamientos(): void {
      console.log('[FORO] [DATA] Iniciando geocodificación inversa para avistamientos...');
-    // Usar this.avistamientos (lista completa) para asegurar que todos son procesados
     this.avistamientos.forEach(avistamiento => {
-      // Evitar geocodificar si ya tiene una dirección legible (ej. de una carga anterior o si vino del backend)
-      // O si no tiene ubicación válida
+      
       if (avistamiento.lugarDesaparicionLegible && avistamiento.lugarDesaparicionLegible !== '' && avistamiento.lugarDesaparicionLegible !== 'Cargando...') {
-          //console.log(`[FORO] [DATA] Avistamiento ${avistamiento.idAvistamiento} ya tiene lugar legible.`);
+         
           return;
       }
-      // Inicializar con un placeholder si no tiene lugar legible
+      
        if (!avistamiento.lugarDesaparicionLegible) {
            avistamiento.lugarDesaparicionLegible = avistamiento.ubicacion || 'Cargando...';
        }
@@ -161,12 +157,9 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
 
       const coords = this.mapService.parsearCoords(avistamiento.ubicacion);
       if (coords) {
-        //console.log(`[FORO] [DATA] Geocodificando coords ${coords} para avistamiento ${avistamiento.idAvistamiento}...`);
         this.geocodificacionService.obtenerDireccionDesdeCoordenadas(coords[0], coords[1]).subscribe({
           next: direccion => {
-             //console.log(`[FORO] [DATA] Dir recibida para ${avistamiento.idAvistamiento}: ${direccion}`);
              avistamiento.lugarDesaparicionLegible = direccion;
-             // Forzar detección de cambios para actualizar la UI a medida que llegan las direcciones
              this.cdr.detectChanges();
           },
           error: (err) => {
@@ -178,7 +171,6 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
       } else {
         console.warn(`[FORO] [DATA] No hay coords válidas para ${avistamiento.idAvistamiento}.`);
         avistamiento.lugarDesaparicionLegible = avistamiento.ubicacion || 'Ubicación no disponible'; // Fallback
-         // Trigger change detection here too if fallback is set
          this.cdr.detectChanges();
       }
     });
@@ -188,9 +180,7 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
 
   filtrarAvistamientos(): void {
     console.log('[FORO] [FILTRO] Aplicando filtros...');
-    // Asegurarse de que la lista original 'avistamientos' está completa antes de filtrar
     this.avistamientosFiltrados = this.avistamientos.filter(avistamiento => {
-      // Asegurarse de que personaDesaparecida y nombre existan antes de acceder a ellos
       const nombreAvistamiento = avistamiento.personaDesaparecida?.nombre || '';
       const nombreMatch = !this.nombreBusqueda ||
         nombreAvistamiento.toLowerCase().includes(this.nombreBusqueda.toLowerCase());
@@ -200,7 +190,6 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
       const lugarMatch = !this.lugarBusqueda ||
         lugarAvistamientoTexto.toLowerCase().includes(this.lugarBusqueda.toLowerCase());
 
-      // Filtrar por fecha - Asegurando formato de fecha y manejo de nulos
       const fechaAvistamientoStr = avistamiento.fecha; // Asumiendo que es una cadena YYYY-MM-DD o similar
       let fechaMatch = true;
 
@@ -211,7 +200,6 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
            const fechaInicioDate = this.fechaBusquedaInicio ? new Date(this.fechaBusquedaInicio + 'T00:00:00') : null;
            const fechaFinDate = this.fechaBusquedaFin ? new Date(this.fechaBusquedaFin + 'T23:59:59') : null; // Comparar hasta el final del día
 
-           // Si el avistamiento no tiene fecha, no coincide si hay filtros de fecha
            if (!fechaAvistamientoDate || isNaN(fechaAvistamientoDate.getTime())) {
                fechaMatch = false;
            } else {
@@ -339,7 +327,6 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
         this.mapas[mapaId] = mapa; // Guardar la instancia L.Map
 
         console.log('[FORO] [POPUP MAP] Añadiendo marcador via MapService...');
-        // Usar el MapService para añadir el marcador
         this.mapService.agregarMarcador(
           mapa, // Pasar la instancia L.Map
           coords,
@@ -349,7 +336,6 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
         );
         console.log('[FORO] [POPUP MAP] Marcador añadido.');
 
-        // Forzar redibujado del mapa después de un breve retardo - crucial si está dentro de un popup/modal
         setTimeout(() => {
              const currentMap = this.mapas[mapaId];
              if (currentMap) { // Check if map still exists
@@ -417,10 +403,7 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
     // Navegar a la ruta del formulario con el ID del avistamiento
     this.router.navigate(['/avistamientos/form', idAvistamiento]);
   }
-  // ----------------------------------------------------------
-
-
-  // --- Método para limpiar todas las instancias de mapa (útil en ngOnDestroy) ---
+  
   private limpiarTodosLosMapas(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     console.log('[FORO] [DESTROY] Limpiando todas las instancias de mapa...');
@@ -433,5 +416,5 @@ export class ForoAvistamientosComponent implements OnInit, OnDestroy {
     this.mapas = {}; // Reset the map instances object
     console.log('[FORO] [DESTROY] Todas las instancias de mapa limpiadas.');
   }
-  // ---------------------------------------------------------------------------
+  
 }

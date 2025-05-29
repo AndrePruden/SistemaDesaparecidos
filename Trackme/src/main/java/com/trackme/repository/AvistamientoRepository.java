@@ -13,8 +13,6 @@ public interface AvistamientoRepository extends JpaRepository<Avistamiento, Long
     List<Avistamiento> findByEmailUsuario(String emailUsuario);
     List<Avistamiento> findByPersonaDesaparecida_IdDesaparecido(Long idPersonaDesaparecida);
 
-    // --- MODIFICACIÓN AQUÍ: Añadir `, a.idAvistamiento DESC` para desempate por ID ---
     @Query("SELECT a FROM Avistamiento a WHERE a.personaDesaparecida.idDesaparecido = :idReporte ORDER BY a.fecha DESC, a.idAvistamiento DESC")
     List<Avistamiento> findUltimoAvistamientoPorReporte(@Param("idReporte") Long idReporte);
-    // -------------------------------------------------------------------------------
 }

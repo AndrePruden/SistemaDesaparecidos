@@ -17,14 +17,12 @@
       
       <div class="card-actions">
         <button class="btn-mapa" (click)="mostrarPopup(avistamiento)">Ver Mapa</button>
-        <!-- --- AÑADIR ESTE BOTÓN: Botón de Editar --- -->
-        <!-- Mostrarlo solo si el usuario actual es el creador del avistamiento -->
+        
         <button class="btn-editar"
                 *ngIf="currentUserEmail && avistamiento.emailUsuario === currentUserEmail"
                 (click)="irAEditarAvistamiento(avistamiento.idAvistamiento)">
                 Editar
         </button>
-        <!-- ---------------------------------------- -->
       </div>
     </div>
   </ng-container>

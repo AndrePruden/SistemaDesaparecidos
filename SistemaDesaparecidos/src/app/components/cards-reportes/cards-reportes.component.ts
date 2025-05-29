@@ -428,40 +428,36 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
   }
 
 
-  // Cierra el popup y limpia la instancia del mapa asociada
   cerrarPopup(): void {
     console.log('[CARDS] [POPUP] Cerrando popup.');
     if (this.reporteSeleccionado) {
       const mapaId = 'mapaPopup-' + this.reporteSeleccionado.idDesaparecido;
       if (this.mapas[mapaId]) {
          console.log(`[CARDS] [POPUP] Limpiando mapa ${mapaId} al cerrar popup.`);
-         // Usar MapService para eliminar
          this.mapService.eliminarMapa(this.mapas[mapaId] as L.Map); // Cast a L.Map
-         this.mapas[mapaId] = null; // Establecer a null después de eliminar
+         this.mapas[mapaId] = null; 
          console.log(`[CARDS] [POPUP] Mapa ${mapaId} limpiado.`);
       }
     } else {
         console.log('[CARDS] [POPUP] No hay reporte seleccionado, nada que limpiar.');
     }
-    this.reporteSeleccionado = null; // Oculta el popup
-    this.cdr.detectChanges(); // Asegura que el *ngIf se desactive
+    this.reporteSeleccionado = null; 
+    this.cdr.detectChanges(); 
     console.log('[CARDS] [POPUP] Popup cerrado.');
   }
 
 
-  // Limpia todas las instancias de mapa guardadas (útil en ngOnDestroy)
   private limpiarTodosLosMapas(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     console.log('[CARDS] [DESTROY] Limpiando todas las instancias de mapa...');
     for (const mapaId in this.mapas) {
       if (this.mapas[mapaId]) {
         console.log(`[CARDS] [DESTROY] Limpiando mapa ${mapaId}...`);
-         // Usar MapService para eliminar
          this.mapService.eliminarMapa(this.mapas[mapaId] as L.Map); // Cast a L.Map
          this.mapas[mapaId] = null; // Establecer a null
       }
     }
-    this.mapas = {}; // Reset the map instances object
+    this.mapas = {}; 
     console.log('[CARDS] [DESTROY] Todas las instancias de mapa limpiadas.');
   }
 
@@ -472,19 +468,16 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
   }
 
   puedeArchivar(reporte: Reporte): boolean {
-    // Asegurarse de que emailUsuarioActual no sea null antes de comparar
     return this.emailUsuarioActual !== null && this.emailUsuarioActual === reporte.emailReportaje && reporte.estado === true;
   }
 
   archivarReporte(id: number): void {
       console.log('[CARDS] Intentando archivar reporte ID:', id);
-      // Asegúrate de que el email del usuario actual se obtenga correctamente
       if (this.emailUsuarioActual === null) {
           console.warn('[CARDS] No se puede archivar: Usuario no logueado o email no disponible.');
            this.snackBar.open('Debes iniciar sesión para archivar reportes.', 'Cerrar', { duration: 3000 });
            return;
       }
-       // Buscar el reporte en la lista para verificar si el usuario actual es el creador
        const reporteToArchive = this.reportes.find(r => r.idDesaparecido === id);
        if (!reporteToArchive || reporteToArchive.emailReportaje !== this.emailUsuarioActual) {
             console.warn('[CARDS] No se puede archivar: El usuario actual no creó este reporte o el reporte no existe/ya está archivado.');
@@ -510,13 +503,10 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
           next: (response) => {
             console.log('[CARDS] ✅ Reporte archivado con éxito:', response);
             this.snackBar.open('Reporte archivado con éxito', 'Cerrar', { duration: 3000 });
-            // --- Volver a obtener reportes para actualizar la lista visible ---
             this.obtenerReportes();
-            // ----------------------------------------------------------------
           },
           error: (err) => {
             console.error('[CARDS] ❌ Error al archivar el reporte:', err);
-             // Mostrar mensaje de error más útil si es posible
             this.snackBar.open(`Error al archivar el reporte: ${err.error?.message || err.message || 'Desconocido'}`, 'Cerrar', { duration: 5000 });
           }
         });
@@ -529,24 +519,20 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
 
   filtrarReportes(): void {
     console.log('[CARDS] [FILTRO] Aplicando filtros...');
-    // Filtramos sobre la lista completa 'reportes' (que ya tiene el filtro inicial por estado/email)
     this.reportesFiltrados = this.reportes.filter(reporte => {
       const nombreMatch = !this.nombreBusqueda ||
         reporte.nombre.toLowerCase().includes(this.nombreBusqueda.toLowerCase());
 
-      // Assuming exact age match for number input, handle null
       const edadMatch = this.edadBusqueda === null ||
         reporte.edad === this.edadBusqueda;
 
-      // Use lugarDesaparicionLegible for filtering if available, fallback to raw
-      // Ensure it's not null/undefined before calling methods
+      
       const lugarReporteTexto = reporte.lugarDesaparicionLegible && reporte.lugarDesaparicionLegible !== '' ? reporte.lugarDesaparicionLegible : (reporte.lugarDesaparicion || '');
       const lugarMatch = !this.lugarBusqueda ||
         lugarReporteTexto.toLowerCase().includes(this.lugarBusqueda.toLowerCase());
 
 
-      // Filter by date - Assuming fechaBusqueda is a date string like 'YYYY-MM-DD'
-      // Ensure reporte.fechaDesaparicion is not null before comparison
+      
       const fechaReporteStr = reporte.fechaDesaparicion;
       const fechaMatch = !this.fechaBusqueda ||
          (fechaReporteStr && fechaReporteStr.startsWith(this.fechaBusqueda)); // Simple prefix match "YYYY-MM-DD"
@@ -554,8 +540,7 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
       return nombreMatch && edadMatch && lugarMatch && fechaMatch;
     });
      console.log('[CARDS] [FILTRO] Resultados filtrados:', this.reportesFiltrados.length);
-     // No necesitas cargar últimos avistamientos o geocodificar de nuevo solo por filtrar,
-     // ya se hizo en la carga inicial sobre la lista completa `this.reportes`.
+     
      this.cdr.detectChanges(); // Force detection after filtering
   }
 
@@ -566,6 +551,6 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
     this.edadBusqueda = null;
     this.lugarBusqueda = '';
     this.fechaBusqueda = '';
-    this.filtrarReportes(); // Apply filters again (which will show all reports from the initial filtered set)
+    this.filtrarReportes(); 
   }
 }

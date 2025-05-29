@@ -1,14 +1,10 @@
 <div class="form-container">
-  <!-- Título dinámico -->
   <h2>{{ isEditing ? 'Editar Avistamiento' : 'Reportar Nuevo Avistamiento' }}</h2>
 
-  <!-- Usar ngSubmit con onSubmit, ya que manejará tanto crear como editar -->
   <form (ngSubmit)="onSubmit()" #avistamientoForm="ngForm" novalidate>
     <div class="form-group">
       <label for="fecha">Fecha del avistamiento *</label>
-      <!-- Bindear al campo correcto en avistamientoFormData -->
       <input type="date" id="fecha" name="fecha" [(ngModel)]="avistamientoFormData.fecha" required #fechaInput="ngModel" />
-      <!-- Mostrar mensajes de error si es necesario -->
       <div *ngIf="fechaInput.invalid && (fechaInput.dirty || fechaInput.touched)" class="error-message">
         <small *ngIf="fechaInput.errors?.['required']">La fecha es requerida.</small>
       </div>
@@ -17,13 +13,10 @@
     <div class="form-group">
       <label for="lugar">Lugar del avistamiento *</label>
       <p>Selecciona la ubicación en el mapa haciendo click.</p>
-      <!-- Input para mostrar coordenadas, vinculado a avistamientoFormData.coordenadas -->
-      <!-- Este campo se actualiza con el clic en el mapa -->
+      
       <input type="text" id="lugarDisplay" name="lugarDisplay" [(ngModel)]="avistamientoFormData.coordenadas"
              placeholder="Coordenadas (Lat, Lng)" readonly class="form-control-readonly" #lugarInput="ngModel" required />
-      <!-- La validación 'required' en el input readonly no es ideal. La validación en TS (onSubmit) es mejor.
-           Usamos #lugarInput="ngModel" para que Angular rastree si el campo ha sido tocado. -->
-      <!-- Mostrar error basado en avistamientoFormData.ubicacion (se llena desde el mapa) -->
+      
       <div *ngIf="!avistamientoFormData.ubicacion && (avistamientoForm.submitted || lugarInput.touched)" class="error-message">
         <small>La ubicación en el mapa es requerida.</small>
       </div>
@@ -52,43 +45,35 @@
 
     <div class="form-group">
       <label for="personaDesaparecidaSelect">Seleccionar Reporte (Persona Desaparecida Oficial) *</label>
-      <!-- Usamos selectedIdDesaparecido para el ngModel del select -->
-      <!-- Deshabilitar en modo edición si no permites cambiar el reporte asociado -->
+    
       <select id="personaDesaparecidaSelect" name="personaDesaparecidaSelect"
               [(ngModel)]="selectedIdDesaparecido" (ngModelChange)="onPersonaDesaparecidaChange($event)"
               required #personaSelect="ngModel" [disabled]="isEditing"> <!-- Deshabilitado en edición -->
         <option [ngValue]="null" disabled>-- Selecciona un reporte --</option>
-        <!-- reportes debe ser una lista de objetos con `id` y `nombre` -->
         <option *ngFor="let reporte of reportes" [value]="reporte.id">
           {{ reporte.nombre }}
         </option>
       </select>
-      <!-- Mostrar mensajes de error si es necesario -->
       <div *ngIf="personaSelect.invalid && (personaSelect.dirty || personaSelect.touched)" class="error-message">
         <small *ngIf="personaSelect.errors?.['required']">Debes seleccionar un reporte.</small>
       </div>
-      <!-- Mensaje informativo si está deshabilitado en edición -->
       <small *ngIf="isEditing && !personaSelect.disabled" class="form-text text-muted">
           El reporte asociado no se puede cambiar al editar.
       </small>
     </div>
 
-    <!-- Texto del botón dinámico y disabled state -->
     <button type="submit" [disabled]="!avistamientoForm.form.valid || isLoading || !avistamientoFormData.ubicacion || selectedIdDesaparecido === null">
       {{ isEditing ? 'Actualizar Avistamiento' : 'Enviar Avistamiento' }}
     </button>
 
-    <!-- Botón de Cancelar visible solo en modo edición -->
     <button type="button" *ngIf="isEditing" class="btn-cancelar" (click)="cancelarEdicion()">
       Cancelar
     </button>
 
-    <!-- Área para mostrar mensajes de éxito/error -->
     <div *ngIf="mensaje" class="mensaje-info {{ mensaje.startsWith('Error') ? 'mensaje-error' : 'mensaje-exito' }}">
         {{ mensaje }}
     </div>
 
-    <!-- Indicador de carga -->
     <div *ngIf="isLoading" class="loading-indicator">Cargando...</div>
   </form>
 </div>

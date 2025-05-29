@@ -34,7 +34,6 @@ export class AvistamientoService {
   // --- Renombrar a avistamientoCambiadoSource para consistencia ---
   private avistamientoCambiadoSource = new Subject<void>();
   avistamientoCambiado$ = this.avistamientoCambiadoSource.asObservable();
-  // ----------------------------------------------------------------
 
   constructor(private http: HttpClient) {}
 
@@ -50,21 +49,16 @@ export class AvistamientoService {
       );
   }
 
-  // --- AÑADIR ESTE MÉTODO: Obtener un avistamiento por su ID ---
   obtenerAvistamientoPorId(id: number): Observable<Avistamiento> {
     console.log(`[SERVICE][FRONT] 📩 Solicitando GET /avistamientos/${id}`);
-    // Usamos el endpoint backend que acabamos de añadir
     return this.http.get<Avistamiento>(`${this.baseUrl}/${id}`).pipe(
       tap(data => console.log(`[SERVICE][FRONT] ✅ Avistamiento ${id} recibido:`, data)),
       catchError(this.handleError)
     );
   }
-  // ------------------------------------------------------------
-
-  // --- AÑADIR ESTE MÉTODO: Actualizar un avistamiento por su ID ---
+  
   actualizarAvistamiento(id: number, avistamientoData: Partial<Avistamiento>): Observable<any> {
     console.log(`[SERVICE][FRONT] 📤 Intentando PUT /avistamientos/${id}:`, avistamientoData);
-     // Usamos el endpoint backend que acabamos de añadir
     return this.http.put(`${this.baseUrl}/${id}`, avistamientoData)
       .pipe(
         tap(response => {
@@ -74,7 +68,6 @@ export class AvistamientoService {
         catchError(this.handleError)
       );
   }
-  // ---------------------------------------------------------------
 
   obtenerAvistamientosPorUsuario(email: string): Observable<any[]> {
      console.log(`[SERVICE][FRONT] 📩 Solicitando GET /avistamientos/usuario/${email}`);
@@ -94,14 +87,11 @@ export class AvistamientoService {
 
   obtenerUltimoAvistamiento(idReporte: number): Observable<Avistamiento | null> {
     console.log(`[SERVICE][FRONT] 📩 Solicitando GET /avistamientos/ultimo/${idReporte}`);
-     // Asegúrate que tu backend retorna 404 si no lo encuentra, o un objeto si sí.
-     // El `catchError` en tu servicio backend maneja el 404 convirtiéndolo a un Observable<null>, lo cual es correcto.
+     
     return this.http.get<Avistamiento>(`${this.baseUrl}/ultimo/${idReporte}`)
       .pipe(
         catchError(error => {
-            // Si el backend ya maneja el 404 y devuelve un Observable<null>, este catchError aquí
-            // solo atraparía otros errores. Si el backend lanza un error para 404, este lo atraparía.
-            // Basado en tu backend service, parece que ya se maneja el 404 para devolver null.
+            
              console.error(`[SERVICE][FRONT] Error al obtener último avistamiento para reporte ${idReporte}:`, error);
             if (error.status === 404) {
                 console.log(`[SERVICE][FRONT] Último avistamiento para reporte ${idReporte} no encontrado (404) - retornado null.`);
@@ -134,7 +124,6 @@ export class AvistamientoService {
     } else {
       errorMessage = `Error del servidor: ${error.status}`;
       if (error.statusText) errorMessage += ` - ${error.statusText}`;
-       // Intentar obtener un mensaje más detallado del cuerpo del error si es un objeto
       if (error.error && typeof error.error === 'object' && error.error.message) {
           errorMessage += `: ${error.error.message}`;
       } else if (typeof error.error === 'string' && error.error.length > 0) {
@@ -148,8 +137,7 @@ export class AvistamientoService {
     return throwError(() => new Error(errorMessage));
   }
 
-  // Nota: Este método parece fuera de lugar aquí. Debería estar en ReportesService.
-  // Lo mantengo ya que estaba en tu código, pero considéralo para refactorizar.
+  
   obtenerReportesFiltrados(nombre: string, lugar: string, fecha: string) {
     const params = {
       nombre,
@@ -157,20 +145,17 @@ export class AvistamientoService {
       fecha
     };
      console.log('[SERVICE][FRONT] Solicitando GET /avistamientos/filtrar (Nota: este endpoint es de reportes filtrados?)');
-    return this.http.get<any[]>(`${this.baseUrl}/filtrar`, { params }) // Esta URL podría ser incorrecta si '/filtrar' no está en /avistamientos
-     .pipe(catchError(this.handleError)); // Asegúrate de manejar errores también aquí
+    return this.http.get<any[]>(`${this.baseUrl}/filtrar`, { params }) 
+     .pipe(catchError(this.handleError)); 
   }
 
-   // Este helper es útil si tu servicio de mapas o geocodificación no lo tiene
-   // o si quieres tenerlo centralizado. Si ya está en MapService, úsalo desde allí.
+   
    parsearCoords(ubicacion: string | undefined | null): [number, number] | null {
        if (!ubicacion) {
-            //console.warn('[SERVICE][FRONT] Intento de parsear coords nulas/vacías.');
             return null;
        }
        const partes = ubicacion.split(',').map(part => parseFloat(part.trim()));
        if (partes.length === 2 && !isNaN(partes[0]) && !isNaN(partes[1])) {
-           //console.log('[SERVICE][FRONT] Coords parseadas con éxito:', partes);
            return [partes[0], partes[1]];
        }
        console.warn('[SERVICE][FRONT] Formato de coordenadas no válido para parsear:', ubicacion);

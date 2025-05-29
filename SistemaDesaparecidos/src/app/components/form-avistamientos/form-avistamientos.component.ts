@@ -277,39 +277,33 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
         console.log('[DEBUG FORM] Ubicación y coordenadas asignadas:', this.avistamientoFormData.ubicacion);
 
 
-        // Seleccionar la persona desaparecida en el dropdown
-        // El backend puede devolver PersonaDesaparecida completa o solo un objeto con ID
-        // Debes asegurarte de que el `selectedIdDesaparecido` se setee con el ID correcto
+        
         if (avistamiento.personaDesaparecida &&
             (avistamiento.personaDesaparecida.idDesaparecido !== null && avistamiento.personaDesaparecida.idDesaparecido !== undefined ||
              avistamiento.personaDesaparecida.id !== null && avistamiento.personaDesaparecida.id !== undefined)) // Añadir check para 'id' también si backend lo usa
              {
-             // Usar idDesaparecido si existe, si no, usar id (ajusta según tu backend)
             const personaId = avistamiento.personaDesaparecida.idDesaparecido ?? avistamiento.personaDesaparecida.id;
             this.selectedIdDesaparecido = (personaId !== null && personaId !== undefined) ? +personaId : null; // Asegurarse de que es number | null
              console.log('[DEBUG FORM] ID de persona desaparecida asignado a selectedIdDesaparecido:', this.selectedIdDesaparecido);
-             // Opcional: llamar a onPersonaDesaparecidaChange para actualizar el objeto completo si es necesario
-            // this.onPersonaDesaparecidaChange(this.selectedIdDesaparecido); // Ya se llama al final de este bloque
+             
         } else {
             this.selectedIdDesaparecido = null; // Asegurarse de que el select esté vacío
-            // Resetear el objeto personaDesaparecida en formData si no viene un ID válido
+           
             this.avistamientoFormData.personaDesaparecida = { idDesaparecido: null, nombre: '' };
             console.warn('[DEBUG FORM] No se encontró ID de persona desaparecida en los datos cargados. selectedIdDesaparecido = null.');
         }
-        // Llamar a onPersonaDesaparecidaChange después del if-else para actualizar el objeto completo si es necesario (aunque el form ya se llenó, esto asegura el objeto formData)
         this.onPersonaDesaparecidaChange(this.selectedIdDesaparecido);
 
 
-        // Si el mapa ya está inicializado, actualizar el marcador y centrarlo con la ubicación cargada
-        // Esto puede pasar si AfterViewInit disparó antes de que el subscribe Next() terminara.
+       
         if (this.mapa && this.avistamientoFormData.ubicacion) {
              const coords = this.parsearCoords(this.avistamientoFormData.ubicacion); // Usar el método parsearCoords del componente
              if(coords){
                 console.log('[DEBUG FORM MAP] 📍 Actualizando marcador en mapa con coords cargadas (desde subscribe):', coords);
                 this.actualizarMarcadorMapa(coords);
-                // Centrar el mapa en las coordenadas del avistamiento
+                
                 this.mapa.setView(coords, this.mapa.getZoom() > 6 ? this.mapa.getZoom() : 13); // Mantener zoom si es alto, si no, usar 13
-                 this.mapa.invalidateSize(); // Importante si el mapa estaba oculto o se redimensionó
+                 this.mapa.invalidateSize(); 
                  console.log('[DEBUG FORM MAP] Mapa centrado y tamaño invalidado.');
              } else {
                   console.warn('[DEBUG FORM MAP] Ubicación cargada no válida para el mapa (desde subscribe):', this.avistamientoFormData.ubicacion);
@@ -317,18 +311,17 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
              }
         } else if (this.avistamientoFormData.ubicacion) {
              console.log('[DEBUG FORM MAP] 🗺️ Mapa aún no inicializado al cargar datos. Se intentará poner marcador/centrar en inicializarMapa o AfterViewInit.');
-             // Si el mapa no estaba listo, la lógica en inicializarMapa o AfterViewInit lo manejará después.
+             
         } else {
              console.log('[DEBUG FORM MAP] No hay ubicación en los datos cargados, no se pondrá marcador inicial.');
         }
 
 
         this.isLoading = false; // Ocultar indicador de carga
-        // Forzar detección de cambios para que el formulario se actualice con los datos cargados
+        
         this.cdr.detectChanges();
         console.log('[DEBUG FORM] ✅ Datos de edición aplicados al formulario.');
-        // Opcional: Marcar el formulario como "pristine" después de cargar datos si no quieres que aparezcan errores de "dirty"
-        // Esto evita que los mensajes de validación aparezcan inmediatamente al cargar
+       
          if (this.avistamientoForm) { this.avistamientoForm.form.markAsPristine(); }
       },
       error: (error) => {
@@ -340,16 +333,14 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
          this.mapInitError = 'No se pudo cargar el avistamiento para mostrar la ubicación.';
         this.cdr.detectChanges(); // Forzar detección de cambios para mostrar el error
 
-        // Considerar redirigir o mostrar un mensaje de error y limpiar el formulario
+       
         this.resetForm(true); // Resetear el form y mapa en caso de error de carga
         this.router.navigate(['/reportes']); // Redirigir a la lista si falla la carga
       },
     });
   }
-  // -----------------------------------------------------------------------------
 
 
-  // --- Método para inicializar el mapa (Lógica ya estaba en tu código base) ---
   private inicializarMapa(): void {
     console.log('[DEBUG FORM MAP] 🗺️ Iniciando inicialización del mapa.'); // Log de inicio
     if (!isPlatformBrowser(this.platformId)) {
@@ -359,7 +350,6 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
          this.cdr.detectChanges();
         return;
     }
-    // Asegurarse de que el elemento del DOM para el mapa está disponible
     if (!this.mapContainer?.nativeElement) {
         console.error('[DEBUG FORM MAP] ❌ ERROR - mapContainer.nativeElement es null. No se puede inicializar el mapa.'); // Log de error
          this.mapInitError = 'Error interno: Contenedor del mapa no encontrado.'; // Estado de error
@@ -377,8 +367,7 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
     this.mapInitError = null; // Limpiar error previo
 
     const container = this.mapContainer.nativeElement;
-    // Asegurar que el contenedor tenga dimensiones visibles antes de inicializar Leaflet
-     // Tu código base ya lo hacía, lo mantengo. Es crucial.
+   
      container.style.height = '400px'; // O alguna altura predefinida
      container.style.width = '100%'; // O algún ancho predefinido
      container.style.margin = '1rem 0'; // Reaplicar estilos del template
@@ -387,8 +376,7 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
     console.log('[DEBUG FORM MAP] Dimensiones y estilos del contenedor del mapa aseguradas.');
 
     try {
-        // Crear el icono personalizado si aún no existe (Lógica ya estaba en tu código base)
-        // Asumiendo que tienes un assets/images/marker-icon.png etc.
+        
         if (!this.iconoAvistamientoPersonalizado) {
              this.iconoAvistamientoPersonalizado = L.icon({
                iconUrl: 'assets/images/marker-icon.png',
@@ -401,8 +389,7 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
         }
 
 
-        // Inicializar el mapa
-        // Usar el centro cargado si estamos en edición y la ubicación ya está en formData, si no, usar el centro por defecto
+       
         const initialCenter: [number, number] = (this.isEditing && this.avistamientoFormData.ubicacion)
             ? this.parsearCoords(this.avistamientoFormData.ubicacion) || [-17.3935, -66.1570] // Fallback a Cochabamba si coords cargadas son inválidas
             : [-17.3935, -66.1570]; // Coordenadas por defecto (ej: Cochabamba)
@@ -411,12 +398,10 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
             center: initialCenter,
             zoom: 13,
             zoomControl: true, // Mostrar control de zoom
-            // preferCanvas: true // Puede mejorar rendimiento con muchos marcadores, pero no es necesario aquí
         });
          console.log('[DEBUG FORM MAP] Instancia de mapa creada con centro inicial:', initialCenter);
 
 
-        // Añadir la capa de OpenStreetMap (Lógica ya estaba en tu código base)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors',
           maxZoom: 19,
@@ -426,18 +411,15 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
         console.log('[DEBUG FORM MAP] Capa de OpenStreetMap añadida.');
 
 
-        // Añadir el evento click para colocar marcador (Lógica ya estaba en tu código base)
         this.mapa.on('click', (e: L.LeafletMouseEvent) => this.manejarClickMapa(e));
         console.log('[DEBUG FORM MAP] Event listener para click en mapa añadido.');
 
 
-        // Si estamos editando y ya hay una ubicación en formData, poner el marcador inicial inmediatamente después de crear el mapa
          if (this.isEditing && this.avistamientoFormData.ubicacion) {
              const coords = this.parsearCoords(this.avistamientoFormData.ubicacion); // Usar el método parsearCoords del componente
               if(coords){
                  console.log('[DEBUG FORM MAP] 📍 Poniendo marcador inicial (edición) en inicializarMapa:', coords);
                  this.actualizarMarcadorMapa(coords);
-                 // El mapa ya está centrado en `initialCenter`, que usa estas coords si son válidas.
               } else {
                   console.warn('[DEBUG FORM MAP] Ubicación cargada no válida para poner marcador inicial en inicializarMapa:', this.avistamientoFormData.ubicacion);
                   this.mapInitError = 'Las coordenadas cargadas para la edición no son válidas.'; // Mostrar error en UI del mapa
@@ -447,10 +429,9 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
          }
 
 
-        // Forzar redibujado del mapa después de un breve retardo - crucial si está dentro de un popup/modal
-        // Tu código base ya lo hacía, lo mantengo.
+        
         setTimeout(() => {
-             if (this.mapa) { // Verificar que el mapa aún existe antes de llamar a invalidateSize
+             if (this.mapa) { 
                 this.mapa.invalidateSize(); // Asegura que el mapa se renderice correctamente dentro del div
                 console.log('[DEBUG FORM MAP] ✅ Mapa inicializado e invalidateSize llamado.'); // Log de éxito
                 this.isLoadingMap = false; // Mapa cargado
@@ -460,8 +441,8 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
                    this.mapInitError = 'El mapa no se inicializó correctamente.'; // Fallback de error
                    this.isLoadingMap = false;
              }
-             this.cdr.detectChanges(); // Forzar detección de cambios para actualizar UI (estados isLoadingMap, mapInitError)
-        }, 200); // Un pequeño retraso (200ms) es a menudo necesario para dar tiempo al DOM
+             this.cdr.detectChanges(); 
+        }, 200); 
 
     } catch (error: any) {
         // Capturar cualquier error durante la inicialización de Leaflet
@@ -473,11 +454,7 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
         this.cdr.detectChanges(); // Forzar detección para mostrar errores
     }
   }
-  // ---------------------------------------------------------------------------
-
-
-  // --- Método para manejar el clic en el mapa (Lógica ya estaba en tu código base) ---
-  // Se llama cuando el usuario hace clic en el mapa para seleccionar una ubicación
+ 
   private manejarClickMapa(evento: L.LeafletMouseEvent): void {
     console.log('[DEBUG FORM MAP] 🖱️ Click en mapa. Coordenadas:', evento.latlng); // Log de coordenadas
     // Verificar si estamos en un navegador y si el mapa y el icono existen
@@ -487,61 +464,49 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
     }
 
     const latlng = evento.latlng;
-    // Guardar las coordenadas en el formato "Lat, Lng" en el formData
     this.avistamientoFormData.ubicacion = `${latlng.lat.toFixed(6)}, ${latlng.lng.toFixed(6)}`;
     this.avistamientoFormData.coordenadas = this.avistamientoFormData.ubicacion; // Actualiza el input readonly para mostrar las coords
     console.log('[DEBUG FORM] Coordenadas seleccionadas y asignadas:', this.avistamientoFormData.ubicacion);
 
-    // Actualizar el marcador en el mapa para mostrar la nueva ubicación seleccionada
     this.actualizarMarcadorMapa([latlng.lat, latlng.lng]); // Llamar al método para actualizar el marcador
 
-    // Forzar detección de cambios para que el input de coordenadas se actualice en la UI
+    
     this.cdr.detectChanges();
   }
-  // ----------------------------------------------------------------------------------
 
 
-  // --- Método para añadir o mover el marcador en el mapa (Lógica ya estaba en tu código base) ---
   private actualizarMarcadorMapa(coords: [number, number]): void {
       console.log('[DEBUG FORM MAP] 📌 Actualizando marcador en mapa con coords:', coords); // Log de coords
-      // Verificar si estamos en un navegador y si el mapa y el icono existen
       if (!isPlatformBrowser(this.platformId) || !this.mapa || !this.iconoAvistamientoPersonalizado) {
           console.warn('[DEBUG FORM MAP] Mapa, icono, o navegador no disponible para actualizar marcador.');
           return;
       }
 
-      // Si ya existe un marcador, eliminarlo antes de añadir el nuevo
       if (this.marcador) {
         this.mapa.removeLayer(this.marcador);
         console.log('[DEBUG FORM MAP] Marcador existente removido.');
       }
 
-      // Crear y añadir el nuevo marcador en las coordenadas dadas
       this.marcador = L.marker(coords, { icon: this.iconoAvistamientoPersonalizado }).addTo(this.mapa);
       console.log('[DEBUG FORM MAP] ✅ Marcador actualizado/añadido.');
-      // Opcional: puedes añadir un popup al marcador si quieres
-      // this.marcador.bindPopup("Ubicación seleccionada").openPopup();
+     
   }
-  // ---------------------------------------------------------------------------------------------
 
 
-  // --- Método para limpiar el mapa y su instancia (Lógica ya estaba en tu código base) ---
    private limpiarMapa(): void {
     console.log('[DEBUG FORM MAP] 🧹 Iniciando limpieza del mapa.'); // Log de inicio
-    // Verificar si estamos en un navegador
     if (!isPlatformBrowser(this.platformId)) {
          console.warn('[DEBUG FORM MAP] No en navegador, omitiendo limpieza de mapa.');
          return;
     }
 
-    // Eliminar el marcador si existe
     if (this.marcador && this.mapa) {
       this.mapa.removeLayer(this.marcador);
       this.marcador = null; // Establecer a null
       console.log('[DEBUG FORM MAP] Marcador removido.');
     }
 
-    // Eliminar la instancia del mapa si existe
+    
     if (this.mapa) {
       this.mapa.off(); // Remover todos los eventos asociados al mapa
       this.mapa.remove(); // Remover la instancia del mapa del DOM y liberar recursos
@@ -554,9 +519,7 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
      this.isLoadingMap = false; // Asegurarse de que el indicador de carga del mapa esté desactivado
      this.cdr.detectChanges(); // Forzar detección para actualizar la UI si el mapa se removió
    }
-   // --------------------------------------------------------------------------------------
 
-   // --- Helper para parsear coordenadas "Lat, Lng" (Podría estar en un servicio compartido) ---
    private parsearCoords(ubicacion: string | undefined | null): [number, number] | null {
         if (!ubicacion) {
             //console.warn('[DEBUG FORM] Intento de parsear coords nulas/vacías.');
@@ -579,12 +542,9 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
     // Usar ReportesService para obtener los reportes
     this.reportesService.obtenerReportes().subscribe({
       next: (data: any[]) => { // Asumiendo que data es un array de objetos reporte
-        // Mapear la respuesta a la interfaz local DesaparecidoOficial
-        // Asegúrate de que el backend devuelva los reportes que deben ser seleccionables en el select
-        // (Ej: solo activos, etc., si es necesario, aplicar aquí)
+        
         this.reportes = data
-            // Filtrar por estado si es necesario (ej: solo activos, según la lógica de negocio)
-            // .filter(item => item.estado === true) // Descomenta si solo quieres reportes activos
+            
             .map(item => ({
                 // Asegúrate de mapear el ID correcto ('id' o 'idDesaparecido' según el backend)
               id: item.id ?? item.idDesaparecido, // Usa 'id' si item.id existe, si no, usa item.idDesaparecido
@@ -597,12 +557,7 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
         // Forzar detección de cambios para actualizar el select en la UI
         this.cdr.detectChanges();
 
-        // Si estamos en modo edición y ya cargamos los datos del avistamiento (que incluye el ID del reporte asociado),
-        // llamar a onPersonaDesaparecidaChange con el ID cargado para asegurar que el select muestre el valor correcto
-        // y el objeto personaDesaparecida en formData esté completo (esto ya se hace en cargarAvistamientoParaEdicion, pero lo verifico)
-        // if (this.isEditing && this.avistamientoFormData.personaDesaparecida?.idDesaparecido) {
-        //      this.onPersonaDesaparecidaChange(this.avistamientoFormData.personaDesaparecida.idDesaparecido);
-        // }
+      
 
       },
       error: (error) => {
@@ -612,10 +567,8 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
       }
     });
   }
-  // -------------------------------------------------------------------------------------
 
-  // --- Método para manejar el cambio en el select de Persona Desaparecida ---
-  // Se llama cuando el usuario selecciona una opción en el dropdown de reportes
+  
   onPersonaDesaparecidaChange(selectedId: number | string | null): void {
     console.log('[DEBUG FORM] 👥 ID de persona desaparecida seleccionado en select (onPersonaDesaparecidaChange):', selectedId, typeof selectedId);
 
@@ -638,22 +591,17 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
         }
     }
 
-    // --- Lógica de sincronización clave ---
-    // SIEMPRE actualizar el idDesaparecido en el objeto personaDesaparecida dentro de avistamientoFormData
-    // con el valor numérico limpio (`numericSelectedId`).
-    // Este es el ID que se enviará al backend en el payload.
+   
     this.avistamientoFormData.personaDesaparecida.idDesaparecido = numericSelectedId;
     console.log('[DEBUG FORM] Establecido avistamientoFormData.personaDesaparecida.idDesaparecido a:', this.avistamientoFormData.personaDesaparecida.idDesaparecido);
     // -------------------------------------
 
 
-    // Buscar el reporte seleccionado en la lista `this.reportes` (la lista cargada para el select)
-    // para obtener información adicional como el nombre (opcional, pero útil si lo necesitas en formData o UI)
+    
     const reporteSeleccionado = this.reportes.find(r => r.id === numericSelectedId);
 
     if (reporteSeleccionado) {
-      // Actualizar el nombre en formData si se encontró el reporte
-      // (Este nombre no siempre es necesario para el backend, pero puede ser útil en el frontend)
+      
       this.avistamientoFormData.personaDesaparecida.nombre = reporteSeleccionado.nombre;
       console.log('[DEBUG FORM] ✅ Nombre de persona desaparecida encontrado y asignado:', reporteSeleccionado.nombre);
     } else {
@@ -679,11 +627,7 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
     console.log('[DEBUG FORM] onSubmit: avistamientoFormData.fecha ANTES VALIDACIÓN =', this.avistamientoFormData.fecha);
 
 
-    // Validar el formulario utilizando el objeto NgForm bindeado (#avistamientoForm)
-    // Esto verifica los campos con 'required' y otros validadores de template.
-    // Ojo: el input de ubicación es readonly, su 'required' en template no funciona para la validación automática de ngForm.
-    // Debes validarlo manualmente (lo cual ya haces).
-    // También, la validación del select 'personaDesaparecidaSelect' con 'required' debería funcionar.
+    
     if (this.avistamientoForm && !this.avistamientoForm.form.valid) {
         this.mensaje = 'Por favor, completa todos los campos requeridos (*).'; // Mensaje genérico de error de validación
         console.warn('[FORM] 🚫 Formulario inválido según Angular form validation.', this.avistamientoForm.form.errors); // Log de detalles de validación
@@ -700,13 +644,11 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
         return; // Detener el proceso de submit si el formulario es inválido por validaciones de Angular
     }
 
-    // Validaciones manuales adicionales que no están cubiertas por ngForm (como el mapa/ubicación)
-    // 1. Validar que se seleccionó un Reporte (aunque el 'required' del select y ngForm deberían cubrirlo, esto es una doble verificación)
+    
      if (this.selectedIdDesaparecido === null) { // Chequear el ngModel del select directamente
          this.mensaje = 'Debes seleccionar un Reporte.'; // Mensaje específico para este error
          this.isLoading = false; // Ocultar indicador si está visible
          console.warn('[FORM] 🚫 Validación manual fallida - selectedIdDesaparecido es null.');
-         // Opcional: Asegurarse de que el control del select esté marcado como touched para mostrar su mensaje de error específico en la UI
          if (this.avistamientoForm?.controls['personaDesaparecidaSelect']) {
               this.avistamientoForm.controls['personaDesaparecidaSelect'].markAsTouched();
          }
@@ -751,30 +693,22 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
     // Si todas las validaciones pasan, mostrar el indicador de carga y proceder
     this.isLoading = true;
 
-    // Preparar el payload para enviar al backend
-    // Incluir solo los campos que el backend espera para crear o actualizar.
-    // ID de avistamiento: NO para creación (POST), SÍ para actualización (PUT) - pero usualmente va en la URL para PUT.
-    // emailUsuario: SÍ para creación (POST), NO para actualización (PUT) - el backend lo obtiene por el ID del avistamiento o contexto de sesión.
-
-    // Crear un objeto payload solo con los datos que el backend espera recibir
+    
     const payload: any = { // Usar 'any' temporalmente si la interfaz Avistamiento es demasiado estricta para el payload
-      // personaDesaparecida necesita ser un objeto con idDesaparecido para el backend
+      
       personaDesaparecida: {
-        // Usar el ID que está en avistamientoFormData (que viene del selectedIdDesaparecido)
+      
         idDesaparecido: this.avistamientoFormData.personaDesaparecida?.idDesaparecido
-         // Si el backend espera el nombre en el payload de actualización también, inclúyelo aquí:
-         // nombre: this.avistamientoFormData.personaDesaparecida?.nombre // Asumiendo que nombre está en formData
+        
       },
       fecha: this.avistamientoFormData.fecha, // String "YYYY-MM-DD" (del input date)
       ubicacion: this.avistamientoFormData.ubicacion, // String "Lat, Lng" (del clic en el mapa)
       descripcion: this.avistamientoFormData.descripcion || null // Asegurar que sea null si está vacío/undefined
 
-      // emailUsuario NO se incluye en el payload de PUT, solo en POST (se añade condicionalmente más abajo)
-      // emailUsuario: this.avistamientoFormData.emailUsuario // Solo para POST
+      
     };
 
-    // Asegurarse de que el objeto personaDesaparecida no esté vacío si el ID es null
-    // (Esta validación ya se hizo, pero es buena práctica asegurar el payload final)
+    
      if (payload.personaDesaparecida && payload.personaDesaparecida.idDesaparecido === null) {
           console.warn('[DEBUG FORM] Payload personaDesaparecida.idDesaparecido es null. Enviando personaDesaparecida: null');
           payload.personaDesaparecida = null; // O {} según lo que espere tu backend para desvincular si eso es posible
@@ -785,19 +719,16 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
     console.log('[FORM] 📤 Payload preparado para enviar:', JSON.parse(JSON.stringify(payload))); // Log del payload final a enviar
 
 
-    // --- Lógica condicional para CREAR o ACTUALIZAR ---
     if (this.isEditing && this.avistamientoFormData.idAvistamiento !== undefined) {
       // Si estamos en modo edición y tenemos un ID de avistamiento válido
       console.log(`[FORM] Modo Edición: ID ${this.avistamientoFormData.idAvistamiento}. Llamando a actualizarAvistamiento.`);
-      // Llamar al método del servicio para actualizar, pasando el ID del avistamiento y el payload
-      // Asegurarse de que el ID es un número
+      
       this.actualizarAvistamiento(this.avistamientoFormData.idAvistamiento as number, payload); // Pasar solo el payload, ID va en URL
 
     } else {
       // Si no estamos en modo edición (modo creación)
       console.log('[FORM] Modo Creación. Llamando a crearAvistamiento.');
-      // Para la creación, necesitas agregar el email del usuario al payload
-      // Obtener el email del usuario logueado desde el BehaviorSubject (asumiendo que existe currentUserEmailSubject)
+      
       const emailUsuario = this.usuarioService.getCurrentUserEmail();
       if (!emailUsuario) {
            this.mensaje = 'Debes iniciar sesión para registrar un avistamiento.';
@@ -806,28 +737,20 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
            this.cdr.detectChanges();
            return; // Detener si no hay usuario logueado
       }
-      // Agregar el email del usuario al payload para la creación
       const createPayload = { ...payload, emailUsuario: emailUsuario };
-      // Llamar al método del servicio para crear, pasando el payload completo (con email)
       this.crearAvistamiento(createPayload);
     }
   }
-  // --------------------------------------------------------------------------
-
-
-  // --- Método para manejar la creación del avistamiento ---
-  // Este método ahora solo es llamado por onSubmit en modo creación
+ 
   crearAvistamiento(payload: any): void { // Acepta el payload completo de creación (que ya incluye emailUsuario)
     console.log('[FORM] 📤 Payload para CREAR avistamiento enviado a service:', payload);
 
-    // Llamar al método del servicio para crear
     this.avistamientosService.crearAvistamiento(payload).subscribe({
       next: (response) => {
         console.log('[FORM] ✅ Avistamiento creado con éxito:', response); // Log de éxito
         this.mensaje = 'Avistamiento registrado con éxito.'; // Mensaje de éxito al usuario
         this.isLoading = false; // Ocultar indicador
         this.cdr.detectChanges(); // Forzar detección para mostrar el mensaje de éxito
-        // Redirigir después de un pequeño retraso para que el usuario vea el mensaje
         setTimeout(() => {
             this.router.navigate(['/reportes']); // Redirigir a la página de reportes/cards (o a la que sea apropiada)
         }, 2000); // 2 segundos de retraso
@@ -841,14 +764,10 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
       }
     });
   }
-  // -------------------------------------------------------
-
-  // --- Método para manejar la actualización del avistamiento ---
-  // Este método ahora solo es llamado por onSubmit en modo edición
+  
   actualizarAvistamiento(id: number, payload: Partial<Avistamiento>): void { // Acepta el ID del avistamiento y el payload de actualización
     console.log(`[FORM] 📤 Payload para ACTUALIZAR avistamiento ${id} enviado a service:`, payload);
 
-    // Llamar al método del servicio para actualizar
     this.avistamientosService.actualizarAvistamiento(id, payload).subscribe({
       next: (response) => {
         console.log('[FORM] ✅ Avistamiento actualizado con éxito:', response); // Log de éxito
@@ -869,28 +788,19 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
       }
     });
   }
-  // -------------------------------------------------------------------
 
 
-  // --- Método para cancelar la edición ---
-  // Se llama al hacer clic en el botón "Cancelar" en modo edición
+  
   cancelarEdicion(): void {
     console.log('[FORM] Edición cancelada.'); // Log de cancelación
-    // Limpiar el formulario (opcional, resetForm ya se llama al cambiar de modo)
-    // this.resetForm();
-    // Redirigir a la página de reportes (o a la que sea apropiada)
+   
     this.router.navigate(['/reportes']);
   }
-  // --------------------------------------
-
-
-  // --- Método para resetear el formulario y su estado ---
-  // Se llama al pasar de edición a creación o después de un submit exitoso
+  
   resetForm(shouldReinitializeMap: boolean = true): void {
     console.log('[FORM] 🔄 Reseteando formulario...'); // Log de inicio de reset
 
-    // Resetear los datos del formulario al estado inicial vacío
-    // Usar el objeto inicial para asegurar que todos los campos se limpian, incluyendo personaDesaparecida.
+    
     this.avistamientoFormData = {
       idAvistamiento: undefined, // Asegurarse de que no quede un ID viejo si pasas de editar a crear
       fecha: '',
@@ -901,26 +811,17 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
       coordenadas: '' // Resetear el input readonly
     };
 
-    // Resetear el ngModel del select de reporte
     this.selectedIdDesaparecido = null;
 
-    // Asegurarse de que el modo edición está desactivado (si se llama desde un lugar donde se desactiva edición)
-    // Si se llama desde paramMap al detectar que no hay ID, isEditing ya será false.
-    // this.isEditing = false; // Descomentar si llamas a resetForm directamente para pasar a modo creación
-
-
-    // Limpiar el mapa existente
+    
     this.limpiarMapa();
 
-    // Re-inicializar el mapa si se solicita (útil al pasar de editar a crear)
-    // Solo inicializar si estamos en un navegador y el contenedor del mapa está disponible.
+    
     if (shouldReinitializeMap && isPlatformBrowser(this.platformId) && this.mapContainer?.nativeElement) {
        console.log('[DEBUG FORM MAP] Re-inicializando mapa después de reset para modo creación.');
-       // Usar un pequeño retraso para dar tiempo a que el DOM se prepare después de reset
          setTimeout(() => this.inicializarMapa(), 50);
     } else if (shouldReinitializeMap) {
          console.warn('[DEBUG FORM MAP] No se pudo re-inicializar mapa después de reset (no navegador o contenedor no disponible).');
-         // Opcional: mostrar un mensaje de error al usuario
     }
 
 
@@ -928,41 +829,23 @@ export class FormAvistamientosComponent implements OnInit, OnDestroy, AfterViewI
     this.isLoading = false; // Asegurarse de que el indicador de carga está desactivado
     this.mapInitError = null; // Limpiar error de inicialización de mapa
 
-    // Usar el método resetForm() del objeto NgForm bindeado.
-    // Este método resetea el estado de validación (pristine, untouched) y los valores de los controles bindeados.
-    // Si se pasa un objeto, intenta setear los valores de los controles a ese objeto.
+    
     if (this.avistamientoForm) {
         console.log('[DEBUG FORM] Llamando a avistamientoForm.resetForm().');
-        // Pasar el objeto inicial (`this.avistamientoFormData` recién reseteado)
-        // ayuda a resetear los valores de los inputs/selects bindeados por ngModel.
+        
         this.avistamientoForm.resetForm(this.avistamientoFormData);
-        // resetForm() a veces no limpia el ngModel de select correctamente con null/undefined.
-        // Se recomienda setear el ngModel `selectedIdDesaparecido` = null explícitamente después si hay problemas.
-        this.selectedIdDesaparecido = null; // Asegurar que el select ngModel es null después del reset
+        
+        this.selectedIdDesaparecido = null; 
 
     } else {
         console.warn('[DEBUG FORM] avistamientoForm es null, no se puede llamar a resetForm().');
-        // Si avistamientoForm no está disponible, el reset manual ya limpió los datos,
-        // pero el estado de validación (touched/dirty) no se limpiará automáticamente.
+       
     }
 
-    // Forzar detección de cambios para que la UI se limpie y el estado del formulario se refleje
     this.cdr.detectChanges();
     console.log('[FORM] ✅ Formulario reseteado.');
   }
-  // --------------------------------------------------------------------
-
-   // Tu código base tenía un método `crearAvistamiento` directamente llamado por ngSubmit.
-   // Ahora `onSubmit` es el que maneja la lógica y llama a `crearAvistamiento` o `actualizarAvistamiento`.
-   // El método `crearAvistamiento` original se ha adaptado para ser una función que recibe el payload y llama al servicio.
-   // Tu código base también tenía lógica de feature flags y email en `crearAvistamiento`. La he movido a `onSubmit`
-   // porque esa lógica de decidir si puede crear o no ocurre ANTES de llamar al servicio, y el email se necesita
-   // en el payload de creación, no en el de actualización. La he integrado en el `onSubmit` condicionalmente.
-   // El método `crearAvistamiento` ahora solo encapsula la llamada al servicio `avistamientosService.crearAvistamiento` y el manejo de su respuesta/error.
-
-    // El método `crearAvistamiento` de tu código base original con feature flags y email
-    // se ha integrado en la función `onSubmit` y se ha renombrado a `crearAvistamiento(payload)`
-    // y `actualizarAvistamiento(id, payload)` como funciones separadas para claridad.
+  
 
 
 }
