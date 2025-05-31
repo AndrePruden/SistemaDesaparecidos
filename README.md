@@ -118,12 +118,35 @@ TrackMe es un sistema diseñado para gestionar información sobre personas desap
    ng serve
    ```
 
+ Esto compilará la aplicación y la abrirá en tu navegador por defecto (generalmente `http://localhost:4200`).
+
+
+ 5. **Despliegue en Produccion:**
+    - Asegúrate de tener MySQL instalado y en ejecución.
+   ```sh
+   ng build --configuration production
+   ```
+- Servir los archivos estáticos generados:
+   ```sh
+    http-server ./dist/SistemaDesaparecidos/browser/
+   ```
+
+## Uso
+
+1.  **Registro:** Navega a `/registro` para crear una nueva cuenta de usuario.
+2.  **Iniciar Sesión:** Navega a `/iniciar-sesion` con tus credenciales. Al iniciar sesión, se almacenará tu email en `localStorage` para mantener la sesión.
+3.  **Ver Reportes y Avistamientos:** Accede a `/reportes` para ver los listados principales. Aquí encontrarás los reportes de personas desaparecidas y un foro/listado de avistamientos reportados.
+4.  **Crear Reporte:** Si tienes permisos (estás logueado o el feature flag `create-reports` está activo), verás la opción para crear un nuevo reporte. Deberás ingresar detalles y seleccionar la ubicación en un mapa.
+5.  **Crear Avistamiento:** Si tienes permisos (estás logueado o el feature flag `create-sightings` está activo), verás la opción para reportar un avistamiento. Deberás seleccionar a la persona desaparecida de una lista, indicar la fecha y seleccionar la ubicación en un mapa.
+6.  **Perfil:** Si estás logueado, puedes acceder a `/perfil` para ver y actualizar tus datos.
+
 ## Contribuciones
-Si deseas contribuir al proyecto, por favor sigue las mejores prácticas de desarrollo colaborativo, realiza cambios en ramas separadas y envía un pull request con tus modificaciones.
+
+Si deseas contribuir al proyecto, por favor sigue las mejores prácticas de desarrollo colaborativo, realiza cambios en ramas separadas y envía un pull request con tus modificaciones. Asegúrate de documentar tus cambios y probarlos a fondo.
 
 ## Licencia
+
 Este proyecto está bajo la licencia [MIT](LICENSE).
 
 ---
 Desarrollado por el equipo de TrackMe.
-
