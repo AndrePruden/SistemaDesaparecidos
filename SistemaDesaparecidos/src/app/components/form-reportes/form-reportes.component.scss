@@ -6,7 +6,72 @@ form {
   background-color: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+.guidance-header {
+  background: #f8f9fa;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.875rem;
+  border-left: 0.25rem solid #007EA7;
+}
+
+.guidance-header h3 {
+  margin: 0 0 0.625rem 0;
+  color: #003459;
+  font-size: 1.5rem;
+}
+
+.instruction-text {
+  margin: 0;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+}
+
+.step-section {
+  margin-bottom: 2.5rem;
+  padding: 1.25rem;
+  border: 0.063rem solid #e9ecef;
+  border-radius: 0.5rem;
+  background: #fefefe;
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.625rem;
+  border-bottom: 0.125rem solid #e9ecef;
+}
+
+.step-number {
+  background: #007EA7;
+  color: white;
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-right: 0.9375rem;
+  font-size: 0.875rem;
+}
+
+.step-header h4 {
+  margin: 0;
+  color: #003459;
+  font-size: 1.125rem;
 }
 
 .input-field {
@@ -25,8 +90,8 @@ form {
 .input-field input,
 .input-field textarea {
   padding: 0.75rem 1rem;
-  border: 1.5px solid #007EA7;
-  border-radius: 8px;
+  border: 0.094rem solid #007EA7;
+  border-radius: 0.5rem;
   font-size: 1rem;
   transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
   font-family: inherit;
@@ -37,20 +102,47 @@ form {
 .input-field textarea:focus {
   border-color: #0048E8;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(0, 72, 232, 0.2);
+  box-shadow: 0 0 0 0.125rem rgba(0, 72, 232, 0.2);
   background-color: #eaf4ff;
 }
 
 .input-field textarea {
-  min-height: 120px;
+  min-height: 7.5rem;
   resize: vertical;
+}
+
+.field-guidance {
+  margin-bottom: 0.5rem;
+}
+
+.help-text {
+  font-size: 0.8125rem;
+  color: #666;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.map-instruction {
+  font-size: 0.75rem;
+  color: #007EA7;
+  font-weight: 500;
+}
+
+.description-tips {
+  margin-top: 0.3125rem;
+}
+
+.description-tips small {
+  color: #28a745;
+  font-style: italic;
+  font-size: 0.75rem;
 }
 
 .file-input input[type="file"] {
   padding: 0.3rem 0;
   background-color: #f9f9f9;
-  border: 1.5px solid #007EA7;
-  border-radius: 8px;
+  border: 0.094rem solid #007EA7;
+  border-radius: 0.5rem;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s, border-color 0.3s;
@@ -61,10 +153,105 @@ form {
   border-color: #0048E8;
 }
 
+.file-requirements {
+  color: #6c757d;
+  font-size: 0.6875rem;
+  display: block;
+  margin-top: 0.1875rem;
+}
+
+.success-text {
+  color: #28a745;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.warning-text {
+  color: #dc3545;
+  font-size: 0.75rem;
+}
+
+.location-confirmation, .file-confirmation {
+  margin-top: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  background: #d4edda;
+  border: 0.063rem solid #c3e6cb;
+  border-radius: 0.25rem;
+}
+
+#mapa {
+  height: 400px;
+  width: 100%;
+}
+
+.map-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  pointer-events: none;
+  border-radius: 0.25rem;
+}
+
+.map-message {
+  text-align: center;
+  color: #666;
+}
+
+.map-message i {
+  font-size: 1.5rem;
+  margin-bottom: 0.625rem;
+  display: block;
+}
+
+.final-step {
+  background: #f8f9fa;
+  border-color: #007EA7;
+}
+
+.form-summary {
+  margin-bottom: 1.25rem;
+}
+
+.review-instruction {
+  font-weight: 500;
+  color: #003459;
+  margin-bottom: 0.9375rem;
+  font-size: 1rem;
+}
+
+.checklist {
+  list-style: none;
+  padding: 0;
+}
+
+.checklist li {
+  padding: 0.3125rem 0;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.checklist li.completed {
+  color: #28a745;
+}
+
+.check-icon {
+  margin-right: 0.5rem;
+  font-weight: bold;
+}
+
 .button-wrapper {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
+  text-align: center;
+  margin-top: 1.25rem;
 }
 
 button[type="submit"] {
@@ -72,46 +259,129 @@ button[type="submit"] {
   color: white;
   border: none;
   padding: 0.75rem 2rem;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s ease;
+  min-width: 12.5rem;
 }
 
 button[type="submit"]:hover {
   background-color: #003459;
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
 
 button[type="submit"]:active {
   transform: scale(0.98);
 }
 
-#mapContainer {
-  height: 400px;
-  width: 100%;
+button[type="submit"].disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
-@media (max-width: 600px) {
+button[type="submit"].disabled:hover {
+  background-color: #007EA7;
+  transform: none;
+}
+
+.submit-guidance {
+  margin-top: 0.625rem;
+}
+
+@media (max-width: 37.5rem) {
+  .form-container {
+    padding: 0.75rem;
+  }
+  
   form {
     padding: 1rem;
     gap: 1rem;
   }
+  
+  .guidance-header {
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .guidance-header h3 {
+    font-size: 1.25rem;
+  }
+  
+  .step-section {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .step-number {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.75rem;
+  }
+  
+  .step-header h4 {
+    font-size: 1rem;
+  }
+  
   .input-field label {
     font-size: 1rem;
   }
+  
   .input-field input,
   .input-field textarea {
     font-size: 0.95rem;
     padding: 0.5rem 0.7rem;
   }
+  
   #mapa {
-    height: 180px !important;
-    min-height: 120px !important;
+    height: 11.25rem;
+    min-height: 7.5rem;
   }
+  
   .button-wrapper {
     flex-direction: column;
     gap: 0.5rem;
+    text-align: center;
+  }
+  
+  button[type="submit"] {
+    min-width: 100%;
+    font-size: 1rem;
+  }
+  
+  .help-section {
+    padding: 1rem;
+  }
+  
+  .map-message i {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 25rem) {
+  .form-container {
+    padding: 0.5rem;
+  }
+  
+  form {
+    padding: 0.75rem;
+  }
+  
+  .guidance-header {
+    padding: 0.75rem;
+  }
+  
+  .step-section {
+    padding: 0.75rem;
+  }
+  
+  #mapa {
+    height: 9.375rem;
+  }
+  
+  .input-field textarea {
+    min-height: 6rem;
   }
 }

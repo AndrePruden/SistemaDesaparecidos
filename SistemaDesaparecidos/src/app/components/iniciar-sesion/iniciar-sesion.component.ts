@@ -28,17 +28,17 @@ export class IniciarSesionComponent {
   }
 
   onSubmit(): void {
-      console.log('[IniciarSesionComponent] 📩 Botón Submit clickeado.');
+      console.log('[IniciarSesionComponent] Botón Submit clickeado.');
     if (!this.credenciales.email || !this.credenciales.password) {
       this.mensaje = 'Por favor, completa todos los campos.';
        console.warn('[IniciarSesionComponent] Validación básica fallida: Campos vacíos.');
       return;
     }
-    console.log('[IniciarSesionComponent] 🔐 Intentando iniciar sesión con:', this.credenciales.email);
+    console.log('[IniciarSesionComponent] Intentando iniciar sesión con:', this.credenciales.email);
 
     this.usuarioService.iniciarSesion(this.credenciales).subscribe(
       (response) => {
-        console.log('[IniciarSesionComponent] ✅ Respuesta del backend:', response);
+        console.log('[IniciarSesionComponent] Respuesta del backend:', response);
        
         if (response.message === 'Inicio de sesión exitoso.') {
           console.log('🎉 [IniciarSesionComponent] Inicio de sesión exitoso para el email:', this.credenciales.email);
@@ -48,25 +48,25 @@ export class IniciarSesionComponent {
           this.mensaje = 'Inicio de sesión exitoso!'; 
           this.router.navigate(['/']); 
         }  else {
-          console.warn('❌ [IniciarSesionComponent] Error de inicio de sesión: Mensaje no esperado del backend.');
+          console.warn('[IniciarSesionComponent] Error de inicio de sesión: Mensaje no esperado del backend.');
           this.mensaje = response.message || 'Credenciales incorrectas. Inténtalo de nuevo.'; // Usar el mensaje del backend si existe
         }
       },
       (error) => {
-        console.error('❌ [IniciarSesionComponent] Error al iniciar sesión:', error);
+        console.error('[IniciarSesionComponent] Error al iniciar sesión:', error);
          
         if (error.status === 404) {
           this.mensaje = 'El correo electrónico no está registrado.';
-          console.warn('⚠️ [IniciarSesionComponent] El correo electrónico no está registrado:', this.credenciales.email);
+          console.warn('[IniciarSesionComponent] El correo electrónico no está registrado:', this.credenciales.email);
         } else if (error.status === 401) {
           this.mensaje = 'Contraseña incorrecta.';
-          console.warn('⚠️ [IniciarSesionComponent] Contraseña incorrecta para el correo:', this.credenciales.email);
+          console.warn('[IniciarSesionComponent] Contraseña incorrecta para el correo:', this.credenciales.email);
         } else if (error.error?.message) { 
              this.mensaje = error.error.message;
         }
         else {
           this.mensaje = 'Error al iniciar sesión. Inténtalo de nuevo.';
-          console.error('⚠️ [IniciarSesionComponent] Error inesperado:', error);
+          console.error('[IniciarSesionComponent] Error inesperado:', error);
         }
       }
     );

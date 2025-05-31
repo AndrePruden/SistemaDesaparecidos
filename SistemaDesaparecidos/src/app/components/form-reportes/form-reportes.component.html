@@ -1,38 +1,126 @@
-<form (ngSubmit)="crearReporte()">
-    <div class="input-field">
-      <label for="nombre">Nombre completo *</label>
-      <input type="text" [(ngModel)]="nuevoReporte.nombre" name="nombre" id="nombre" placeholder="Ej. Juan Pérez" required />
+<div class="form-container">
+  <!-- Encabezado con instrucciones generales -->
+  <div class="guidance-header">
+    <h3>Crear Nuevo Reporte de Persona Desaparecida</h3>
+    <p class="instruction-text">Complete los siguientes campos para crear un reporte. Los campos marcados con (*) son obligatorios.</p>
+  </div>
+
+  <form (ngSubmit)="crearReporte()">
+    <!-- Paso 1: Información personal -->
+    <div class="step-section">
+      <div class="step-header">
+        <span class="step-number">1</span>
+        <h4>Información Personal</h4>
+      </div>
+      
+      <div class="input-field">
+        <label for="nombre">Nombre completo *</label>
+        <div class="field-guidance">
+          <span class="help-text">Ingrese el nombre completo de la persona desaparecida</span>
+        </div>
+        <input type="text" [(ngModel)]="nuevoReporte.nombre" name="nombre" id="nombre" placeholder="Ej. Juan Pérez González" required />
+      </div>
+      
+      <div class="input-field">
+        <label for="edad">Edad</label>
+        <div class="field-guidance">
+          <span class="help-text">Edad aproximada al momento de la desaparición</span>
+        </div>
+        <input type="number" [(ngModel)]="nuevoReporte.edad" name="edad" id="edad" placeholder="Ej. 32" min="0" max="120" />
+      </div>
     </div>
-  
-    <div class="input-field">
-      <label for="edad">Edad</label>
-      <input type="number" [(ngModel)]="nuevoReporte.edad" name="edad" id="edad" placeholder="Ej. 32" />
-    </div>
-  
-    <div class="input-field">
-      <label for="fechaDesaparicion">Fecha de desaparición *</label>
-      <input type="date" [(ngModel)]="nuevoReporte.fechaDesaparicion" name="fechaDesaparicion" id="fechaDesaparicion" required />
-    </div>
-  
-    <div class="input-field">
-      <label for="lugarDesaparicion">Lugar de desaparición *</label>
-      <!-- No hay un campo de texto, solo el mapa interactivo -->
-    </div>
+
+    <div class="step-section">
+      <div class="step-header">
+        <span class="step-number">2</span>
+        <h4>Detalles de la Desaparición</h4>
+      </div>
+      
+      <div class="input-field">
+        <label for="fechaDesaparicion">Fecha de desaparición *</label>
+        <div class="field-guidance">
+          <span class="help-text">Seleccione la fecha en que se vio por última vez a la persona</span>
+        </div>
+        <input type="date" [max]="fechaMaxima" [(ngModel)]="nuevoReporte.fechaDesaparicion" name="fechaDesaparicion" id="fechaDesaparicion" required />
+      </div>
     
-    <div id="mapa" style="height: 300px; margin-bottom: 1em;"></div>
-  
-    <div class="input-field">
-      <label for="descripcion">Descripción</label>
-      <textarea [(ngModel)]="nuevoReporte.descripcion" name="descripcion" id="descripcion" placeholder="Vestimenta, características físicas, etc."></textarea>
+      <div class="input-field">
+        <label for="lugarDesaparicion">Lugar de desaparición *</label>
+        <div class="field-guidance">
+          <span class="help-text">Haga clic en el mapa para marcar el lugar donde se vio por última vez a la persona</span>
+          <span class="map-instruction"> Toque el mapa para establecer la ubicación</span>
+        </div>
+      </div>
+      
+      <div id="mapa" style="height: 300px; margin-bottom: 1em;">
+      </div>
+      <div class="location-confirmation" *ngIf="ubicacionSeleccionada">
+        <span class="success-text">Ubicación seleccionada correctamente</span>
+      </div>
     </div>
-  
-    <div class="input-field file-input">
-      <label for="imagen">Subir imagen</label>
-      <input type="file" id="imagen" (change)="onFileSelected($event)" accept="image/*" />
+    <div class="step-section">
+      <div class="step-header">
+        <span class="step-number">3</span>
+        <h4>Descripción Adicional</h4>
+      </div>
+      <div class="input-field">
+        <label for="descripcion">Descripción detallada</label>
+        <div class="field-guidance">
+          <span class="help-text">Incluya detalles como vestimenta, características físicas, comportamiento, etc.</span>
+          <div class="description-tips">
+            <small> Consejos: Mencione color de ropa, altura aproximada, características distintivas, estado de ánimo, etc.</small>
+          </div>
+        </div>
+        <textarea [(ngModel)]="nuevoReporte.descripcion" name="descripcion" id="descripcion" 
+                  placeholder="Ej. Vestía camisa azul, pantalón negro, aproximadamente 1.70m de altura, cabello castaño corto..."
+                  rows="4"></textarea>
+      </div>
     </div>
-  
-    <div class="button-wrapper">
-      <button type="submit">Crear Reporte</button>
+    <div class="step-section">
+      <div class="step-header">
+        <span class="step-number">4</span>
+        <h4>Fotografía (Opcional)</h4>
+      </div>
+      <div class="input-field file-input">
+        <label for="imagen">Subir imagen</label>
+        <div class="field-guidance">
+          <span class="help-text">Suba una fotografía reciente de la persona desaparecida</span>
+          <small class="file-requirements">Formatos aceptados: JPG, PNG, GIF. Tamaño máximo: 5MB</small>
+        </div>
+        <input type="file" id="imagen" (change)="onFileSelected($event)" accept="image/*" />
+        <div class="file-confirmation" *ngIf="archivoSeleccionado">
+          <span class="success-text">Imagen cargada: {{nombreArchivo}}</span>
+        </div>
+      </div>
     </div>
+    <div class="step-section final-step">
+      <div class="step-header">
+        <span class="step-number">5</span>
+        <h4>Revisar y Enviar</h4>
+      </div>
+      
+      <div class="form-summary">
+        <p class="review-instruction">Revise que toda la información esté correcta antes de enviar el reporte.</p>
+        <div class="required-fields-check">
+          <p><strong>Campos obligatorios completados:</strong></p>
+          <ul class="checklist">
+            <li [class.completed]="nuevoReporte.nombre">
+              <span class="check-icon">{{nuevoReporte.nombre ? '✓' : '○'}}</span> Nombre completo
+            </li>
+            <li [class.completed]="nuevoReporte.fechaDesaparicion">
+              <span class="check-icon">{{nuevoReporte.fechaDesaparicion ? '✓' : '○'}}</span> Fecha de desaparición
+            </li>
+            <li [class.completed]="ubicacionSeleccionada">
+              <span class="check-icon">{{ubicacionSeleccionada ? '✓' : '○'}}</span> Ubicación en el mapa
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <button type="submit" [disabled]="!formularioCompleto()" 
+                [class.disabled]="!formularioCompleto()">
+      <span *ngIf="!enviandoReporte">Crear Reporte</span>
+      <span *ngIf="enviandoReporte">Enviando...</span>
+    </button>
   </form>
-  
+</div>

@@ -1,40 +1,36 @@
 <app-header></app-header>
 <main class="container">
-  <div class="forms">
-    <div class="form signup">
-      <h1 class="title">Iniciar sesión</h1>
-      <form (ngSubmit)="onSubmit()">
-        <div class="input-field">
-          <input
-            type="email"
-            id="email"
-            [(ngModel)]="credenciales.email"
-            name="email"
-            placeholder="Ingrese su email"
-            required
-          />
-          <i class="uil uil-envelope icon"></i>
-        </div>
-        <div class="input-field">
-          <input
+  <form (ngSubmit)="onSubmit()">
+    <h2 class="title">Iniciar sesión</h2>
+    <div class="form-row">
+      <label for="email">Correo electrónico</label>
+      <input
+        type="email"
+        id="email"
+        [(ngModel)]="credenciales.email"
+        name="email"
+        placeholder="Ingrese su email"
+        required
+        class="form-control"
+      />
+    </div>
+    <div class="form-row">
+      <label for="password">Contraseña</label>
+      <div class="password-wrapper">
+        <input
             [type]="mostrarPassword ? 'text' : 'password'"
             id="password"
             [(ngModel)]="credenciales.password"
             name="password"
-            placeholder="Ingrese su contraseña"
             required
-          />
-          <i class="uil uil-lock icon"></i>
-          <button type="button" (click)="togglePasswordVisibility()" class="btn-toggle-password">
+        />
+        <button type="button" (click)="togglePasswordVisibility()" class="btn-toggle-password">
             {{ mostrarPassword ? 'Ocultar' : 'Mostrar' }}
-          </button>
-        </div>
-        <div class="input-field button">
-          <button type="submit">Iniciar Sesión</button>
-        </div>
-      </form>
-      <p *ngIf="mensaje" class="mensaje">{{ mensaje }}</p>
+        </button>
+      </div>
     </div>
-  </div>
+    <button type="submit" class="btn-iniciar">Iniciar Sesión</button>
+    <div *ngIf="mensaje" class="mensaje">{{ mensaje }}</div>
+  </form>
 </main>
 <app-footer></app-footer>

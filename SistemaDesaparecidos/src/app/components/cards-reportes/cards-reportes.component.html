@@ -2,7 +2,7 @@
   <input type="text" [(ngModel)]="nombreBusqueda" placeholder="Nombre..." (input)="filtrarReportes()">
   <input type="number" [(ngModel)]="edadBusqueda" placeholder="Edad..." (input)="filtrarReportes()">
   <input type="text" [(ngModel)]="lugarBusqueda" placeholder="Lugar de desaparición..." (input)="filtrarReportes()">
-  <input type="date" [(ngModel)]="fechaBusqueda" (input)="filtrarReportes()">
+  <input type="date" [max]="fechaMaxima" [(ngModel)]="fechaBusqueda" (input)="filtrarReportes()" id="fecha">
   <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar filtros</button>
 </div>
 

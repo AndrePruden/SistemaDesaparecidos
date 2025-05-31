@@ -2,6 +2,7 @@
   position: relative;
   overflow: hidden;
   height: 100vh;
+  width: 100%;
 }
 
 .carousel-inner {
@@ -51,7 +52,7 @@ p {
   margin-left: auto;
 }
 
-.btn-principal:hover{
+.btn-principal:hover {
   background-color: #005f7f;
 }
 
@@ -73,9 +74,10 @@ button {
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.3s ease;
-  &:hover {
-    background: rgba(0, 0, 0, 0.8);
-  }
+}
+
+button:hover {
+  background: rgba(0, 0, 0, 0.8);
 }
 
 @media (max-width: 600px) {
@@ -83,23 +85,29 @@ button {
     height: 45vh;
     min-height: 260px;
   }
+  
   .carousel-inner img {
     height: 45vh;
     min-height: 260px;
   }
+  
   .overlay {
     padding: 8px;
   }
+  
   h1 {
     font-size: 1.1em;
   }
+  
   p {
     font-size: 0.95em;
   }
+  
   .btn-principal {
     font-size: 0.95em;
     padding: 0.5rem 1rem;
   }
+  
   .controls button {
     padding: 0.5rem 1rem;
     font-size: 1.2rem;
