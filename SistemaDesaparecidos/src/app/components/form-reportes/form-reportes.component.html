@@ -18,7 +18,8 @@
         <div class="field-guidance">
           <span class="help-text">Ingrese el nombre completo de la persona desaparecida</span>
         </div>
-        <input type="text" [(ngModel)]="nuevoReporte.nombre" name="nombre" id="nombre" placeholder="Ej. Juan Pérez González" required />
+        <input type="text" [(ngModel)]="nuevoReporte.nombre" name="nombre" 
+               id="nombre" placeholder="Ej. Juan Pérez González" required />
       </div>
       
       <div class="input-field">
@@ -26,10 +27,12 @@
         <div class="field-guidance">
           <span class="help-text">Edad aproximada al momento de la desaparición</span>
         </div>
-        <input type="number" [(ngModel)]="nuevoReporte.edad" name="edad" id="edad" placeholder="Ej. 32" min="0" max="120" />
+        <input type="number" [(ngModel)]="nuevoReporte.edad" name="edad" 
+               id="edad" placeholder="Ej. 32" min="0" max="120" />
       </div>
     </div>
 
+    <!-- Paso 2: Detalles de la desaparición -->
     <div class="step-section">
       <div class="step-header">
         <span class="step-number">2</span>
@@ -41,34 +44,67 @@
         <div class="field-guidance">
           <span class="help-text">Seleccione la fecha en que se vio por última vez a la persona</span>
         </div>
-        <input type="date" [max]="fechaMaxima" [(ngModel)]="nuevoReporte.fechaDesaparicion" name="fechaDesaparicion" id="fechaDesaparicion" required />
+        <input type="date" [max]="fechaMaxima" [(ngModel)]="nuevoReporte.fechaDesaparicion" 
+               name="fechaDesaparicion" id="fechaDesaparicion" required />
       </div>
     
       <div class="input-field">
         <label for="lugarDesaparicion">Lugar de desaparición *</label>
         <div class="field-guidance">
           <span class="help-text">Haga clic en el mapa para marcar el lugar donde se vio por última vez a la persona</span>
-          <span class="map-instruction"> Toque el mapa para establecer la ubicación</span>
+          <span class="map-instruction">Toque el mapa para establecer la ubicación</span>
+          <div class="description-tips">
+            <small>Consejos: Puede hacer zoom para mayor precisión. Haga clic en otro lugar si necesita corregir</small>
+          </div>
+        </div>
+        <input type="text" 
+               id="lugarDesaparicion" 
+               name="lugarDesaparicion" 
+               [(ngModel)]="nuevoReporte.lugarDesaparicion"
+               placeholder="Coordenadas (Lat, Lng)" 
+               readonly 
+               class="form-control-readonly" 
+               required />
+        
+        <!-- Mostrar dirección legible si está disponible -->
+        <div class="location-display" *ngIf="ubicacionLegible">
+          <small class="location-readable">{{ubicacionLegible}}</small>
         </div>
       </div>
       
-      <div id="mapa" style="height: 300px; margin-bottom: 1em;">
+      <!-- Contenedor del mapa -->
+      <div class="map-container">
+        <div id="mapa" style="height: 400px; width: 100%; margin-bottom: 1em;"></div>
+        
+        <!-- Estado de carga del mapa -->
+        <div class="map-loading" *ngIf="isLoadingMap">
+          <span>Cargando mapa...</span>
+        </div>
+        
+        <!-- Error del mapa -->
+        <div class="map-error" *ngIf="mapError">
+          <span class="error-text">{{mapError}}</span>
+        </div>
       </div>
+      
       <div class="location-confirmation" *ngIf="ubicacionSeleccionada">
         <span class="success-text">Ubicación seleccionada correctamente</span>
       </div>
     </div>
+
+    <!-- Paso 3: Descripción adicional -->
     <div class="step-section">
       <div class="step-header">
         <span class="step-number">3</span>
         <h4>Descripción Adicional</h4>
       </div>
+      
       <div class="input-field">
         <label for="descripcion">Descripción detallada</label>
         <div class="field-guidance">
           <span class="help-text">Incluya detalles como vestimenta, características físicas, comportamiento, etc.</span>
           <div class="description-tips">
-            <small> Consejos: Mencione color de ropa, altura aproximada, características distintivas, estado de ánimo, etc.</small>
+            <small>Consejos: Mencione color de ropa, altura aproximada, características distintivas, estado de ánimo, etc.</small>
           </div>
         </div>
         <textarea [(ngModel)]="nuevoReporte.descripcion" name="descripcion" id="descripcion" 
@@ -76,11 +112,14 @@
                   rows="4"></textarea>
       </div>
     </div>
+
+    <!-- Paso 4: Fotografía -->
     <div class="step-section">
       <div class="step-header">
         <span class="step-number">4</span>
         <h4>Fotografía (Opcional)</h4>
       </div>
+      
       <div class="input-field file-input">
         <label for="imagen">Subir imagen</label>
         <div class="field-guidance">
@@ -88,11 +127,19 @@
           <small class="file-requirements">Formatos aceptados: JPG, PNG, GIF. Tamaño máximo: 5MB</small>
         </div>
         <input type="file" id="imagen" (change)="onFileSelected($event)" accept="image/*" />
+        
         <div class="file-confirmation" *ngIf="archivoSeleccionado">
           <span class="success-text">Imagen cargada: {{nombreArchivo}}</span>
         </div>
+        
+        <!-- Preview de la imagen -->
+        <div class="image-preview" *ngIf="imagenPreview">
+          <img [src]="imagenPreview" alt="Vista previa de la imagen" class="preview-img" />
+        </div>
       </div>
     </div>
+
+    <!-- Paso 5: Revisar y enviar -->
     <div class="step-section final-step">
       <div class="step-header">
         <span class="step-number">5</span>
@@ -115,12 +162,23 @@
             </li>
           </ul>
         </div>
+        
+        <!-- Información del usuario -->
+        <div class="user-info" *ngIf="currentUserEmail">
+          <small class="user-email">Reporte será enviado como: {{currentUserEmail}}</small>
+        </div>
+      </div>
+      
+      <!-- Botón de envío -->
+      <div class="submit-section">
+        <button type="submit" 
+                [disabled]="!formularioCompleto() || enviandoReporte" 
+                [class.disabled]="!formularioCompleto() || enviandoReporte"
+                class="submit-button">
+          <span *ngIf="!enviandoReporte">Crear Reporte</span>
+          <span *ngIf="enviandoReporte">Enviando...</span>
+        </button>
       </div>
     </div>
-    <button type="submit" [disabled]="!formularioCompleto()" 
-                [class.disabled]="!formularioCompleto()">
-      <span *ngIf="!enviandoReporte">Crear Reporte</span>
-      <span *ngIf="enviandoReporte">Enviando...</span>
-    </button>
   </form>
 </div>
