@@ -1,3 +1,29 @@
+<div class="awareness-stats-container">
+  <div class="loading-stats" *ngIf="isLoadingStats">
+      <p>Cargando estadísticas...</p>
+   </div>
+
+  <div class="awareness-stats" *ngIf="!isLoadingStats && totalReportesActivos > 0">
+    <h3>Estadísticas del Problema</h3>
+    <ul>
+      <li>Actualmente hay <strong>{{ totalReportesActivos }}</strong> reportes activos de personas desaparecidas registrados.</li>
+      <li *ngIf="reportesUltimaSemanaActivos > 0">Se reportaron <strong>{{ reportesUltimaSemanaActivos }}</strong> nuevas desapariciones en los últimos 7 días.</li>
+      <li *ngIf="reportesUltimaSemanaActivos === 0 && totalReportesActivos > 0">No se registraron nuevas desapariciones en los últimos 7 días con estado activo.</li>
+      <li *ngIf="totalReportesActivos > 0 && porcentajeEdad12a25Activos > 0">Aproximadamente el <strong>{{ porcentajeEdad12a25Activos.toFixed(1) }}%</strong> de los reportes activos corresponden a personas entre 12 y 25 años.</li>
+       <li *ngIf="totalReportesActivos > 0 && porcentajeEdad12a25Activos === 0">No hay reportes activos de personas entre 12 y 25 años en este momento.</li>
+      <li *ngIf="zonasMasReportesActivos.length > 0">Las 3 zonas con más reportes activos son:
+          <span *ngFor="let zona of zonasMasReportesActivos; let last = last">
+              <strong>{{ zona.lugar }}</strong> ({{ zona.count }} casos){{ !last ? '' : '.' }}{{ !last ? ', ' : '' }}
+          </span>
+      </li>
+       <li *ngIf="zonasMasReportesActivos.length === 0 && totalReportesActivos > 0">Aún no hay suficientes reportes activos para identificar zonas predominantes.</li>
+    </ul>
+  </div>
+  <div class="awareness-stats no-stats-available" *ngIf="!isLoadingStats && totalReportesActivos === 0">
+    <p>No hay reportes activos registrados en este momento para mostrar estadísticas.</p>
+  </div>
+</div>
+
 <div class="contenedor-filtro">
   <input type="text" [(ngModel)]="nombreBusqueda" placeholder="Nombre..." (input)="filtrarReportes()">
   <input type="number" [(ngModel)]="edadBusqueda" placeholder="Edad..." (input)="filtrarReportes()">
