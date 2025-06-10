@@ -11,8 +11,8 @@ body, :host {
   padding: 1rem;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0,126,167,0.07);
-  background: linear-gradient(90deg, #fafdff 80%, #e3f6fc 100%);
-  border: 1.5px solid #e3f6fc;
+  background: #fafdff;
+  border: 1px solid #e3f6fc;
   align-items: center;
   justify-content: flex-start;
   position: relative;
@@ -41,11 +41,11 @@ body, :host {
   margin: 0 0.2rem;
   border-radius: 7px;
   border: none;
-  background: linear-gradient(90deg, #007EA7 60%, #56c6e6 100%);
+  background: #007EA7;
   color: #fff;
   font-weight: 600;
   font-size: 0.97rem;
-  box-shadow: 0 2px 8px rgba(0,126,167,0.10);
+  box-shadow: none;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
   display: flex;
@@ -57,8 +57,8 @@ body, :host {
 
 .contenedor-filtro button:hover,
 .contenedor-filtro .btn-filtro:hover {
-  background: linear-gradient(90deg, #005f7f 60%, #56c6e6 100%);
-  box-shadow: 0 4px 16px rgba(0,126,167,0.16);
+  background: #005f7f;
+  box-shadow: none;
   transform: translateY(-2px) scale(1.04);
 }
 
@@ -95,11 +95,11 @@ body, :host {
   padding: 0.38rem 1.1rem;
   border-radius: 7px;
   border: none;
-  background: linear-gradient(90deg, #e3f6fc 60%, #b3e0f7 100%);
+  background: #e3f6fc;
   color: #007EA7;
   font-weight: 700;
   font-size: 0.97rem;
-  box-shadow: 0 1px 6px rgba(0,126,167,0.09);
+  box-shadow: none;
   cursor: pointer;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
   outline: none;
@@ -114,14 +114,14 @@ body, :host {
 
 .filtros-estado .btn-filtro-estado:hover,
 .filtros-estado .btn-filtro-estado:focus {
-  background: linear-gradient(90deg, #56c6e6 60%, #007EA7 100%);
+  background: #56c6e6;
   color: #fff;
   box-shadow: 0 2px 10px rgba(0,126,167,0.13);
   transform: translateY(-2px) scale(1.04);
 }
 
 .filtros-estado .btn-filtro-estado.activo {
-  background: linear-gradient(90deg, #007EA7 60%, #56c6e6 100%);
+  background: #007EA7;
   color: #fff;
   border: 2px solid #007EA7;
   box-shadow: 0 4px 16px rgba(0,126,167,0.18);
@@ -159,9 +159,9 @@ body, :host {
 
 .lista-reportes {
   background-color: #ffffffcc;
-  padding: 2rem 2.5rem;
-  border-radius: 18px;
-  box-shadow: 0 8px 32px rgba(0, 126, 167, 0.09);
+  padding: 1rem 1.2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,126,167,0.05);
   border: 1.5px solid #e3f6fc;
   margin-bottom: 2rem;
   transition: box-shadow 0.2s;
@@ -183,9 +183,9 @@ body, :host {
   flex: 0 0 260px;
   background: linear-gradient(135deg, #e3f6fc 60%, #b3e0f7 100%);
   border-left: 5px solid #007EA7;
-  border-radius: 18px;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0,126,167,0.13);
+  box-shadow: 0 2px 8px rgba(0,126,167,0.07);
   transition: transform 0.2s, box-shadow 0.2s;
   scroll-snap-align: start;
   margin-right: 0.5rem;
@@ -498,11 +498,11 @@ body, :host {
   margin: 0 0.2rem;
   border-radius: 7px;
   border: 1.5px solid #b3e0f7;
-  background: linear-gradient(90deg, #e3f6fc 60%, #b3e0f7 100%);
+  background: #e3f6fc;
   color: #007EA7;
   font-weight: 600;
   font-size: 0.97rem;
-  box-shadow: 0 1px 6px rgba(0,126,167,0.09);
+  box-shadow: none;
   cursor: pointer;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
   outline: none;
@@ -511,12 +511,7 @@ body, :host {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image:
-    linear-gradient(90deg, #e3f6fc 60%, #b3e0f7 100%),
-    url("data:image/svg+xml;charset=UTF-8,<svg width='16' height='16' fill='gray' xmlns='http://www.w3.org/2000/svg'><path d='M4 6l4 4 4-4' stroke='%23007EA7' stroke-width='2' fill='none' stroke-linecap='round'/></svg>");
-  background-repeat: no-repeat, no-repeat;
-  background-position: right 0.8em center, right 0.8em center;
-  background-size: auto, 1.2em;
+  background-image: none;
 }
 
 .contenedor-filtro select:focus,
