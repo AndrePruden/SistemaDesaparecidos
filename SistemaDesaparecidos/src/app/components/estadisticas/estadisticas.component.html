@@ -1,14 +1,8 @@
-<h2>📊 Estadísticas - Coordenadas de desaparición</h2>
+<app-header></app-header>
 
-<div *ngIf="cargando">Cargando coordenadas...</div>
-<div *ngIf="error" class="error">{{ error }}</div>
-
-<ul *ngIf="!cargando && coordenadas.length > 0">
-  <li *ngFor="let coord of coordenadas">
-    🧍‍♂️ ID: {{ coord.idDesaparecido }} | Lat: {{ coord.lat }} | Lng: {{ coord.lng }}
-  </li>
-</ul>
-
-<div *ngIf="!cargando && coordenadas.length === 0">
-  No hay coordenadas disponibles.
+<div class="container">
+  <h2>Mapa de Calor de Reportes de Desapariciones</h2>
+  <div id="mapa-estadisticas" class="map-container"></div>
 </div>
+
+<app-footer></app-footer>
