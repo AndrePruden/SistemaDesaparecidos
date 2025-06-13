@@ -39,7 +39,16 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/leaflet/dist/leaflet.js"
+              {
+                "input": "node_modules/leaflet/dist/leaflet.js",
+                "inject": true,
+                "bundleName": "leaflet"
+              },
+              {
+                "input": "node_modules/leaflet.heat/dist/leaflet-heat.js",
+                "inject": true,
+                "bundleName": "leaflet-heat"
+              }
             ],
             "baseHref": "/"
           },
