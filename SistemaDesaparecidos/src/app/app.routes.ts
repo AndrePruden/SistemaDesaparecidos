@@ -6,6 +6,7 @@ import { ReportesComponent } from './components/reportes/reportes.component';
 import { PerfilComponent } from './components/perfil/perfil.component';
 import { FormAvistamientosComponent } from './components/form-avistamientos/form-avistamientos.component'; 
 import { ForoAvistamientosComponent } from './components/foro-avistamientos/foro-avistamientos.component'; 
+import { EstadisticasComponent } from './components/estadisticas/estadisticas.component';
 
 
 export const routes: Routes = [
@@ -14,6 +15,7 @@ export const routes: Routes = [
   { path: 'iniciar-sesion', component: IniciarSesionComponent },
   { path: 'reportes', component: ReportesComponent }, 
   { path: 'perfil', component: PerfilComponent },
+  {path: 'estadisticas', component: EstadisticasComponent},
 
   { path: 'foro-avistamientos', component: ForoAvistamientosComponent }, 
   { path: 'avistamientos/form', component: FormAvistamientosComponent }, 

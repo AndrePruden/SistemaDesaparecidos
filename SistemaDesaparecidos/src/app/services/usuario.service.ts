@@ -17,7 +17,7 @@ export interface ResponseMessage {
   providedIn: 'root',
 })
 export class UsuarioService {
-  private apiUrl = 'https://sistemadesaparecidos-production.up.railway.app/usuarios';
+  private apiUrl = 'http://sistemadesaparecidos-production-6b5e.up.railway.app/usuarios';
   //private apiUrl = 'http://localhost:8080/usuarios';
 
   // --- Modificación: Inicializar el BehaviorSubject con el email de localStorage si existe ---
