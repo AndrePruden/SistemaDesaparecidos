@@ -1,0 +1,119 @@
+.estadisticas-container {
+  padding: 2rem;
+  background-color: #f9f9f9;
+  color: #333;
+
+  h2 {
+    padding: 50px;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: #2c3e50;
+  }
+
+  .cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    .card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 200px;
+      transition: transform 0.2s;
+
+      &:hover {
+        transform: translateY(-5px);
+      }
+
+      h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: #34495e;
+      }
+
+      p {
+        font-size: 1.6rem;
+        font-weight: bold;
+        color: #2980b9;
+      }
+    }
+  }
+
+.zonas-peligrosas {
+  margin-top: 2rem;
+
+  h3 {
+    text-align: center;
+    color: #e74c3c;
+    margin-bottom: 1rem;
+  }
+
+  .zonas-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .zona-card {
+    background: #fff5f5;
+    border: 1px solid #e0b4b4;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    width: 300px;
+    box-shadow: 0 2px 4px rgba(231, 76, 60, 0.2);
+    transition: all 0.2s;
+
+    &:hover {
+      box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
+    }
+
+    .zona-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      h4 {
+        font-size: 1.1rem;
+        color: #c0392b;
+      }
+
+      p {
+        font-size: 1rem;
+        color: #e74c3c;
+      }
+
+      button {
+        align-self: start;
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.3rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+
+        &:hover {
+          background: #c0392b;
+        }
+      }
+    }
+  }
+}
+
+
+  #mapa-estadisticas {
+    height: 500px;
+    width: 100%;
+    margin-top: 2rem;
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 2px solid #ddd;
+  }
+}

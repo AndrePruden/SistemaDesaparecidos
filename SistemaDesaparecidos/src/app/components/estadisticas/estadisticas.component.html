@@ -1,0 +1,37 @@
+<app-header></app-header>
+
+<div class="estadisticas-container">
+  <h2>Resumen de Estadísticas</h2>
+
+  <div id="mapa-estadisticas"></div>
+
+  <div class="cards-container">
+    <div class="card resumen">
+      <h3>Total de Reportes</h3>
+      <p>{{ totalReportes }}</p>
+    </div>
+    <div class="card resumen">
+      <h3>Zonas Detectadas</h3>
+      <p>{{ zonasTotales }}</p>
+    </div>
+    <div class="card resumen">
+      <h3>Densidad Promedio</h3>
+      <p>{{ densidadPromedio }}</p>
+    </div>
+  </div>
+
+  <div class="zonas-peligrosas" *ngIf="zonasFrecuentes.length">
+    <h3>Zonas con mayor número de reportes</h3>
+    <div class="zonas-grid">
+      <div class="zona-card" *ngFor="let zona of zonasFrecuentes">
+        <div class="zona-info">
+          <h4>{{ zona.label }}</h4>
+          <p><strong>{{ zona.cantidad }}</strong> reportes registrados</p>
+          <button (click)="centrarEnZona(zona.lat, zona.lng)">Ver en el mapa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

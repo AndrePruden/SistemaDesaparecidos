@@ -26,7 +26,7 @@ export interface Avistamiento {
   providedIn: 'root'
 })
 export class AvistamientoService {
-  private baseUrl = 'https://sistemadesaparecidos-production.up.railway.app/avistamientos'; // Usar esta en producción
+   private baseUrl = 'https://sistemadesaparecidos-production-6b5e.up.railway.app/avistamientos'; // Usar esta en producción
   //private baseUrl = 'http://localhost:8080/avistamientos'; // Usar esta en desarrollo
 
   private avistamientoCambiadoSource = new Subject<void>();

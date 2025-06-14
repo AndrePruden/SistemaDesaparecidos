@@ -10,6 +10,7 @@
         <li>
           <a (click)="verificarAccesoReportes($event)">Reportes</a>
         </li>
+        <li><a routerLink="/estadisticas">Estadísticas</a></li>
         <ng-container *ngIf="!estaLogueado">
             <li><a routerLink="/registro">Registrarse</a></li>
             <li><a routerLink="/iniciar-sesion">Iniciar Sesión</a></li>
