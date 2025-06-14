@@ -47,6 +47,9 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
   emailUsuarioActual: string | null = null;
   private avistamientoChangeSubscription: Subscription | undefined;
 
+  autorFiltro: string = 'todos';
+  estadoFiltro: string = 'activos';
+
   constructor(
     private reportesService: ReportesService,
     private avistamientoService: AvistamientoService,
@@ -420,28 +423,43 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
   filtrarReportes(): void {
     console.log('[CARDS] [FILTRO] Aplicando filtros...');
     this.reportesFiltrados = this.reportes.filter(reporte => {
+      // Filtro por nombre
       const nombreMatch = !this.nombreBusqueda ||
         reporte.nombre.toLowerCase().includes(this.nombreBusqueda.toLowerCase());
 
+      // Filtro por edad
       const edadMatch = this.edadBusqueda === null ||
         reporte.edad === this.edadBusqueda;
 
-      
+      // Filtro por lugar
       const lugarReporteTexto = reporte.lugarDesaparicionLegible && reporte.lugarDesaparicionLegible !== '' ? reporte.lugarDesaparicionLegible : (reporte.lugarDesaparicion || '');
       const lugarMatch = !this.lugarBusqueda ||
         lugarReporteTexto.toLowerCase().includes(this.lugarBusqueda.toLowerCase());
 
-
-      
+      // Filtro por fecha
       const fechaReporteStr = reporte.fechaDesaparicion;
       const fechaMatch = !this.fechaBusqueda ||
          (fechaReporteStr && fechaReporteStr.startsWith(this.fechaBusqueda)); // Simple prefix match "YYYY-MM-DD"
 
-      return nombreMatch && edadMatch && lugarMatch && fechaMatch;
+      // Filtro por autor
+      let autorMatch = true;
+      if (this.autorFiltro === 'mios') {
+        autorMatch = this.emailUsuarioActual !== null && reporte.emailReportaje === this.emailUsuarioActual;
+      }
+
+      // Filtro por estado
+      let estadoMatch = true;
+      if (this.estadoFiltro === 'activos') {
+        estadoMatch = reporte.estado === true;
+      } else if (this.estadoFiltro === 'archivados') {
+        estadoMatch = reporte.estado === false;
+      }
+
+      return nombreMatch && edadMatch && lugarMatch && fechaMatch && autorMatch && estadoMatch;
     });
-     console.log('[CARDS] [FILTRO] Resultados filtrados:', this.reportesFiltrados.length);
-     
-     this.cdr.detectChanges(); // Force detection after filtering
+    console.log('[CARDS] [FILTRO] Resultados filtrados:', this.reportesFiltrados.length);
+
+    this.cdr.detectChanges(); // Force detection after filtering
   }
 
 
