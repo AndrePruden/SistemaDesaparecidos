@@ -40,7 +40,7 @@ TrackMe es un sistema diseñado para gestionar información sobre personas desap
 - Clases de validación personalizadas
 - Cálculos de distancia (Haversine)
 
-  ## Estructura del Proyecto
+## Estructura del Proyecto
 
 El proyecto sigue una arquitectura de dos capas principales:
 
@@ -75,42 +75,7 @@ Asegúrate de tener instalados:
 3. **Configura la Base de Datos:**
    - Asegúrate de tener MySQL instalado y en ejecución.
    - Crea una base de datos llamada `Trackme`.
-   - Dentro de la base de datos `Trackme`, crea las siguientes tablas:
-   
-     ```sql
-     CREATE TABLE usuarios (
-         id INT AUTO_INCREMENT PRIMARY KEY,
-         email VARCHAR(255) NOT NULL UNIQUE,
-         nombre VARCHAR(100) NOT NULL,
-         password VARCHAR(255) NOT NULL
-     );
-
-     CREATE TABLE persona_desaparecida (
-         id_desaparecido INT AUTO_INCREMENT PRIMARY KEY,
-         email_reportaje VARCHAR(100) NOT NULL,
-         nombre VARCHAR(100) NOT NULL,
-         edad INT,
-         fecha_desaparicion DATE NOT NULL,
-         lugar_desaparicion VARCHAR(255) NOT NULL,
-         descripcion TEXT,
-         imagen TEXT
-         FOREIGN KEY (email_reportaje) REFERENCES usuarios(email) ON DELETE CASCADE
-     );
-
-     CREATE TABLE avistamientos (
-        id_avistamiento BIGINT AUTO_INCREMENT PRIMARY KEY,
-        email_usuario VARCHAR(100) NOT NULL,
-        id_persona_desaparecida BIGINT NOT NULL,  -- Cambiado a BIGINT
-        fecha DATETIME NOT NULL,
-        ubicacion VARCHAR(255) NOT NULL,
-        descripcion TEXT,
-        FOREIGN KEY (email_usuario) REFERENCES usuarios(email) ON DELETE CASCADE,
-        FOREIGN KEY (id_persona_desaparecida) REFERENCES persona_desaparecida(id_desaparecido) ON DELETE CASCADE
-      );
-     ```
-
-     **Configurar Base de Datos Remota (Aiven):**
-     -Si prefieres usar una base de datos remota segura:
+   - Configurar la base de datos remota (Aiven):
      -Credenciales 
        Hostname: mysql-1c418c5-ucb-2025.b.aivencloud.com
 
@@ -131,7 +96,7 @@ Asegúrate de tener instalados:
        spring.datasource.password=AVNS_v9DsynIVQbxEaz0QX1l
        spring.jpa.hibernate.ddl-auto=update
        spring.jpa.show-sql=true
-   ```
+     ```
 
 4. **Agrega el driver de MySQL en el archivo `pom.xml`:**
    ```xml
