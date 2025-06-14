@@ -58,6 +58,8 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
   nombresReportesActivos: string[] = [];
   readonly maxNombresToList = 5;
 
+  autorFiltro: string = 'todos';
+  estadoFiltro: string = 'activos';
 
   constructor(
     private reportesService: ReportesService,
@@ -525,12 +527,46 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
         lugarReporteTexto.toLowerCase().includes(this.lugarBusqueda.toLowerCase());
 
        const fechaReporteStr = reporte.fechaDesaparicion;
+    this.reportesFiltrados = this.reportes.filter(reporte => {
+      // Filtro por nombre
+      const nombreMatch = !this.nombreBusqueda ||
+        reporte.nombre.toLowerCase().includes(this.nombreBusqueda.toLowerCase());
+
+      // Filtro por edad
+      const edadMatch = this.edadBusqueda === null ||
+        reporte.edad === this.edadBusqueda;
+
+      // Filtro por lugar
+      const lugarReporteTexto = reporte.lugarDesaparicionLegible && reporte.lugarDesaparicionLegible !== '' ? reporte.lugarDesaparicionLegible : (reporte.lugarDesaparicion || '');
+      const lugarMatch = !this.lugarBusqueda ||
+        lugarReporteTexto.toLowerCase().includes(this.lugarBusqueda.toLowerCase());
+
+      // Filtro por fecha
+      const fechaReporteStr = reporte.fechaDesaparicion;
       const fechaMatch = !this.fechaBusqueda ||
          (fechaReporteStr && fechaReporteStr.startsWith(this.fechaBusqueda));
 
-      return nombreMatch && edadMatch && lugarMatch && fechaMatch;
+      // Filtro por autor
+      let autorMatch = true;
+      if (this.autorFiltro === 'mios') {
+        autorMatch = this.emailUsuarioActual !== null && reporte.emailReportaje === this.emailUsuarioActual;
+      }
+
+      // Filtro por estado
+      let estadoMatch = true;
+      if (this.estadoFiltro === 'activos') {
+        estadoMatch = reporte.estado === true;
+      } else if (this.estadoFiltro === 'archivados') {
+        estadoMatch = reporte.estado === false;
+      }
+
+      return nombreMatch && edadMatch && lugarMatch && fechaMatch && autorMatch && estadoMatch;
     });
      console.log('[CARDS] [FILTRO] Resultados filtrados:', this.reportesFiltrados.length);
+    console.log('[CARDS] [FILTRO] Resultados filtrados:', this.reportesFiltrados.length);
+
+    this.cdr.detectChanges(); // Force detection after filtering
+  }
 
      this.cdr.detectChanges();
   }
