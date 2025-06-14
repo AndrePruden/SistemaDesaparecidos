@@ -566,7 +566,7 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
     console.log('[CARDS] [FILTRO] Resultados filtrados:', this.reportesFiltrados.length);
 
     this.cdr.detectChanges(); // Force detection after filtering
-  }
+     })
 
      this.cdr.detectChanges();
   }
