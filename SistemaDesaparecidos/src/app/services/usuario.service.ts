@@ -97,4 +97,12 @@ export class UsuarioService {
       this.setCurrentUserEmail(null); // Establecer el email a null (esto también limpia localStorage)
   }
   // --------------------------------------
+
+  enviarCodigo(email: string): Observable<ResponseMessage> {
+    return this.http.post<ResponseMessage>(`${this.apiUrl}/enviar-codigo`, { email });
+  }
+
+  verificarCodigo(email: string, codigo: string): Observable<ResponseMessage> {
+    return this.http.post<ResponseMessage>(`${this.apiUrl}/verificar-codigo`, { email, codigo });
+  }
 }

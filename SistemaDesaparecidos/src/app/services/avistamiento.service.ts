@@ -3,20 +3,18 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError , Subject} from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-// Definición de la interfaz Avistamiento (Asegúrate que coincide con el backend)
 export interface Avistamiento {
-  idAvistamiento?: number; // Puede ser opcional para la creación, pero presente para edición
+  idAvistamiento?: number; 
   emailUsuario: string;
-  lugarDesaparicionLegible?: string | null; // Propiedad calculada en frontend
-  ubicacion: string; // Coordenadas (ej. "Lat, Lng")
-  fecha: string; // Fecha (ej. "YYYY-MM-DD")
+  lugarDesaparicionLegible?: string | null; 
+  ubicacion: string; 
+  fecha: string; 
   descripcion: string | null;
-  coordenadas?: string; // Añadido para el input readonly en el form
+  coordenadas?: string;
 
-  // Estructura esperada para personaDesaparecida. Puede que solo necesites idDesaparecido para el payload de creación/actualización
   personaDesaparecida: {
-    id?: number | null; // A veces el backend usa 'id'
-    idDesaparecido: number | null; // A veces el backend usa 'idDesaparecido'
+    id?: number | null;
+    idDesaparecido: number | null; 
     nombre?: string | null;
     lugarDesaparicion?: string | null;
     fechaDesaparicion?: string | null;
@@ -31,18 +29,17 @@ export class AvistamientoService {
    private baseUrl = 'https://sistemadesaparecidos-production-6b5e.up.railway.app/avistamientos'; // Usar esta en producción
   //private baseUrl = 'http://localhost:8080/avistamientos'; // Usar esta en desarrollo
 
-  // --- Renombrar a avistamientoCambiadoSource para consistencia ---
   private avistamientoCambiadoSource = new Subject<void>();
   avistamientoCambiado$ = this.avistamientoCambiadoSource.asObservable();
 
   constructor(private http: HttpClient) {}
 
   crearAvistamiento(avistamiento: any): Observable<any> {
-    console.log('[SERVICE][FRONT] 📤 Enviando POST /avistamientos/crear:', avistamiento);
+    console.log('[SERVICE][FRONT] Enviando POST /avistamientos/crear:', avistamiento);
     return this.http.post(`${this.baseUrl}/crear`, avistamiento)
       .pipe(
         tap(response => {
-          console.log('[SERVICE][FRONT] ✅ Avistamiento creado con éxito en backend:', response);
+          console.log('[SERVICE][FRONT] Avistamiento creado con éxito en backend:', response);
           this.avistamientoCambiadoSource.next(); // Notificar después de crear
        }),
        catchError(this.handleError)
@@ -50,19 +47,19 @@ export class AvistamientoService {
   }
 
   obtenerAvistamientoPorId(id: number): Observable<Avistamiento> {
-    console.log(`[SERVICE][FRONT] 📩 Solicitando GET /avistamientos/${id}`);
+    console.log(`[SERVICE][FRONT] Solicitando GET /avistamientos/${id}`);
     return this.http.get<Avistamiento>(`${this.baseUrl}/${id}`).pipe(
-      tap(data => console.log(`[SERVICE][FRONT] ✅ Avistamiento ${id} recibido:`, data)),
+      tap(data => console.log(`[SERVICE][FRONT] Avistamiento ${id} recibido:`, data)),
       catchError(this.handleError)
     );
   }
   
   actualizarAvistamiento(id: number, avistamientoData: Partial<Avistamiento>): Observable<any> {
-    console.log(`[SERVICE][FRONT] 📤 Intentando PUT /avistamientos/${id}:`, avistamientoData);
+    console.log(`[SERVICE][FRONT] Intentando PUT /avistamientos/${id}:`, avistamientoData);
     return this.http.put(`${this.baseUrl}/${id}`, avistamientoData)
       .pipe(
         tap(response => {
-          console.log(`[SERVICE][FRONT] ✅ Avistamiento ${id} actualizado en backend:`, response);
+          console.log(`[SERVICE][FRONT] Avistamiento ${id} actualizado en backend:`, response);
           this.avistamientoCambiadoSource.next(); // Notificar después de actualizar
         }),
         catchError(this.handleError)
@@ -70,7 +67,7 @@ export class AvistamientoService {
   }
 
   obtenerAvistamientosPorUsuario(email: string): Observable<any[]> {
-     console.log(`[SERVICE][FRONT] 📩 Solicitando GET /avistamientos/usuario/${email}`);
+     console.log(`[SERVICE][FRONT] Solicitando GET /avistamientos/usuario/${email}`);
     return this.http.get<any[]>(`${this.baseUrl}/usuario/${email}`)
       .pipe(
         catchError(this.handleError)
@@ -86,7 +83,7 @@ export class AvistamientoService {
   }
 
   obtenerUltimoAvistamiento(idReporte: number): Observable<Avistamiento | null> {
-    console.log(`[SERVICE][FRONT] 📩 Solicitando GET /avistamientos/ultimo/${idReporte}`);
+    console.log(`[SERVICE][FRONT] Solicitando GET /avistamientos/ultimo/${idReporte}`);
      
     return this.http.get<Avistamiento>(`${this.baseUrl}/ultimo/${idReporte}`)
       .pipe(
@@ -108,7 +105,7 @@ export class AvistamientoService {
 
 
   obtenerTodosLosAvistamientos(): Observable<Avistamiento[]> {
-     console.log('[SERVICE][FRONT] 📩 Solicitando GET /avistamientos/todos');
+     console.log('[SERVICE][FRONT] Solicitando GET /avistamientos/todos');
     return this.http.get<Avistamiento[]>(`${this.baseUrl}/todos`)
       .pipe(
         catchError(this.handleError)
@@ -116,7 +113,7 @@ export class AvistamientoService {
   }
 
   private handleError(error: any) {
-    console.error('[SERVICE][FRONT] ❌ Ocurrió un error:', error);
+    console.error('[SERVICE][FRONT] Ocurrió un error:', error);
      let errorMessage = 'Error desconocido en el servicio';
 
     if (error.error instanceof ErrorEvent) {
