@@ -33,10 +33,6 @@ export class ReportesService {
     return this.http.get<any[]>(`${this.baseUrl}/reporte/${id}`);
   }
 
-  // crearAvistamiento(avistamiento: any): Observable<any> {
-  //   return this.http.post(`${this.baseUrl}/avistamientos/crear`, avistamiento);
-  // }
-
   archivarReporte(id: number) {
     return this.http.put(`${this.baseUrl}/${id}/archivar`, null,{
       responseType: 'text' as 'json'

@@ -35,11 +35,16 @@ export class RegistroComponent {
     notificaciones: false
   };  
 
+  codigo: string = '';
+  mostrarCodigo: boolean = false;
+  codigoEnviado: boolean = false;
+  verificandoCodigo: boolean = false;
+
   errores: ErroresValidacion = {};
   mensaje: string = '';
   mostrarPassword: boolean = false;
   private readonly emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  private readonly nombreRegex = /^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$/; // Incluye caracteres especiales del español
+  private readonly nombreRegex = /^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$/;
   private readonly passwordRegex = {
     mayuscula: /[A-Z]/,
     minuscula: /[a-z]/,
@@ -287,10 +292,85 @@ export class RegistroComponent {
   onSubmit(): void {
     console.log('Datos ingresados:', this.usuario);
     this.mensaje = '';
+  
     if (!this.validarFormulario()) {
       this.mensaje = 'Por favor, corrige los errores en el formulario antes de continuar.';
       return;
     }
+
+    this.enviarCodigo();
+  }
+
+  enviarCodigo(): void {
+    if (!this.usuario.email) {
+      this.mensaje = "Por favor, ingresa un correo válido.";
+      return;
+    }
+
+    this.mensaje = 'Enviando código de verificación...';
+
+    this.usuarioService.enviarCodigo(this.usuario.email).subscribe({
+      next: (response) => {
+        this.mensaje = response.message;
+        this.mostrarAlertaCodigo();
+      },
+      error: (error) => {
+        console.error('Error al enviar código:', error);
+        this.mensaje = "Error al enviar el código. Verifica el correo e intenta de nuevo.";
+      }
+    });
+  }
+
+  mostrarAlertaCodigo(): void {
+    const codigo = prompt('Se ha enviado un código de verificación a tu correo.\nPor favor, ingresa el código de 6 dígitos:');
+  
+    if (codigo === null) {
+      this.mensaje = 'Verificación cancelada. Puedes intentar registrarte nuevamente.';
+      return;
+    }
+  
+    if (!codigo || codigo.trim().length === 0) {
+      alert('Debes ingresar el código para continuar.');
+      this.mostrarAlertaCodigo(); 
+      return;
+    }
+  
+    if (codigo.trim().length !== 6 || !/^\d{6}$/.test(codigo.trim())) {
+      alert('El código debe tener exactamente 6 dígitos.');
+      this.mostrarAlertaCodigo();
+      return;
+    }
+    this.verificarCodigo(codigo.trim());
+  }
+
+  verificarCodigo(codigo: string): void {
+    this.mensaje = 'Verificando código...';
+
+    this.usuarioService.verificarCodigo(this.usuario.email, codigo).subscribe({
+      next: (response) => {
+        this.mensaje = `${response.message} Procesando registro...`;
+        this.procesarRegistro();
+      },
+      error: (error) => {
+        console.error('Error al verificar código:', error);
+      
+        let mensajeError = "Código incorrecto o expirado.";
+        if (error.error?.message) {
+          mensajeError = error.error.message;
+        }
+      
+        const intentarDeNuevo = confirm(`${mensajeError}\n\n¿Deseas intentar con otro código?`);
+      
+        if (intentarDeNuevo) {
+          this.mostrarAlertaCodigo(); 
+        } else {
+          this.mensaje = 'Verificación cancelada. Puedes intentar registrarte nuevamente.';
+        }
+      }
+    });
+  }
+  
+  procesarRegistro(): void {
     const usuarioFormateado = {
       nombre: this.usuario.nombre.trim(),
       ci: Number(this.usuario.ci),
@@ -301,12 +381,18 @@ export class RegistroComponent {
       password: this.usuario.password,
       notificaciones: this.usuario.notificaciones
     };
+
     console.log('Enviando usuario al backend:', usuarioFormateado);
+    
     this.usuarioService.registrarUsuario(usuarioFormateado).subscribe({
       next: (response) => {
         this.mensaje = "¡Registro exitoso! Bienvenido a nuestra plataforma.";
         console.log('Registro exitoso:', response);
-        this.router.navigate(['/']); 
+        
+        // Pequeño delay para que el usuario vea el mensaje de éxito
+        setTimeout(() => {
+          this.router.navigate(['/']);
+        }, 2000);
       },
       error: (error) => {
         console.error('Error al registrar usuario:', error);
@@ -343,6 +429,10 @@ export class RegistroComponent {
     };
     this.errores = {};
     this.mensaje = '';
+    this.codigo = '';
+    this.codigoEnviado = false;
+    this.mostrarCodigo = false;
+    this.verificandoCodigo = false;
   }
 
   calcularEdad(fechaNacimiento: Date): number {
