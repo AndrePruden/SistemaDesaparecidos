@@ -12,8 +12,8 @@ export interface CoordenadaReporte {
   providedIn: 'root'
 })
 export class EstadisticasService {
-  // private baseUrl = 'https://sistemadesaparecidos-production.up.railway.app/reportes/todos'; // Usar esta en producción
-  private baseUrl = 'http://localhost:8080/reportes/todos'; // Usar esta en desarrollo
+  private baseUrl = 'https://sistemadesaparecidos-production-6b5e.up.railway.app/reportes/todos'; // Usar esta en producción
+  //private baseUrl = 'http://localhost:8080/reportes/todos'; // Usar esta en desarrollo
 
   constructor(private http: HttpClient) {}
 
