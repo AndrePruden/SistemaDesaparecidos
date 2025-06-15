@@ -1,13 +1,19 @@
 package com.trackme.controller;
 
 import com.trackme.model.Usuario;
+import com.trackme.service.EmailService;
+import com.trackme.service.OtpService;
 import com.trackme.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -18,6 +24,12 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UsuarioService usuarioService;
+
+    @Autowired
+    private OtpService otpService;
+
+    @Autowired
+    private EmailService emailService;
 
     public UserController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
@@ -105,5 +117,32 @@ public class UserController {
         usuarioService.eliminarUsuario(id);
         logger.info("Usuario eliminado: ID {}", id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/enviar-codigo")
+    public ResponseEntity<Map<String, String>> enviarCodigo(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String codigo = otpService.generarOtp(email);
+        emailService.enviarCodigo(email, codigo);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Código enviado");
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/verificar-codigo")
+    public ResponseEntity<Map<String, String>> verificarCodigo(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String codigo = payload.get("codigo");
+
+        Map<String, String> response = new HashMap<>();
+
+        if (otpService.verificarOtp(email, codigo)) {
+            response.put("message", "Código verificado. Registro completado.");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("message", "Código inválido o expirado.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
     }
 }

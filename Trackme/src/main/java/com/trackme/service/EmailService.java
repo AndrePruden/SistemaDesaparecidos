@@ -55,4 +55,12 @@ public class EmailService {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy 'a las' HH:mm");
         return sdf.format(date);
     }
+
+    public void enviarCodigo(String destinatario, String codigo) {
+        SimpleMailMessage mensaje = new SimpleMailMessage();
+        mensaje.setTo(destinatario);
+        mensaje.setSubject("Tu código de verificación");
+        mensaje.setText("Tu código de verificación es: " + codigo);
+        mailSender.send(mensaje);
+    }
 }

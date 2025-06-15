@@ -11,17 +11,17 @@ export class FeatureFlagsService {
   //private apiUrl = 'http://localhost:8080/config';
 
   constructor(private http: HttpClient) {
-    console.log('🚩 FeatureFlagsService inicializado');
+    console.log('FeatureFlagsService inicializado');
   }
 
   setFlags(flags: { [key: string]: boolean }): void {
     this.flags = flags;
-    console.log('🚩 Feature flags configurados:', this.flags);
+    console.log('Feature flags configurados:', this.flags);
   }
 
   getFeatureFlag(featureName: string): Observable<boolean>  {
     const enabled = this.http.get<boolean>(`${this.apiUrl}/feature-toggles/${featureName}`);
-    console.log(`🚩 Consultando feature '${featureName}':`, enabled);
+    console.log(`Consultando feature '${featureName}':`, enabled);
     return enabled;
   }
 

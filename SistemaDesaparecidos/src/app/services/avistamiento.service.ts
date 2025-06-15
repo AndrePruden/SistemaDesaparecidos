@@ -3,20 +3,18 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError , Subject} from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-// Definición de la interfaz Avistamiento (Asegúrate que coincide con el backend)
 export interface Avistamiento {
-  idAvistamiento?: number; // Puede ser opcional para la creación, pero presente para edición
+  idAvistamiento?: number; 
   emailUsuario: string;
-  lugarDesaparicionLegible?: string | null; // Propiedad calculada en frontend
-  ubicacion: string; // Coordenadas (ej. "Lat, Lng")
-  fecha: string; // Fecha (ej. "YYYY-MM-DD")
+  lugarDesaparicionLegible?: string | null; 
+  ubicacion: string; 
+  fecha: string; 
   descripcion: string | null;
-  coordenadas?: string; // Añadido para el input readonly en el form
+  coordenadas?: string;
 
-  // Estructura esperada para personaDesaparecida. Puede que solo necesites idDesaparecido para el payload de creación/actualización
   personaDesaparecida: {
-    id?: number | null; // A veces el backend usa 'id'
-    idDesaparecido: number | null; // A veces el backend usa 'idDesaparecido'
+    id?: number | null;
+    idDesaparecido: number | null; 
     nombre?: string | null;
     lugarDesaparicion?: string | null;
     fechaDesaparicion?: string | null;
@@ -31,7 +29,6 @@ export class AvistamientoService {
    private baseUrl = 'https://sistemadesaparecidos-production-6b5e.up.railway.app/avistamientos'; // Usar esta en producción
   //private baseUrl = 'http://localhost:8080/avistamientos'; // Usar esta en desarrollo
 
-  // --- Renombrar a avistamientoCambiadoSource para consistencia ---
   private avistamientoCambiadoSource = new Subject<void>();
   avistamientoCambiado$ = this.avistamientoCambiadoSource.asObservable();
 
