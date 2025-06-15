@@ -47,16 +47,7 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
   emailUsuarioActual: string | null = null;
   private avistamientoChangeSubscription: Subscription | undefined;
 
-  totalReportesActivos = 0;
-  reportesUltimaSemanaActivos = 0;
-  zonasMasReportesActivos: { lugar: string, count: number }[] = [];
-  isLoadingStats = true;
-
-  minEdadActivos: number | null = null;
-  maxEdadActivos: number | null = null;
-
-  nombresReportesActivos: string[] = [];
-  readonly maxNombresToList = 5;
+  
 
   autorFiltro: string = 'todos';
   estadoFiltro: string = 'activos';
@@ -109,7 +100,6 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
   }
 
   obtenerReportes(): void {
-    this.isLoadingStats = true;
     console.log('[CARDS] [DATA] Solicitando todos los reportes...');
     this.reportesService.obtenerReportes().subscribe(
       (data: Reporte[]) => {
@@ -127,99 +117,20 @@ export class CardsReportesComponent implements OnInit, OnDestroy {
         this.setDireccionesReportes(this.reportes);
         this.cargarUltimosAvistamientos(this.reportes);
 
-        const reportesActivosPuros = data.filter(r => r.estado === true);
-        this.calcularEstadisticas(reportesActivosPuros);
-
-        this.isLoadingStats = false;
+        
         this.cdr.detectChanges();
       },
       (err) => {
           console.error('[CARDS] [ERROR] al obtener reportes:', err);
            this.reportes = [];
            this.reportesFiltrados = [];
-           this.isLoadingStats = false;
            this.cdr.detectChanges();
-           this.totalReportesActivos = 0;
-           this.reportesUltimaSemanaActivos = 0;
-           this.zonasMasReportesActivos = [];
-           this.nombresReportesActivos = [];
-           this.minEdadActivos = null;
-           this.maxEdadActivos = null;
+          
       }
     );
   }
 
-  calcularEstadisticas(reportesActivos: Reporte[]): void {
-      console.log('[CARDS] Calculando estadísticas sobre', reportesActivos.length, 'reportes activos.');
-    if (!reportesActivos || reportesActivos.length === 0) {
-      this.totalReportesActivos = 0;
-      this.reportesUltimaSemanaActivos = 0;
-      this.zonasMasReportesActivos = [];
-      this.nombresReportesActivos = [];
-      this.minEdadActivos = null;
-      this.maxEdadActivos = null;
-      console.log('[CARDS] No hay reportes activos para calcular estadísticas.');
-      return;
-    }
-
-    this.totalReportesActivos = reportesActivos.length;
-
-    if (this.totalReportesActivos > 0 && this.totalReportesActivos <= this.maxNombresToList) {
-        this.nombresReportesActivos = reportesActivos.filter(r => r.nombre).map(r => r.nombre);
-    } else {
-        this.nombresReportesActivos = [];
-    }
-
-    const hoy = new Date();
-    const haceUnaSemana = new Date(hoy);
-    haceUnaSemana.setDate(hoy.getDate() - 7);
-    haceUnaSemana.setHours(0, 0, 0, 0);
-
-    const finHoy = new Date(hoy);
-    finHoy.setHours(23, 59, 59, 999);
-
-    this.reportesUltimaSemanaActivos = reportesActivos.filter(reporte => {
-      const fechaReporte = new Date(reporte.fechaDesaparicion);
-       return fechaReporte >= haceUnaSemana && fechaReporte <= finHoy;
-    }).length;
-
-    const edadesValidas = reportesActivos
-        .map(r => r.edad)
-        .filter(edad => typeof edad === 'number' && edad > 0);
-
-    if (edadesValidas.length > 0) {
-        this.minEdadActivos = Math.min(...edadesValidas);
-        this.maxEdadActivos = Math.max(...edadesValidas);
-    } else {
-        this.minEdadActivos = null;
-        this.maxEdadActivos = null;
-    }
-
-    const conteoZonas: { [key: string]: number } = {};
-    reportesActivos.forEach(reporte => {
-       const lugar = reporte.lugarDesaparicionLegible && !['Cargando...', 'Ubicación desconocida', 'Ubicación no disponible', ''].includes(reporte.lugarDesaparicionLegible)
-           ? reporte.lugarDesaparicionLegible
-           : (reporte.lugarDesaparicion || 'Lugar no especificado');
-       if (lugar && lugar !== 'Lugar no especificado' && lugar !== 'Ubicación no disponible') {
-            conteoZonas[lugar] = (conteoZonas[lugar] || 0) + 1;
-       }
-    });
-
-    this.zonasMasReportesActivos = Object.keys(conteoZonas)
-      .map(key => ({ lugar: key, count: conteoZonas[key] }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 3);
-
-       console.log('[CARDS] Estadísticas calculadas:', {
-           totalReportesActivos: this.totalReportesActivos,
-           nombresReportesActivos: this.nombresReportesActivos,
-           reportesUltimaSemanaActivos: this.reportesUltimaSemanaActivos,
-           minEdadActivos: this.minEdadActivos,
-           maxEdadActivos: this.maxEdadActivos,
-           zonasMasReportesActivos: this.zonasMasReportesActivos
-       });
-  }
-
+  
 
   setDireccionesReportes(reporteList: Reporte[]): void {
       console.log('[CARDS] [DATA] Iniciando geocodificación inversa para', reporteList.length, 'reportes.');
