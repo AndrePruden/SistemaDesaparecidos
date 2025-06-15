@@ -7,8 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class FeatureFlagsService {
   private flags: { [key: string]: boolean } = {};
-  //private apiUrl = 'http://sistemadesaparecidos-production-6b5e.up.railway.app/config';
-  private apiUrl = 'http://localhost:8080/config';
+  private apiUrl = 'http://sistemadesaparecidos-production-6b5e.up.railway.app/config';
+  //private apiUrl = 'http://localhost:8080/config';
 
   constructor(private http: HttpClient) {
     console.log('FeatureFlagsService inicializado');
