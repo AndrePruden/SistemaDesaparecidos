@@ -32,124 +32,191 @@ class UserControllerTest {
     void setUp() {
         usuario = new Usuario();
         usuario.setId(1L);
-        usuario.setNombre("Juan Perez");
-        usuario.setEmail("juan@example.com");
+        usuario.setEmail("test@email.com");
         usuario.setPassword("password123");
+        usuario.setNombre("Test User");
     }
 
     @Test
-    void registrarUsuario_Exitoso() {
-        when(usuarioService.obtenerUsuarioPorEmail(anyString())).thenReturn(Optional.empty());
+    void registrarUsuario_Success() {
+        when(usuarioService.obtenerUsuarioPorEmail("test@email.com")).thenReturn(Optional.empty());
         when(usuarioService.crearUsuario(any(Usuario.class))).thenReturn(usuario);
 
         ResponseEntity<?> response = userController.registrarUsuario(usuario);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(usuario, response.getBody());
-        verify(usuarioService, times(1)).crearUsuario(usuario);
+        verify(usuarioService, times(1)).obtenerUsuarioPorEmail("test@email.com");
+        verify(usuarioService, times(1)).crearUsuario(any(Usuario.class));
     }
 
     @Test
-    void registrarUsuario_EmailExistente() {
-        when(usuarioService.obtenerUsuarioPorEmail(anyString())).thenReturn(Optional.of(usuario));
+    void registrarUsuario_EmailYaRegistrado_BadRequest() {
+        when(usuarioService.obtenerUsuarioPorEmail("test@email.com")).thenReturn(Optional.of(usuario));
 
         ResponseEntity<?> response = userController.registrarUsuario(usuario);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("El correo ya está registrado.", ((ResponseMessage) response.getBody()).getMessage());
+        ResponseMessage responseMessage = (ResponseMessage) response.getBody();
+        assertEquals("El correo ya está registrado.", responseMessage.getMessage());
+        verify(usuarioService, times(1)).obtenerUsuarioPorEmail("test@email.com");
+        verify(usuarioService, never()).crearUsuario(any(Usuario.class));
     }
 
     @Test
-    void iniciarSesion_Exitoso() {
-        when(usuarioService.obtenerUsuarioPorEmail(anyString())).thenReturn(Optional.of(usuario));
-        when(usuarioService.verificarContraseña(anyString(), anyString())).thenReturn(true);
+    void registrarUsuario_ValidationError_BadRequest() {
+        when(usuarioService.obtenerUsuarioPorEmail("test@email.com")).thenReturn(Optional.empty());
+        when(usuarioService.crearUsuario(any(Usuario.class)))
+                .thenThrow(new IllegalArgumentException("Datos inválidos"));
 
-        ResponseEntity<?> response = userController.iniciarSesion(usuario);
+        ResponseEntity<?> response = userController.registrarUsuario(usuario);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        ResponseMessage responseMessage = (ResponseMessage) response.getBody();
+        assertEquals("Datos inválidos", responseMessage.getMessage());
+    }
+
+    @Test
+    void registrarUsuario_InternalError_InternalServerError() {
+        when(usuarioService.obtenerUsuarioPorEmail("test@email.com")).thenReturn(Optional.empty());
+        when(usuarioService.crearUsuario(any(Usuario.class)))
+                .thenThrow(new RuntimeException("Error interno"));
+
+        ResponseEntity<?> response = userController.registrarUsuario(usuario);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        ResponseMessage responseMessage = (ResponseMessage) response.getBody();
+        assertEquals("Error interno al registrar usuario.", responseMessage.getMessage());
+    }
+
+    @Test
+    void iniciarSesion_Success() {
+        Usuario usuarioLogin = new Usuario();
+        usuarioLogin.setEmail("test@email.com");
+        usuarioLogin.setPassword("password123");
+
+        when(usuarioService.obtenerUsuarioPorEmail("test@email.com")).thenReturn(Optional.of(usuario));
+        when(usuarioService.verificarContraseña("password123", "password123")).thenReturn(true);
+
+        ResponseEntity<?> response = userController.iniciarSesion(usuarioLogin);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Inicio de sesión exitoso.", ((ResponseMessage) response.getBody()).getMessage());
+        ResponseMessage responseMessage = (ResponseMessage) response.getBody();
+        assertEquals("Inicio de sesión exitoso.", responseMessage.getMessage());
+        verify(usuarioService, times(1)).obtenerUsuarioPorEmail("test@email.com");
+        verify(usuarioService, times(1)).verificarContraseña("password123", "password123");
     }
 
     @Test
-    void iniciarSesion_EmailNoRegistrado() {
-        when(usuarioService.obtenerUsuarioPorEmail(anyString())).thenReturn(Optional.empty());
+    void iniciarSesion_EmailNoRegistrado_NotFound() {
+        Usuario usuarioLogin = new Usuario();
+        usuarioLogin.setEmail("noexiste@email.com");
+        usuarioLogin.setPassword("password123");
 
-        ResponseEntity<?> response = userController.iniciarSesion(usuario);
+        when(usuarioService.obtenerUsuarioPorEmail("noexiste@email.com")).thenReturn(Optional.empty());
+
+        ResponseEntity<?> response = userController.iniciarSesion(usuarioLogin);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("El correo electrónico no está registrado.", ((ResponseMessage) response.getBody()).getMessage());
+        ResponseMessage responseMessage = (ResponseMessage) response.getBody();
+        assertEquals("El correo electrónico no está registrado.", responseMessage.getMessage());
+        verify(usuarioService, times(1)).obtenerUsuarioPorEmail("noexiste@email.com");
+        verify(usuarioService, never()).verificarContraseña(anyString(), anyString());
     }
 
     @Test
-    void iniciarSesion_ContraseñaIncorrecta() {
-        when(usuarioService.obtenerUsuarioPorEmail(anyString())).thenReturn(Optional.of(usuario));
-        when(usuarioService.verificarContraseña(anyString(), anyString())).thenReturn(false);
+    void iniciarSesion_ContraseñaIncorrecta_Unauthorized() {
+        Usuario usuarioLogin = new Usuario();
+        usuarioLogin.setEmail("test@email.com");
+        usuarioLogin.setPassword("passwordIncorrecto");
 
-        ResponseEntity<?> response = userController.iniciarSesion(usuario);
+        when(usuarioService.obtenerUsuarioPorEmail("test@email.com")).thenReturn(Optional.of(usuario));
+        when(usuarioService.verificarContraseña("passwordIncorrecto", "password123")).thenReturn(false);
+
+        ResponseEntity<?> response = userController.iniciarSesion(usuarioLogin);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("Contraseña incorrecta.", ((ResponseMessage) response.getBody()).getMessage());
+        ResponseMessage responseMessage = (ResponseMessage) response.getBody();
+        assertEquals("Contraseña incorrecta.", responseMessage.getMessage());
+        verify(usuarioService, times(1)).verificarContraseña("passwordIncorrecto", "password123");
     }
 
     @Test
-    void obtenerUsuarioPorEmail_Exitoso() {
-        when(usuarioService.obtenerUsuarioPorEmail(anyString())).thenReturn(Optional.of(usuario));
+    void obtenerUsuarioPorEmail_Success() {
+        when(usuarioService.obtenerUsuarioPorEmail("test@email.com")).thenReturn(Optional.of(usuario));
 
-        ResponseEntity<?> response = userController.obtenerUsuarioPorEmail("juan@example.com");
+        ResponseEntity<?> response = userController.obtenerUsuarioPorEmail("test@email.com");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(usuario, response.getBody());
+        verify(usuarioService, times(1)).obtenerUsuarioPorEmail("test@email.com");
     }
 
     @Test
-    void obtenerUsuarioPorEmail_NoEncontrado() {
-        when(usuarioService.obtenerUsuarioPorEmail(anyString())).thenReturn(Optional.empty());
+    void obtenerUsuarioPorEmail_UsuarioNoEncontrado_NotFound() {
+        when(usuarioService.obtenerUsuarioPorEmail("noexiste@email.com")).thenReturn(Optional.empty());
 
-        ResponseEntity<?> response = userController.obtenerUsuarioPorEmail("noexiste@example.com");
+        ResponseEntity<?> response = userController.obtenerUsuarioPorEmail("noexiste@email.com");
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Usuario no encontrado.", ((ResponseMessage) response.getBody()).getMessage());
+        ResponseMessage responseMessage = (ResponseMessage) response.getBody();
+        assertEquals("Usuario no encontrado.", responseMessage.getMessage());
     }
 
     @Test
-    void actualizarUsuario_Exitoso() {
-        when(usuarioService.obtenerUsuarioPorId(anyLong())).thenReturn(Optional.of(usuario));
-        when(usuarioService.actualizarUsuario(any(Usuario.class))).thenReturn(usuario);
+    void actualizarUsuario_Success() {
+        Usuario usuarioActualizado = new Usuario();
+        usuarioActualizado.setId(1L);
+        usuarioActualizado.setEmail("actualizado@email.com");
+        usuarioActualizado.setNombre("Usuario Actualizado");
+
+        when(usuarioService.obtenerUsuarioPorId(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioService.actualizarUsuario(any(Usuario.class))).thenReturn(usuarioActualizado);
+
+        ResponseEntity<?> response = userController.actualizarUsuario(1L, usuarioActualizado);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(usuarioActualizado, response.getBody());
+        verify(usuarioService, times(1)).obtenerUsuarioPorId(1L);
+        verify(usuarioService, times(1)).actualizarUsuario(any(Usuario.class));
+    }
+
+    @Test
+    void actualizarUsuario_UsuarioNoEncontrado_NotFound() {
+        when(usuarioService.obtenerUsuarioPorId(1L)).thenReturn(Optional.empty());
 
         ResponseEntity<?> response = userController.actualizarUsuario(1L, usuario);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(usuario, response.getBody());
-    }
-
-    @Test
-    void actualizarUsuario_NoEncontrado() {
-        when(usuarioService.obtenerUsuarioPorId(anyLong())).thenReturn(Optional.empty());
-
-        ResponseEntity<?> response = userController.actualizarUsuario(99L, usuario);
-
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Usuario no encontrado.", ((ResponseMessage) response.getBody()).getMessage());
+        ResponseMessage responseMessage = (ResponseMessage) response.getBody();
+        assertEquals("Usuario no encontrado.", responseMessage.getMessage());
+        verify(usuarioService, times(1)).obtenerUsuarioPorId(1L);
+        verify(usuarioService, never()).actualizarUsuario(any(Usuario.class));
     }
 
     @Test
-    void eliminarUsuario_Exitoso() {
-        when(usuarioService.obtenerUsuarioPorId(anyLong())).thenReturn(Optional.of(usuario));
-        doNothing().when(usuarioService).eliminarUsuario(anyLong());
+    void eliminarUsuario_Success() {
+        when(usuarioService.obtenerUsuarioPorId(1L)).thenReturn(Optional.of(usuario));
+        doNothing().when(usuarioService).eliminarUsuario(1L);
 
         ResponseEntity<?> response = userController.eliminarUsuario(1L);
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(usuarioService, times(1)).obtenerUsuarioPorId(1L);
         verify(usuarioService, times(1)).eliminarUsuario(1L);
     }
 
     @Test
-    void eliminarUsuario_NoEncontrado() {
-        when(usuarioService.obtenerUsuarioPorId(anyLong())).thenReturn(Optional.empty());
+    void eliminarUsuario_UsuarioNoEncontrado_NotFound() {
+        when(usuarioService.obtenerUsuarioPorId(1L)).thenReturn(Optional.empty());
 
-        ResponseEntity<?> response = userController.eliminarUsuario(99L);
+        ResponseEntity<?> response = userController.eliminarUsuario(1L);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Usuario no encontrado.", ((ResponseMessage) response.getBody()).getMessage());
+        ResponseMessage responseMessage = (ResponseMessage) response.getBody();
+        assertEquals("Usuario no encontrado.", responseMessage.getMessage());
+        verify(usuarioService, times(1)).obtenerUsuarioPorId(1L);
+        verify(usuarioService, never()).eliminarUsuario(1L);
     }
 }
