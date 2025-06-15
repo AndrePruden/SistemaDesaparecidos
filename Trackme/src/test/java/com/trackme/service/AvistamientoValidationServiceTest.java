@@ -14,7 +14,7 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class ValidationServicesTest {
+class AvistamientoValidationServiceTest {
 
     @InjectMocks
     private AvistamientoValidationService avistamientoValidationService;

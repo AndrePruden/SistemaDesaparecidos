@@ -7,23 +7,48 @@ import static org.junit.jupiter.api.Assertions.*;
 class ResponseMessageTest {
 
     @Test
-    void testConstructorAndGetter() {
-        String expectedMessage = "Operación exitosa";
-        ResponseMessage responseMessage = new ResponseMessage(expectedMessage);
+    void constructor_CreatesMessageCorrectly() {
+        String mensaje = "Mensaje de prueba";
 
-        assertNotNull(responseMessage);
-        assertEquals(expectedMessage, responseMessage.getMessage());
+        ResponseMessage responseMessage = new ResponseMessage(mensaje);
+
+        assertEquals(mensaje, responseMessage.getMessage());
     }
 
     @Test
-    void testEmptyMessage() {
-        ResponseMessage responseMessage = new ResponseMessage("");
-        assertEquals("", responseMessage.getMessage());
+    void getMessage_ReturnsCorrectMessage() {
+        String mensaje = "Test message";
+        ResponseMessage responseMessage = new ResponseMessage(mensaje);
+
+        String result = responseMessage.getMessage();
+
+        assertEquals(mensaje, result);
     }
 
     @Test
-    void testNullMessage() {
+    void setMensaje_UpdatesMessageCorrectly() {
+        ResponseMessage responseMessage = new ResponseMessage("Mensaje inicial");
+        String nuevoMensaje = "Mensaje actualizado";
+
+        responseMessage.setMensaje(nuevoMensaje);
+
+        assertEquals(nuevoMensaje, responseMessage.getMessage());
+    }
+
+    @Test
+    void constructor_WithNullMessage_DoesNotThrowException() {
+        assertDoesNotThrow(() -> new ResponseMessage(null));
+
         ResponseMessage responseMessage = new ResponseMessage(null);
         assertNull(responseMessage.getMessage());
+    }
+
+    @Test
+    void constructor_WithEmptyMessage_WorksCorrectly() {
+        String emptyMessage = "";
+
+        ResponseMessage responseMessage = new ResponseMessage(emptyMessage);
+
+        assertEquals(emptyMessage, responseMessage.getMessage());
     }
 }
