@@ -108,7 +108,7 @@ public class ReporteService {
             Path rutaArchivo = uploadDir.resolve(nombreArchivo);
             Files.copy(file.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
 
-            return "http://sistemadesaparecidos-production-6b5e.up.railway.app/uploads/" + nombreArchivo;
+            return "https://sistemadesaparecidos-production-6b5e.up.railway.app/uploads/" + nombreArchivo;
         } catch (IOException e) {
             logger.error("Error al guardar imagen: {}", e.getMessage(), e);
             return null;
