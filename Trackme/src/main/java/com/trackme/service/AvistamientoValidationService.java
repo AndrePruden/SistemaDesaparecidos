@@ -12,10 +12,6 @@ public class AvistamientoValidationService {
             return "El avistamiento no puede ser nulo.";
         }
 
-//        if (!StringUtils.hasText(avistamiento.getPersonaDesaparecida().getNombre())) {
-//            return "El nombre es obligatorio.";
-//        }
-
         if (!StringUtils.hasText(avistamiento.getUbicacion())) {
             return "La ubicación es obligatoria.";
         }

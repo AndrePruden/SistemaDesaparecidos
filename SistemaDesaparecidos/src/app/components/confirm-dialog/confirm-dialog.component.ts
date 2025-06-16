@@ -19,7 +19,7 @@ export class ConfirmDialogComponent {
   ) {}
 
   onConfirm(): void {
-    this.dialogRef.close(true);
+    this.dialogRef.close(true); 
   }
 
   onCancel(): void {
