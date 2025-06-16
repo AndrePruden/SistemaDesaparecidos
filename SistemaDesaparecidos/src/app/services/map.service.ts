@@ -131,6 +131,12 @@ export class MapService {
     }
   }
 
+  añadirCapaBase(mapa: L.Map): void {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(mapa);
+    }
+
   get leaflet(): typeof L {
     return this.L;
   }
